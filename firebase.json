@@ -1,0 +1,8 @@
+// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
+// Description: Firebase project configuration
+{
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

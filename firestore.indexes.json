@@ -1,0 +1,6 @@
+// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
+// Description: Cloud Firestore composite indexes configuration
+{
+  "indexes": [],
+  "fieldOverrides": []
+}

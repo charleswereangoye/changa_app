@@ -1,0 +1,32 @@
+# Owner: A - Person A (Foundation, Authentication, Profile)
+# Description: GitHub Actions CI workflow for format, analyze, test, and no-setState check
+
+name: CI
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - run: flutter pub get
+      - name: Verify Formatting
+        run: dart format --set-exit-if-changed .
+      - name: Analyze Project
+        run: flutter analyze
+      - name: Disallow setState
+        run: |
+          if grep -rn "setState(" lib/; then
+            echo "setState is strictly prohibited! Use Cubits."
+            exit 1
+          fi
+      - name: Run Tests
+        run: flutter test
