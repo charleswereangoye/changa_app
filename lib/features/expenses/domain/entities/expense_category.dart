@@ -1,4 +1,15 @@
 // Owner: C - Person C (Expenses, Dashboard, Documentation)
 // Description: ExpenseCategory enum and category classification
 
-// TODO(C): Implement ExpenseCategory according to project specification
+enum ExpenseCategory {
+  rent,
+  utilities,
+  internet,
+  water,
+  cashpower,
+  gas,
+  groceries,
+  other;
+
+  bool get isResource => this == cashpower || this == gas || this == groceries;
+}
