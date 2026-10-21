@@ -1,4 +1,4 @@
-/// Route name constants matching the screen map.
+/// Route name constants matching the screen map
 class RouteNames {
   RouteNames._();
 
