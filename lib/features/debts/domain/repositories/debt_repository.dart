@@ -10,10 +10,7 @@ abstract class DebtRepository {
   Stream<List<Debt>> watchPendingDebts(String householdId);
 
   // Includes settled debts: the Harmony calculator needs them.
-  Stream<List<Debt>> watchDebtsSince(
-    String householdId,
-    DateTime since,
-  );
+  Stream<List<Debt>> watchDebtsSince(String householdId, DateTime since);
 
   Stream<List<Debt>> watchDebtsBetween(
     String householdId,

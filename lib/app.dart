@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+
+import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
-import 'features/auth/presentation/pages/splash_page.dart';
 
 /// The root widget of the Changa application.
 class ChangaApp extends StatelessWidget {
@@ -8,11 +9,11 @@ class ChangaApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return MaterialApp.router(
       title: 'Changa',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
-      home: const SplashPage(),
+      routerConfig: AppRouter.router,
     );
   }
 }

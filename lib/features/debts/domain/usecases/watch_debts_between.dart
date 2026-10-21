@@ -11,11 +11,7 @@ class WatchDebtsBetween {
 
   const WatchDebtsBetween(this.repository);
 
-  Stream<List<Debt>> call(
-    String householdId,
-    String uidA,
-    String uidB,
-  ) {
+  Stream<List<Debt>> call(String householdId, String uidA, String uidB) {
     return repository.watchDebtsBetween(householdId, uidA, uidB);
   }
 }
