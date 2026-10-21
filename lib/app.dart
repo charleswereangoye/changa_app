@@ -1,8 +1,8 @@
-// Owner: A - Person A (Foundation, Authentication, Profile)
-// Description: Root App widget: MultiBlocProvider, MaterialApp.router, theme configuration
-
 import 'package:flutter/material.dart';
+import 'core/theme/app_theme.dart';
+import 'features/auth/presentation/pages/splash_page.dart';
 
+/// The root widget of the Changa application.
 class ChangaApp extends StatelessWidget {
   const ChangaApp({super.key});
 
@@ -10,13 +10,9 @@ class ChangaApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Changa',
-      theme: ThemeData(
-        useMaterial3: true,
-        colorSchemeSeed: const Color(0xFF1B4D3E),
-      ),
-      home: const Scaffold(
-        body: Center(child: Text('Changa - Roommate Shared Living')),
-      ),
+      debugShowCheckedModeBanner: false,
+      theme: AppTheme.lightTheme,
+      home: const SplashPage(),
     );
   }
 }

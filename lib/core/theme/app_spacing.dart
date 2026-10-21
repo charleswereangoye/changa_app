@@ -1,4 +1,13 @@
-// Owner: A - Person A (Foundation, Authentication, Profile)
-// Description: Spacing, padding, and layout scale constants
+/// Layout spacing constants based on an 8-point / 4-point grid.
+class AppSpacing {
+  AppSpacing._();
 
-// TODO(A): Implement AppSpacing according to project specification
+  static const double xs = 4.0;
+  static const double sm = 8.0;
+  static const double md = 12.0;
+  static const double lg = 16.0;
+  static const double xl = 20.0;
+  static const double xxl = 24.0;
+  static const double xxxl = 32.0;
+  static const double huge = 48.0;
+}
