@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "740240029076",
+    "project_id": "changa-app-87ed8",
+    "storage_bucket": "changa-app-87ed8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:740240029076:android:ed64bd0d8ecb5a2e1d4b81",
+        "android_client_info": {
+          "package_name": "com.example.changa_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClV9dhfMNiRMo1uATgR3hQLjcGOL6P_HE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
