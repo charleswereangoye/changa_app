@@ -1,4 +1,20 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: Member domain entity (role, credits, joinedAt)
+import 'package:equatable/equatable.dart';
 
-// TODO(B): Implement Member according to project specification
+enum MemberRole { admin, member }
+
+class Member extends Equatable {
+  final String uid;
+  final MemberRole role;
+  final int credits;
+  final DateTime joinedAt;
+
+  const Member({
+    required this.uid,
+    required this.role,
+    required this.credits,
+    required this.joinedAt,
+  });
+
+  @override
+  List<Object?> get props => [uid, role, credits, joinedAt];
+}
