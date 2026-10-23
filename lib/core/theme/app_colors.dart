@@ -13,6 +13,9 @@ class AppColors {
   static const Color leafGreen = Color(
     0xFF4B8A37,
   ); // Accent green for logo and indicators
+  static const Color lightGreen = Color(
+    0xFF9FD778,
+  ); // Light green for buttons and active indicators
   static const Color sunglo = Color(0xFFDF7373); // Coral accent color
 
   // Supporting neutral and soft tones
@@ -38,4 +41,7 @@ class AppColors {
   static const Color leafGreen40 = Color(
     0x664B8A37,
   ); // ~40% opacity for inactive green dots
+  static const Color inactiveDot = Color(
+    0xFFD6DACB,
+  ); // Muted dot color for onboarding
 }
