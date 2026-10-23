@@ -1,4 +1,11 @@
-// Owner: E - Person E (Chores, Harmony Score, Preferences)
-// Description: UseCase: Stream all chores for Harmony calculation
+import 'package:changa_app/features/chores/domain/entities/chore.dart';
+import 'package:changa_app/features/chores/domain/repositories/chore_repository.dart';
 
-// TODO(E): Implement WatchAllChores according to project specification
+class WatchAllChores {
+  const WatchAllChores(this._repository);
+
+  final ChoreRepository _repository;
+
+  Stream<List<Chore>> call(String householdId) =>
+      _repository.watchAllChores(householdId);
+}

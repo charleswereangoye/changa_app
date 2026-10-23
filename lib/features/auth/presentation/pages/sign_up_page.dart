@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/validators.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../injection_container.dart';
@@ -59,12 +61,7 @@ class _SignUpPageState extends State<SignUpPage> {
               if (state.isSuccess) {
                 context.goNamed(RouteNames.createHousehold);
               } else if (state.isFailure && state.errorMessage != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.errorMessage!),
-                    backgroundColor: AppColors.sunglo,
-                  ),
-                );
+                AppSnackbar.error(context, state.errorMessage!);
               }
             },
             builder: (context, state) {
@@ -115,12 +112,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               color: AppColors.edward,
                               size: 20,
                             ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please enter your name';
-                              }
-                              return null;
-                            },
+                            validator: Validators.name,
                           ),
                           const SizedBox(height: 14),
 
@@ -135,16 +127,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               color: AppColors.edward,
                               size: 20,
                             ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please enter your email';
-                              }
-                              if (!value.contains('@') ||
-                                  !value.contains('.')) {
-                                return 'Please enter a valid email';
-                              }
-                              return null;
-                            },
+                            validator: Validators.email,
                           ),
                           const SizedBox(height: 14),
 
@@ -159,12 +142,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               color: AppColors.edward,
                               size: 20,
                             ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please enter your phone number';
-                              }
-                              return null;
-                            },
+                            validator: Validators.phone,
                           ),
                           const SizedBox(height: 14),
 
@@ -193,15 +171,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                     .togglePasswordVisibility();
                               },
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please create a password';
-                              }
-                              if (value.length < 6) {
-                                return 'Password must be at least 6 characters';
-                              }
-                              return null;
-                            },
+                            validator: Validators.password,
                           ),
                           const SizedBox(height: 14),
 
@@ -281,9 +251,10 @@ class _SignUpPageState extends State<SignUpPage> {
                                 child: SocialAuthButton(
                                   label: 'Apple',
                                   onPressed: () {
-                                    context
-                                        .read<SignUpCubit>()
-                                        .signUpWithApple();
+                                    AppSnackbar.info(
+                                      context,
+                                      'Apple Sign-In is only available on iOS devices.',
+                                    );
                                   },
                                 ),
                               ),

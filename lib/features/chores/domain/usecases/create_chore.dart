@@ -1,4 +1,12 @@
-// Owner: E - Person E (Chores, Harmony Score, Preferences)
-// Description: UseCase: Create single or 4 recurring weekly chore instances
+import 'package:changa_app/core/error/result.dart';
+import 'package:changa_app/features/chores/domain/entities/new_chore_input.dart';
+import 'package:changa_app/features/chores/domain/repositories/chore_repository.dart';
 
-// TODO(E): Implement CreateChore according to project specification
+class CreateChore {
+  const CreateChore(this._repository);
+
+  final ChoreRepository _repository;
+
+  Future<Result<void>> call(NewChoreInput input) =>
+      _repository.createChore(input);
+}

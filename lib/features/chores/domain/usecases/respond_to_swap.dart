@@ -1,4 +1,18 @@
-// Owner: E - Person E (Chores, Harmony Score, Preferences)
-// Description: UseCase: Accept or decline swap request via transaction
+import 'package:changa_app/core/error/result.dart';
+import 'package:changa_app/features/chores/domain/repositories/chore_repository.dart';
 
-// TODO(E): Implement RespondToSwap according to project specification
+class RespondToSwap {
+  const RespondToSwap(this._repository);
+
+  final ChoreRepository _repository;
+
+  Future<Result<void>> call({
+    required String householdId,
+    required String requestId,
+    required bool accept,
+  }) => _repository.respondToSwap(
+    householdId: householdId,
+    requestId: requestId,
+    accept: accept,
+  );
+}

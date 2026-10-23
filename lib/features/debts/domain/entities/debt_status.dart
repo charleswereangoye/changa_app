@@ -1,0 +1,1 @@
+enum DebtStatus { pending, settled }

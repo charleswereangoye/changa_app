@@ -12,7 +12,20 @@
           "package_name": "com.example.changa_app"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "740240029076-4kdr0kgcos35e60epeio6dt6o8lupp5h.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.changa_app",
+            "certificate_hash": "0b15b59572f0121b87b196fbfc587701f7657919"
+          }
+        },
+        {
+          "client_id": "740240029076-jj2ng4ahetgu1a02dns51ocn0lpj57h1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
           "current_key": "AIzaSyClV9dhfMNiRMo1uATgR3hQLjcGOL6P_HE"
@@ -20,7 +33,12 @@
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "740240029076-jj2ng4ahetgu1a02dns51ocn0lpj57h1.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../../../core/error/result.dart';
@@ -46,6 +47,15 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.success(user);
     } on FirebaseAuthException catch (e) {
       return Result.failure(_mapFirebaseAuthException(e));
+    } on FirebaseException catch (e) {
+      if (e.code == 'permission-denied') {
+        return Result.failure(
+          const PermissionFailure(
+            'Firestore database permission denied. Check your Firestore rules in Firebase Console.',
+          ),
+        );
+      }
+      return Result.failure(UnknownFailure(e.message ?? e.toString()));
     } catch (e) {
       return Result.failure(UnknownFailure(e.toString()));
     }
@@ -65,6 +75,15 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.success(user);
     } on FirebaseAuthException catch (e) {
       return Result.failure(_mapFirebaseAuthException(e));
+    } on FirebaseException catch (e) {
+      if (e.code == 'permission-denied') {
+        return Result.failure(
+          const PermissionFailure(
+            'Firestore database permission denied. Check your Firestore rules in Firebase Console.',
+          ),
+        );
+      }
+      return Result.failure(UnknownFailure(e.message ?? e.toString()));
     } catch (e) {
       return Result.failure(UnknownFailure(e.toString()));
     }
@@ -78,10 +97,30 @@ class AuthRepositoryImpl implements AuthRepository {
       return Result.success(user);
     } on FirebaseAuthException catch (e) {
       return Result.failure(_mapFirebaseAuthException(e));
+    } on GoogleSignInException catch (e) {
+      if (e.code == GoogleSignInExceptionCode.canceled) {
+        return Result.failure(
+          const AuthFailure('Google sign-in was cancelled.'),
+        );
+      }
+      return Result.failure(
+        AuthFailure(e.description ?? 'Google sign-in failed.'),
+      );
+    } on FirebaseException catch (e) {
+      if (e.code == 'permission-denied') {
+        return Result.failure(
+          const PermissionFailure(
+            'Firestore database permission denied. Check your Firestore rules in Firebase Console.',
+          ),
+        );
+      }
+      return Result.failure(UnknownFailure(e.message ?? e.toString()));
     } catch (e) {
       return Result.failure(UnknownFailure(e.toString()));
     }
   }
+
+
 
   @override
   Future<Result<AppUser>> signInWithApple() async {
@@ -134,6 +173,10 @@ class AuthRepositoryImpl implements AuthRepository {
         return const AuthFailure('Please enter a valid email address.');
       case 'network-request-failed':
         return const NetworkFailure();
+      case 'configuration-not-found':
+        return const AuthFailure(
+          'Email/Password sign-in is disabled in Firebase Console. Please enable it under Authentication > Sign-in method.',
+        );
       default:
         return AuthFailure(e.message ?? 'Authentication failed.');
     }

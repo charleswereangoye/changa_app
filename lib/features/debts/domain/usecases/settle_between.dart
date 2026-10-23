@@ -3,7 +3,8 @@
 
 // TODO(D): Implement SettleBetween according to project specification
 
-import '../../../../core/error/result.dart';
+import 'package:changa_app/core/error/result.dart';
+
 import '../repositories/debt_repository.dart';
 
 class SettleBetween {

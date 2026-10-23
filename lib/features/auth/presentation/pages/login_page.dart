@@ -4,6 +4,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../../core/router/route_names.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/validators.dart';
+import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../injection_container.dart';
@@ -53,12 +55,7 @@ class _LoginPageState extends State<LoginPage> {
               if (state.isSuccess) {
                 context.goNamed(RouteNames.dashboard);
               } else if (state.isFailure && state.errorMessage != null) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.errorMessage!),
-                    backgroundColor: AppColors.sunglo,
-                  ),
-                );
+                AppSnackbar.error(context, state.errorMessage!);
               }
             },
             builder: (context, state) {
@@ -110,16 +107,7 @@ class _LoginPageState extends State<LoginPage> {
                               color: AppColors.edward,
                               size: 20,
                             ),
-                            validator: (value) {
-                              if (value == null || value.trim().isEmpty) {
-                                return 'Please enter your email';
-                              }
-                              if (!value.contains('@') ||
-                                  !value.contains('.')) {
-                                return 'Please enter a valid email';
-                              }
-                              return null;
-                            },
+                            validator: Validators.email,
                           ),
                           const SizedBox(height: 14),
 
@@ -148,12 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                                     .togglePasswordVisibility();
                               },
                             ),
-                            validator: (value) {
-                              if (value == null || value.isEmpty) {
-                                return 'Please enter your password';
-                              }
-                              return null;
-                            },
+                            validator: Validators.loginPassword,
                           ),
                           const SizedBox(height: 10),
 
@@ -249,7 +232,10 @@ class _LoginPageState extends State<LoginPage> {
                                 child: SocialAuthButton(
                                   label: 'Apple',
                                   onPressed: () {
-                                    context.read<LoginCubit>().loginWithApple();
+                                    AppSnackbar.info(
+                                      context,
+                                      'Apple Sign-In is only available on iOS devices.',
+                                    );
                                   },
                                 ),
                               ),

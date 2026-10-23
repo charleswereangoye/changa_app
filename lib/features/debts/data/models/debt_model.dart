@@ -10,18 +10,19 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/constants/firestore_paths.dart';
 import '../../domain/entities/debt.dart';
+import '../../domain/entities/debt_status.dart';
+import '../../../../core/enums/settlement_method.dart';
 
 class DebtModel extends Debt {
   const DebtModel({
     required super.id,
-    required super.expenseId,
-    required super.debtorUid,
-    required super.creditorUid,
+    required super.householdId,
+    required super.fromUid,
+    required super.toUid,
     required super.amount,
-    required super.creditsApplied,
     required super.status,
     required super.createdAt,
-    super.settlementMethod,
+    super.settledMethod,
     super.settledAt,
   });
 
@@ -37,15 +38,29 @@ class DebtModel extends Debt {
       throw StateError('Debt document ${document.id} has no data.');
     }
 
+    final householdId = document.reference.parent.parent?.id;
+    if (householdId == null) {
+      throw StateError(
+        'Debt document ${document.id} is not inside a household.',
+      );
+    }
+
     return DebtModel(
       id: document.id,
-      expenseId: data[DebtFields.expenseId] as String,
-      debtorUid: data[DebtFields.debtorUid] as String,
-      creditorUid: data[DebtFields.creditorUid] as String,
-      amount: data[DebtFields.amount] as int,
-      creditsApplied: data[DebtFields.creditsApplied] as int,
-      status: data[DebtFields.status] as String,
-      settlementMethod: data[DebtFields.settlementMethod] as String?,
+      householdId: householdId,
+      fromUid: data[DebtFields.debtorUid] as String,
+      toUid: data[DebtFields.creditorUid] as String,
+      amount: (data[DebtFields.amount] as num).toDouble(),
+      status: _enumValue(
+        DebtStatus.values,
+        data[DebtFields.status],
+        DebtFields.status,
+      ),
+      settledMethod: _nullableEnumValue(
+        SettlementMethod.values,
+        data[DebtFields.settlementMethod],
+        DebtFields.settlementMethod,
+      ),
       settledAt: (data[DebtFields.settledAt] as Timestamp?)?.toDate(),
       createdAt:
           (data[DebtFields.createdAt] as Timestamp?)?.toDate() ??
@@ -57,13 +72,12 @@ class DebtModel extends Debt {
   factory DebtModel.fromEntity(Debt debt) {
     return DebtModel(
       id: debt.id,
-      expenseId: debt.expenseId,
-      debtorUid: debt.debtorUid,
-      creditorUid: debt.creditorUid,
+      householdId: debt.householdId,
+      fromUid: debt.fromUid,
+      toUid: debt.toUid,
       amount: debt.amount,
-      creditsApplied: debt.creditsApplied,
       status: debt.status,
-      settlementMethod: debt.settlementMethod,
+      settledMethod: debt.settledMethod,
       settledAt: debt.settledAt,
       createdAt: debt.createdAt,
     );
@@ -75,13 +89,11 @@ class DebtModel extends Debt {
   /// Keep it false when preserving an existing creation date.
   Map<String, dynamic> toMap({bool useServerTimestamp = false}) {
     return {
-      DebtFields.expenseId: expenseId,
-      DebtFields.debtorUid: debtorUid,
-      DebtFields.creditorUid: creditorUid,
+      DebtFields.debtorUid: fromUid,
+      DebtFields.creditorUid: toUid,
       DebtFields.amount: amount,
-      DebtFields.creditsApplied: creditsApplied,
-      DebtFields.status: status,
-      DebtFields.settlementMethod: settlementMethod,
+      DebtFields.status: status.name,
+      DebtFields.settlementMethod: settledMethod?.name,
       DebtFields.settledAt: settledAt == null
           ? null
           : Timestamp.fromDate(settledAt!),
@@ -95,15 +107,35 @@ class DebtModel extends Debt {
   Debt toEntity() {
     return Debt(
       id: id,
-      expenseId: expenseId,
-      debtorUid: debtorUid,
-      creditorUid: creditorUid,
+      householdId: householdId,
+      fromUid: fromUid,
+      toUid: toUid,
       amount: amount,
-      creditsApplied: creditsApplied,
       status: status,
-      settlementMethod: settlementMethod,
+      settledMethod: settledMethod,
       settledAt: settledAt,
       createdAt: createdAt,
     );
+  }
+
+  static T _enumValue<T extends Enum>(
+    Iterable<T> values,
+    Object? rawValue,
+    String field,
+  ) {
+    if (rawValue is String) {
+      final value = values.asNameMap()[rawValue];
+      if (value != null) return value;
+    }
+    throw FormatException('Invalid $field value: $rawValue');
+  }
+
+  static T? _nullableEnumValue<T extends Enum>(
+    Iterable<T> values,
+    Object? rawValue,
+    String field,
+  ) {
+    if (rawValue == null) return null;
+    return _enumValue(values, rawValue, field);
   }
 }

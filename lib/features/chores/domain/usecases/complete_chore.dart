@@ -1,4 +1,11 @@
-// Owner: E - Person E (Chores, Harmony Score, Preferences)
-// Description: UseCase: Complete chore via transaction and award credits
+import 'package:changa_app/core/error/result.dart';
+import 'package:changa_app/features/chores/domain/repositories/chore_repository.dart';
 
-// TODO(E): Implement CompleteChore according to project specification
+class CompleteChore {
+  const CompleteChore(this._repository);
+
+  final ChoreRepository _repository;
+
+  Future<Result<void>> call(String householdId, String choreId) =>
+      _repository.completeChore(householdId, choreId);
+}

@@ -1,9 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/firestore_paths.dart';
 import '../models/user_model.dart';
+
 
 abstract class AuthRemoteDataSource {
   Stream<User?> get authStateChanges;
@@ -115,7 +118,13 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
   @override
   Future<UserModel> signInWithGoogle() async {
+    if (!kIsWeb && defaultTargetPlatform == TargetPlatform.android) {
+      await GoogleSignIn.instance.initialize(
+        serverClientId: AppConstants.googleServerClientId,
+      );
+    }
     final googleUser = await GoogleSignIn.instance.authenticate();
+
 
     final googleAuth = googleUser.authentication;
     final AuthCredential credential = GoogleAuthProvider.credential(

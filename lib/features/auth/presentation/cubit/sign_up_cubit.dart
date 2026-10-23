@@ -60,8 +60,7 @@ class SignUpCubit extends Cubit<SignUpState> {
         emit(
           state.copyWith(
             status: SignUpStatus.failure,
-            errorMessage:
-                result.failureOrNull?.message ?? 'Failed to sign up.',
+            errorMessage: result.failureOrNull?.message ?? 'Failed to sign up.',
           ),
         );
       }
