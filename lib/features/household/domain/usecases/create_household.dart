@@ -1,4 +1,5 @@
 import 'package:changa_app/core/error/result.dart';
+
 import '../entities/household.dart';
 import '../repositories/household_repository.dart';
 
@@ -10,5 +11,9 @@ class CreateHousehold {
     required String name,
     required HouseholdType type,
     required int expectedMembers,
-  }) => repository.createHousehold(name: name, type: type, expectedMembers: expectedMembers);
+  }) => repository.createHousehold(
+    name: name,
+    type: type,
+    expectedMembers: expectedMembers,
+  );
 }

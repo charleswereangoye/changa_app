@@ -22,5 +22,13 @@ class Household extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, name, type, expectedMembers, pin, adminUid, createdAt];
+  List<Object?> get props => [
+    id,
+    name,
+    type,
+    expectedMembers,
+    pin,
+    adminUid,
+    createdAt,
+  ];
 }

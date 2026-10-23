@@ -32,5 +32,13 @@ class Activity extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, type, actorUid, targetUid, refId, amount, createdAt];
+  List<Object?> get props => [
+    id,
+    type,
+    actorUid,
+    targetUid,
+    refId,
+    amount,
+    createdAt,
+  ];
 }
