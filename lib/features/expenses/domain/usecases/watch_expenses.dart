@@ -1,4 +1,14 @@
 // Owner: C - Person C (Expenses, Dashboard, Documentation)
 // Description: UseCase: Stream household expenses
 
-// TODO(C): Implement WatchExpenses according to project specification
+import '../entities/expense.dart';
+import '../repositories/expense_repository.dart';
+
+class WatchExpenses {
+  const WatchExpenses(this.repository);
+
+  final ExpenseRepository repository;
+
+  Stream<List<Expense>> call(String householdId) =>
+      repository.watchExpenses(householdId);
+}
