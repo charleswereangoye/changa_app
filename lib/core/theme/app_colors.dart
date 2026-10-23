@@ -7,8 +7,12 @@ class AppColors {
 
   // Primary brand colors
   static const Color sherwoodGreen = Color(0xFF03312E); // Main dark green
-  static const Color ginFizz = Color(0xFFFFFAE3); // Warm cream for text/backgrounds
-  static const Color leafGreen = Color(0xFF4B8A37); // Accent green for logo and indicators
+  static const Color ginFizz = Color(
+    0xFFFFFAE3,
+  ); // Warm cream for text/backgrounds
+  static const Color leafGreen = Color(
+    0xFF4B8A37,
+  ); // Accent green for logo and indicators
   static const Color sunglo = Color(0xFFDF7373); // Coral accent color
 
   // Supporting neutral and soft tones
@@ -24,8 +28,14 @@ class AppColors {
   static const Color black = Color(0xFF000000);
 
   // Common transparent shades used in Figma
-  static const Color ginFizz4 = Color(0x0AFFFCE3); // ~4% opacity for ring strokes
+  static const Color ginFizz4 = Color(
+    0x0AFFFCE3,
+  ); // ~4% opacity for ring strokes
   static const Color sunglo15 = Color(0x26DF7373); // 15% opacity for logo ring
-  static const Color sunglo40 = Color(0x66DF7373); // 40% opacity for inactive coral dots
-  static const Color leafGreen40 = Color(0x664B8A37); // ~40% opacity for inactive green dots
+  static const Color sunglo40 = Color(
+    0x66DF7373,
+  ); // 40% opacity for inactive coral dots
+  static const Color leafGreen40 = Color(
+    0x664B8A37,
+  ); // ~40% opacity for inactive green dots
 }
