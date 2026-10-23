@@ -1,34 +1,41 @@
-// Owner: D - Person D (Debts, Settling, Nudges, Notifications, Release Build)
-// Description: Debt domain entity
+import 'package:equatable/equatable.dart';
+import 'package:changa_app/core/enums/settlement_method.dart';
 
-// TODO(D): Implement Debt according to project specification
+import 'debt_status.dart';
 
-class Debt {
-  final String id;
-  final String expenseId;
-  final String debtorUid;
-  final String creditorUid;
-  final int amount;
-  final int creditsApplied;
-  final String status;
-  final String? settlementMethod;
-  final DateTime? settledAt;
-  final DateTime createdAt;
-
+class Debt extends Equatable {
   const Debt({
     required this.id,
-    required this.expenseId,
-    required this.debtorUid,
-    required this.creditorUid,
+    required this.householdId,
+    required this.fromUid,
+    required this.toUid,
     required this.amount,
-    required this.creditsApplied,
     required this.status,
     required this.createdAt,
-    this.settlementMethod,
     this.settledAt,
+    this.settledMethod,
   });
 
-  bool get isPending => status == 'pending';
+  final String id;
+  final String householdId;
+  final String fromUid;
+  final String toUid;
+  final double amount;
+  final DebtStatus status;
+  final DateTime createdAt;
+  final DateTime? settledAt;
+  final SettlementMethod? settledMethod;
 
-  bool get isSettled => status == 'settled';
+  @override
+  List<Object?> get props => [
+    id,
+    householdId,
+    fromUid,
+    toUid,
+    amount,
+    status,
+    createdAt,
+    settledAt,
+    settledMethod,
+  ];
 }
