@@ -1,4 +1,20 @@
-// Owner: E - Person E (Chores, Harmony Score, Preferences)
-// Description: UseCase: Request chore swap with a housemate
+import 'package:changa_app/core/error/result.dart';
+import 'package:changa_app/features/chores/domain/repositories/chore_repository.dart';
 
-// TODO(E): Implement RequestSwap according to project specification
+class RequestSwap {
+  const RequestSwap(this._repository);
+
+  final ChoreRepository _repository;
+
+  Future<Result<void>> call({
+    required String householdId,
+    required String choreId,
+    required String toUid,
+    String? note,
+  }) => _repository.requestSwap(
+    householdId: householdId,
+    choreId: choreId,
+    toUid: toUid,
+    note: note,
+  );
+}

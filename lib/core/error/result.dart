@@ -1,4 +1,13 @@
-// Owner: A - Person A (Foundation, Authentication, Profile)
-// Description: Sealed Result<T> type encapsulating Success or Failure
+sealed class Result<T> {
+  const Result();
+}
 
-// TODO(A): Implement Result according to project specification
+class Success<T> extends Result<T> {
+  final T data;
+  const Success(this.data);
+}
+
+class Failure<T> extends Result<T> {
+  final Exception exception;
+  const Failure(this.exception);
+}

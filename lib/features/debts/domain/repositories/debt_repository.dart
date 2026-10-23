@@ -3,17 +3,15 @@
 
 // TODO(D): Implement DebtRepository according to project specification
 
-import '../../../../core/error/result.dart';
+import 'package:changa_app/core/error/result.dart';
+
 import '../entities/debt.dart';
 
 abstract class DebtRepository {
   Stream<List<Debt>> watchPendingDebts(String householdId);
 
   // Includes settled debts: the Harmony calculator needs them.
-  Stream<List<Debt>> watchDebtsSince(
-    String householdId,
-    DateTime since,
-  );
+  Stream<List<Debt>> watchDebtsSince(String householdId, DateTime since);
 
   Stream<List<Debt>> watchDebtsBetween(
     String householdId,

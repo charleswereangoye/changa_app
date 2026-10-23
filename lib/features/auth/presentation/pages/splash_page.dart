@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 
@@ -23,10 +24,7 @@ class SplashPage extends StatelessWidget {
               height: 380,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.ginFizz4,
-                  width: 1,
-                ),
+                border: Border.all(color: AppColors.ginFizz4, width: 1),
               ),
             ),
           ),
@@ -40,10 +38,7 @@ class SplashPage extends StatelessWidget {
               height: 500,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                border: Border.all(
-                  color: AppColors.ginFizz4,
-                  width: 1,
-                ),
+                border: Border.all(color: AppColors.ginFizz4, width: 1),
               ),
             ),
           ),
