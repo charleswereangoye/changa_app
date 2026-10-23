@@ -3,7 +3,8 @@
 
 // TODO(D): Implement DebtRepository according to project specification
 
-import '../../../../core/error/result.dart';
+import 'package:changa_app/core/error/result.dart';
+
 import '../entities/debt.dart';
 
 abstract class DebtRepository {

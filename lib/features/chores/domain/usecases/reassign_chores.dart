@@ -1,4 +1,18 @@
-// Owner: E - Person E (Chores, Harmony Score, Preferences)
-// Description: UseCase: Reassign pending chores when a member is removed
+import 'package:changa_app/core/error/result.dart';
+import 'package:changa_app/features/chores/domain/repositories/chore_repository.dart';
 
-// TODO(E): Implement ReassignChores according to project specification
+class ReassignChores {
+  const ReassignChores(this._repository);
+
+  final ChoreRepository _repository;
+
+  Future<Result<void>> call({
+    required String householdId,
+    required String fromUid,
+    required String toUid,
+  }) => _repository.reassignChores(
+    householdId: householdId,
+    fromUid: fromUid,
+    toUid: toUid,
+  );
+}

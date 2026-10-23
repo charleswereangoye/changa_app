@@ -15,38 +15,31 @@ class SplashPage extends StatelessWidget {
     // Scaffold provides the main screen structure
     return Scaffold(
       backgroundColor: AppColors.sherwoodGreen,
-      body: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: () {
-          context.go('/onboarding');
-        },
-        child: Stack(
-          children: [
-            // Decorative top-left ring from Figma design
-            Positioned(
-              top: -100,
-              left: -150,
-              child: Container(
-                width: 380,
-                height: 380,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.ginFizz4, width: 1),
-                ),
+      body: Stack(
+        children: [
+          // Decorative top-left ring from Figma design
+          Positioned(
+            top: -100,
+            left: -150,
+            child: Container(
+              width: 380,
+              height: 380,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.ginFizz4, width: 1),
               ),
             ),
 
-            // Decorative bottom-right ring from Figma design
-            Positioned(
-              bottom: -80,
-              right: -100,
-              child: Container(
-                width: 500,
-                height: 500,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.ginFizz4, width: 1),
-                ),
+          // Decorative bottom-right ring from Figma design
+          Positioned(
+            bottom: -80,
+            right: -100,
+            child: Container(
+              width: 500,
+              height: 500,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: AppColors.ginFizz4, width: 1),
               ),
             ),
 

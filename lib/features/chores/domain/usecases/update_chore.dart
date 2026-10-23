@@ -1,4 +1,12 @@
-// Owner: E - Person E (Chores, Harmony Score, Preferences)
-// Description: UseCase: Update chore title, description, or due date
+import 'package:changa_app/core/error/result.dart';
+import 'package:changa_app/features/chores/domain/entities/chore.dart';
+import 'package:changa_app/features/chores/domain/repositories/chore_repository.dart';
 
-// TODO(E): Implement UpdateChore according to project specification
+class UpdateChore {
+  const UpdateChore(this._repository);
+
+  final ChoreRepository _repository;
+
+  Future<Result<void>> call(String householdId, Chore chore) =>
+      _repository.updateChore(householdId, chore);
+}
