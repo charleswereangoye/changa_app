@@ -1,7 +1,7 @@
-import 'package:changa/core/error/result.dart';
-import 'package:changa/features/chores/domain/entities/chore.dart';
-import 'package:changa/features/chores/domain/entities/new_chore_input.dart';
-import 'package:changa/features/chores/domain/entities/swap_request.dart';
+import 'package:changa_app/core/error/result.dart';
+import 'package:changa_app/features/chores/domain/entities/chore.dart';
+import 'package:changa_app/features/chores/domain/entities/new_chore_input.dart';
+import 'package:changa_app/features/chores/domain/entities/swap_request.dart';
 
 abstract class ChoreRepository {
   Stream<List<Chore>> watchChoresForDay(String householdId, DateTime day);

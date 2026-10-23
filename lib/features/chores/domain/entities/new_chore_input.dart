@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import 'package:changa/features/chores/domain/entities/chore.dart';
+import 'package:changa_app/features/chores/domain/entities/chore.dart';
 
 class NewChoreInput extends Equatable {
   const NewChoreInput({

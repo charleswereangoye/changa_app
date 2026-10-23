@@ -1,5 +1,5 @@
-import 'package:changa/core/error/result.dart';
-import 'package:changa/features/chores/domain/repositories/chore_repository.dart';
+import 'package:changa_app/core/error/result.dart';
+import 'package:changa_app/features/chores/domain/repositories/chore_repository.dart';
 
 class DeleteChore {
   const DeleteChore(this._repository);

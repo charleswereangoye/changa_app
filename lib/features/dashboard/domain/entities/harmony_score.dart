@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import 'package:changa/core/constants/app_constants.dart';
+import 'package:changa_app/core/constants/app_constants.dart';
 
 enum HarmonyTier {
   needsAttention,

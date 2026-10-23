@@ -1,6 +1,6 @@
-import 'package:changa/core/error/result.dart';
-import 'package:changa/features/chores/domain/entities/chore.dart';
-import 'package:changa/features/chores/domain/repositories/chore_repository.dart';
+import 'package:changa_app/core/error/result.dart';
+import 'package:changa_app/features/chores/domain/entities/chore.dart';
+import 'package:changa_app/features/chores/domain/repositories/chore_repository.dart';
 
 class UpdateChore {
   const UpdateChore(this._repository);

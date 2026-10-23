@@ -1,5 +1,5 @@
-import 'package:changa/features/chores/domain/entities/swap_request.dart';
-import 'package:changa/features/chores/domain/repositories/chore_repository.dart';
+import 'package:changa_app/features/chores/domain/entities/swap_request.dart';
+import 'package:changa_app/features/chores/domain/repositories/chore_repository.dart';
 
 class WatchSwapRequests {
   const WatchSwapRequests(this._repository);
