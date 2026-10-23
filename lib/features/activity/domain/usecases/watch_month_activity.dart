@@ -1,4 +1,10 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: UseCase: Stream monthly activity entries for history feed
+import '../entities/activity.dart';
+import '../repositories/activity_repository.dart';
 
-// TODO(B): Implement WatchMonthActivity according to project specification
+class WatchMonthActivity {
+  final ActivityRepository repository;
+  WatchMonthActivity(this.repository);
+
+  Stream<List<Activity>> call({required String householdId, required DateTime month}) => 
+      repository.watchMonth(householdId, month);
+}

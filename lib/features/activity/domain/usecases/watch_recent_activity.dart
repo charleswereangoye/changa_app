@@ -1,4 +1,10 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: UseCase: Stream recent activity entries for dashboard
+import '../entities/activity.dart';
+import '../repositories/activity_repository.dart';
 
-// TODO(B): Implement WatchRecentActivity according to project specification
+class WatchRecentActivity {
+  final ActivityRepository repository;
+  WatchRecentActivity(this.repository);
+
+  Stream<List<Activity>> call({required String householdId, int limit = 5}) => 
+      repository.watchRecent(householdId, limit: limit);
+}
