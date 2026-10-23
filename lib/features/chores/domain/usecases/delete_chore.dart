@@ -1,4 +1,14 @@
-// Owner: E - Person E (Chores, Harmony Score, Preferences)
-// Description: UseCase: Delete single chore or entire series
+import 'package:changa/core/error/result.dart';
+import 'package:changa/features/chores/domain/repositories/chore_repository.dart';
 
-// TODO(E): Implement DeleteChore according to project specification
+class DeleteChore {
+  const DeleteChore(this._repository);
+
+  final ChoreRepository _repository;
+
+  Future<Result<void>> call(
+    String householdId,
+    String choreId, {
+    bool wholeSeries = false,
+  }) => _repository.deleteChore(householdId, choreId, wholeSeries: wholeSeries);
+}
