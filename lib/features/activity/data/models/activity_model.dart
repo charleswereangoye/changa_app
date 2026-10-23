@@ -19,7 +19,9 @@ class ActivityModel extends Activity {
       id: id,
       type: ActivityType.values.firstWhere(
         (e) => e.name == json[ActivityFields.type],
-        orElse: () => ActivityType.expenseAdded, // Safe fallback
+        orElse: () => throw FormatException(
+          'Unknown ActivityType: ${json[ActivityFields.type]}',
+        ),
       ),
       actorUid: json[ActivityFields.actorUid] as String,
       targetUid: json[ActivityFields.targetUid] as String?,
