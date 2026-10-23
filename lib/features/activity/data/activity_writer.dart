@@ -7,7 +7,7 @@ class ActivityWriter {
   final FirebaseFirestore _firestore;
 
   ActivityWriter({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   ActivityModel _createModel({
     required ActivityType type,
@@ -39,9 +39,15 @@ class ActivityWriter {
     int? amount,
   }) {
     final activity = _createModel(
-      type: type, actorUid: actorUid, targetUid: targetUid, refId: refId, amount: amount,
+      type: type,
+      actorUid: actorUid,
+      targetUid: targetUid,
+      refId: refId,
+      amount: amount,
     );
-    final docRef = _firestore.doc(FirestorePaths.activity(householdId, activity.id));
+    final docRef = _firestore.doc(
+      FirestorePaths.activity(householdId, activity.id),
+    );
     batch.set(docRef, activity.toJson());
   }
 
@@ -55,9 +61,15 @@ class ActivityWriter {
     int? amount,
   }) {
     final activity = _createModel(
-      type: type, actorUid: actorUid, targetUid: targetUid, refId: refId, amount: amount,
+      type: type,
+      actorUid: actorUid,
+      targetUid: targetUid,
+      refId: refId,
+      amount: amount,
     );
-    final docRef = _firestore.doc(FirestorePaths.activity(householdId, activity.id));
+    final docRef = _firestore.doc(
+      FirestorePaths.activity(householdId, activity.id),
+    );
     tx.set(docRef, activity.toJson());
   }
 }

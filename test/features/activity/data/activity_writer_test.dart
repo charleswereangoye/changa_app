@@ -14,8 +14,11 @@ void main() {
         ActivityFields.actorUid: 'user_123',
         ActivityFields.createdAt: Timestamp.now(),
       };
-      
-      expect(() => ActivityModel.fromJson(json, 'activity_1'), throwsFormatException);
+
+      expect(
+        () => ActivityModel.fromJson(json, 'activity_1'),
+        throwsFormatException,
+      );
     });
   });
 
@@ -30,7 +33,7 @@ void main() {
 
     test('addToBatch formats data and stages write properly', () async {
       final batch = fakeFirestore.batch();
-      
+
       writer.addToBatch(
         batch,
         householdId: 'house_1',
@@ -38,9 +41,9 @@ void main() {
         actorUid: 'user_123',
         amount: 50,
       );
-      
+
       await batch.commit();
-      
+
       // Dump the fake database state to verify the write executed
       final dbState = fakeFirestore.dump();
       expect(dbState.contains('choreCompleted'), isTrue);
