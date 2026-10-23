@@ -1,4 +1,10 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: UseCase: Transfer admin ownership to another member
+import 'package:changa_app/core/error/result.dart';
+import '../repositories/household_repository.dart';
 
-// TODO(B): Implement TransferAdmin according to project specification
+class TransferAdmin {
+  final HouseholdRepository repository;
+  TransferAdmin(this.repository);
+
+  Future<Result<void>> call({required String householdId, required String newAdminUid}) => 
+      repository.transferAdmin(householdId: householdId, newAdminUid: newAdminUid);
+}
