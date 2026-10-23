@@ -17,4 +17,3 @@ class AppConstants {
   static const String googleServerClientId =
       '740240029076-jj2ng4ahetgu1a02dns51ocn0lpj57h1.apps.googleusercontent.com';
 }
-

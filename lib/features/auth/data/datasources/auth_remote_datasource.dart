@@ -7,7 +7,6 @@ import '../../../../core/constants/app_constants.dart';
 import '../../../../core/constants/firestore_paths.dart';
 import '../models/user_model.dart';
 
-
 abstract class AuthRemoteDataSource {
   Stream<User?> get authStateChanges;
   User? get currentFirebaseUser;
@@ -124,7 +123,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       );
     }
     final googleUser = await GoogleSignIn.instance.authenticate();
-
 
     final googleAuth = googleUser.authentication;
     final AuthCredential credential = GoogleAuthProvider.credential(

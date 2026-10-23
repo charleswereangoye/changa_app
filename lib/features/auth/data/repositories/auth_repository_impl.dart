@@ -120,8 +120,6 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
-
-
   @override
   Future<Result<AppUser>> signInWithApple() async {
     try {
