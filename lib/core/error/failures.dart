@@ -38,6 +38,13 @@ class NudgeCooldownFailure extends Failure {
   ]);
 }
 
+/// Authentication failure.
+class AuthFailure extends Failure {
+  const AuthFailure([
+    super.message = 'Authentication failed. Please check your credentials.',
+  ]);
+}
+
 /// Fallback unexpected failure.
 class UnknownFailure extends Failure {
   const UnknownFailure([
