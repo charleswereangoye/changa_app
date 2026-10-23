@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/pages/splash_page.dart';
 

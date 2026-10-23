@@ -11,10 +11,7 @@ class WatchDebtsSince {
 
   const WatchDebtsSince(this.repository);
 
-  Stream<List<Debt>> call(
-    String householdId,
-    DateTime since,
-  ) {
+  Stream<List<Debt>> call(String householdId, DateTime since) {
     return repository.watchDebtsSince(householdId, since);
   }
 }
