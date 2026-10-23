@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:changa/core/utils/date_helpers.dart';
-import 'package:changa/features/chores/domain/entities/chore.dart';
+import 'package:changa_app/core/utils/date_helpers.dart';
+import 'package:changa_app/features/chores/domain/entities/chore.dart';
 
 Chore _chore(DateTime due, {ChoreStatus status = ChoreStatus.pending}) {
   return Chore(

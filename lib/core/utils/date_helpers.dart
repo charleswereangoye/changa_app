@@ -1,4 +1,4 @@
-import 'package:changa/features/chores/domain/entities/chore.dart';
+import 'package:changa_app/features/chores/domain/entities/chore.dart';
 
 /// Calendar-day maths for the roster. Everything works in local time, so a
 /// chore due on Tuesday stays a Tuesday whatever the clock says.
