@@ -1,4 +1,10 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: UseCase: Stream household document updates
+import '../entities/household.dart';
+import '../repositories/household_repository.dart';
 
-// TODO(B): Implement WatchHousehold according to project specification
+class WatchHousehold {
+  final HouseholdRepository repository;
+  WatchHousehold(this.repository);
+
+  Stream<Household?> call(String householdId) =>
+      repository.watchHousehold(householdId);
+}

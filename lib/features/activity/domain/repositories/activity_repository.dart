@@ -1,4 +1,6 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: ActivityRepository domain interface
+import '../entities/activity.dart';
 
-// TODO(B): Implement ActivityRepository according to project specification
+abstract class ActivityRepository {
+  Stream<List<Activity>> watchRecent(String householdId, {int limit = 5});
+  Stream<List<Activity>> watchMonth(String householdId, DateTime month);
+}

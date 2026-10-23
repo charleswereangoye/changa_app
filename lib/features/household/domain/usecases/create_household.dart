@@ -1,4 +1,19 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: UseCase: Create new household with PIN & admin member
+import 'package:changa_app/core/error/result.dart';
 
-// TODO(B): Implement CreateHousehold according to project specification
+import '../entities/household.dart';
+import '../repositories/household_repository.dart';
+
+class CreateHousehold {
+  final HouseholdRepository repository;
+  CreateHousehold(this.repository);
+
+  Future<Result<Household>> call({
+    required String name,
+    required HouseholdType type,
+    required int expectedMembers,
+  }) => repository.createHousehold(
+    name: name,
+    type: type,
+    expectedMembers: expectedMembers,
+  );
+}

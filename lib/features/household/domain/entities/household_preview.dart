@@ -1,4 +1,11 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: HouseholdPreview entity for PIN join lookup
+import 'package:equatable/equatable.dart';
 
-// TODO(B): Implement HouseholdPreview according to project specification
+class HouseholdPreview extends Equatable {
+  final String name;
+  final int memberCount;
+
+  const HouseholdPreview({required this.name, required this.memberCount});
+
+  @override
+  List<Object?> get props => [name, memberCount];
+}

@@ -1,4 +1,13 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: UseCase: Remove member from household
+import 'package:changa_app/core/error/result.dart';
 
-// TODO(B): Implement RemoveMember according to project specification
+import '../repositories/household_repository.dart';
+
+class RemoveMember {
+  final HouseholdRepository repository;
+  RemoveMember(this.repository);
+
+  Future<Result<void>> call({
+    required String householdId,
+    required String uid,
+  }) => repository.removeMember(householdId: householdId, uid: uid);
+}

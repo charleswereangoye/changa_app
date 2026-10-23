@@ -1,4 +1,11 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: UseCase: Invalidate old PIN and generate new one
+import 'package:changa_app/core/error/result.dart';
 
-// TODO(B): Implement RegeneratePin according to project specification
+import '../repositories/household_repository.dart';
+
+class RegeneratePin {
+  final HouseholdRepository repository;
+  RegeneratePin(this.repository);
+
+  Future<Result<String>> call(String householdId) =>
+      repository.regeneratePin(householdId);
+}

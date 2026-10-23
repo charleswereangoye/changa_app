@@ -1,4 +1,44 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: Activity domain entity
+import 'package:equatable/equatable.dart';
 
-// TODO(B): Implement Activity according to project specification
+enum ActivityType {
+  expenseAdded,
+  expenseDeleted,
+  debtSettled,
+  choreCompleted,
+  memberJoined,
+  memberRemoved,
+  swapRequested,
+  swapAccepted,
+  nudgeSent,
+}
+
+class Activity extends Equatable {
+  final String id;
+  final ActivityType type;
+  final String actorUid;
+  final String? targetUid;
+  final String? refId;
+  final int? amount;
+  final DateTime createdAt;
+
+  const Activity({
+    required this.id,
+    required this.type,
+    required this.actorUid,
+    this.targetUid,
+    this.refId,
+    this.amount,
+    required this.createdAt,
+  });
+
+  @override
+  List<Object?> get props => [
+    id,
+    type,
+    actorUid,
+    targetUid,
+    refId,
+    amount,
+    createdAt,
+  ];
+}

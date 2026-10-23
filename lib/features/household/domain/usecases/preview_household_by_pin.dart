@@ -1,4 +1,12 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: UseCase: Preview household name & member count by PIN
+import 'package:changa_app/core/error/result.dart';
 
-// TODO(B): Implement PreviewHouseholdByPin according to project specification
+import '../entities/household_preview.dart';
+import '../repositories/household_repository.dart';
+
+class PreviewHouseholdByPin {
+  final HouseholdRepository repository;
+  PreviewHouseholdByPin(this.repository);
+
+  Future<Result<HouseholdPreview>> call(String pin) =>
+      repository.previewHouseholdByPin(pin);
+}
