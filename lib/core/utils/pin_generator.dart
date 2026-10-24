@@ -1,4 +1,9 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: Cryptographically secure 6-digit PIN generator
+import 'dart:math';
 
-// TODO(B): Implement PinGenerator according to project specification
+class PinGenerator {
+  static String generate() {
+    final random = Random.secure();
+    final pin = 100000 + random.nextInt(900000);
+    return pin.toString();
+  }
+}
