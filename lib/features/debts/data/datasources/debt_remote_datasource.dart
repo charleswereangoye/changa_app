@@ -13,6 +13,9 @@ import '../../../activity/domain/entities/activity.dart';
 import '../../../notifications/data/notification_templates.dart';
 import '../../../notifications/data/notification_writer.dart';
 import '../../domain/logic/settlement_plan.dart';
+import '../../../../core/constants/app_constants.dart';
+import '../../../../core/error/failures.dart';
+import '../../domain/logic/nudge_policy.dart';
 
 class DebtRemoteDataSource {
   const DebtRemoteDataSource(this._firestore);
@@ -200,6 +203,143 @@ class DebtRemoteDataSource {
     );
 
     await batch.commit();
+  }
+
+  /// Returns a policy failure when the nudge is not allowed.
+  /// Returns null after successfully saving the nudge.
+  /// Firestore and document-conversion errors propagate to the repository.
+  Future<Failure?> sendNudge({
+    required String householdId,
+    required String fromUid,
+    required String toUid,
+  }) async {
+    if (householdId.isEmpty ||
+        fromUid.isEmpty ||
+        toUid.isEmpty ||
+        fromUid == toUid) {
+      return const ValidationFailure(
+        'Choose another housemate to send a reminder.',
+      );
+    }
+
+    // fromUid is the sender here, not necessarily a debt's debtor.
+    // Read debts in both directions to establish the sender's net balance.
+    final debtSnapshots = await Future.wait([
+      _debts(householdId)
+          .where(DebtFields.debtorUid, isEqualTo: fromUid)
+          .where(DebtFields.creditorUid, isEqualTo: toUid)
+          .get(const GetOptions(source: Source.server)),
+      _debts(householdId)
+          .where(DebtFields.debtorUid, isEqualTo: toUid)
+          .where(DebtFields.creditorUid, isEqualTo: fromUid)
+          .get(const GetOptions(source: Source.server)),
+    ]);
+
+    final balance = SettlementPlan.between(
+      debts: [
+        for (final snapshot in debtSnapshots)
+          for (final document in snapshot.docs)
+            DebtModel.fromFirestore(document).toEntity(),
+      ],
+      meUid: fromUid,
+      otherUid: toUid,
+    );
+
+    const policy = NudgePolicy(
+      cooldown: Duration(hours: AppConstants.nudgeCooldownHours),
+    );
+
+    final now = DateTime.now();
+
+    // Check that the recipient owes the sender before reading notifications.
+    final balanceFailure = policy.check(balance: balance, now: now);
+
+    if (balanceFailure != null) {
+      return balanceFailure;
+    }
+
+    final cutoff = now.subtract(policy.cooldown);
+
+    final recentNudges = await _firestore
+        .collection(FirestorePaths.notifications(householdId))
+        .where(NotificationFields.actorUid, isEqualTo: fromUid)
+        .where(NotificationFields.recipientUid, isEqualTo: toUid)
+        .where(NotificationFields.type, isEqualTo: 'nudge')
+        .where(
+          NotificationFields.createdAt,
+          isGreaterThanOrEqualTo: Timestamp.fromDate(cutoff),
+        )
+        .orderBy(NotificationFields.createdAt, descending: true)
+        .limit(1)
+        .get(const GetOptions(source: Source.server));
+
+    DateTime? lastNudgedAt;
+
+    if (recentNudges.docs.isNotEmpty) {
+      lastNudgedAt =
+          (recentNudges.docs.first.data()[NotificationFields.createdAt]
+                  as Timestamp)
+              .toDate();
+    }
+
+    final cooldownFailure = policy.check(
+      balance: balance,
+      now: now,
+      lastNudgedAt: lastNudgedAt,
+    );
+
+    if (cooldownFailure != null) {
+      return cooldownFailure;
+    }
+
+    final details = await Future.wait([
+      _firestore
+          .doc(FirestorePaths.user(toUid))
+          .get(const GetOptions(source: Source.server)),
+      _firestore
+          .doc(FirestorePaths.household(householdId))
+          .get(const GetOptions(source: Source.server)),
+    ]);
+
+    final storedName = details[0].data()?[UserFields.fullName] as String?;
+    final recipientName = storedName == null || storedName.trim().isEmpty
+        ? 'there'
+        : storedName.trim();
+
+    final storedHousehold = details[1].data()?[HouseholdFields.name] as String?;
+    final householdName =
+        storedHousehold == null || storedHousehold.trim().isEmpty
+        ? 'your household'
+        : storedHousehold.trim();
+
+    final batch = _firestore.batch();
+
+    NotificationWriter(_firestore).addToBatch(
+      batch: batch,
+      householdId: householdId,
+      recipientUid: toUid,
+      actorUid: fromUid,
+      type: 'nudge',
+      message: NotificationTemplates.nudge(
+        name: recipientName,
+        amount: balance.netAmount,
+        household: householdName,
+      ),
+      refId: fromUid,
+    );
+
+    // Keep the financial amount out of the shared activity feed.
+    ActivityWriter(firestore: _firestore).addToBatch(
+      batch,
+      householdId: householdId,
+      type: ActivityType.nudgeSent,
+      actorUid: fromUid,
+      targetUid: toUid,
+    );
+
+    await batch.commit();
+
+    return null;
   }
 
   Stream<List<Debt>> _watch(Query<Map<String, dynamic>> query) {
