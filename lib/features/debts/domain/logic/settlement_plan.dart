@@ -1,5 +1,3 @@
-// Selects pending debts between two members and calculates their net amount.
-
 import '../entities/debt.dart';
 import '../entities/debt_status.dart';
 
@@ -14,7 +12,6 @@ class SettlementPlan {
   /// Negative: I owe the other person.
   final int netAmount;
 
-  /// The whole-RWF amount represented by this settlement.
   int get amount => netAmount.abs();
 
   bool get isEmpty => debtIds.isEmpty;
@@ -39,32 +36,19 @@ class SettlementPlan {
         continue;
       }
 
-      final owedToMe = debt.fromUid == otherUid && debt.toUid == meUid;
-      final owedByMe = debt.fromUid == meUid && debt.toUid == otherUid;
+      final owedToMe = debt.debtorUid == otherUid && debt.creditorUid == meUid;
+      final owedByMe = debt.debtorUid == meUid && debt.creditorUid == otherUid;
 
       if (!owedToMe && !owedByMe) {
         continue;
       }
 
-      // Avoid counting the same document more than once.
       if (!seenIds.add(debt.id)) {
         continue;
       }
 
-      final amount = debt.amount;
-
-      if (!amount.isFinite ||
-          amount < 0 ||
-          amount != amount.truncateToDouble()) {
-        throw FormatException(
-          'Debt ${debt.id} must have a finite, non-negative whole RWF amount.',
-        );
-      }
-
-      final wholeAmount = amount.toInt();
-
       debtIds.add(debt.id);
-      netAmount += owedToMe ? wholeAmount : -wholeAmount;
+      netAmount += owedToMe ? debt.amount : -debt.amount;
     }
 
     return SettlementPlan._(debtIds: debtIds, netAmount: netAmount);
