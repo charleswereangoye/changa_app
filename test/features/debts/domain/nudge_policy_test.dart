@@ -15,24 +15,26 @@ void main() {
 
   final now = DateTime.utc(2026, 10, 24, 12);
 
-  SettlementPlan balance({double owedToMe = 6000, double owedByMe = 0}) {
+  SettlementPlan balance({int owedToMe = 6000, int owedByMe = 0}) {
     return SettlementPlan.between(
       debts: [
         Debt(
           id: 'owed-to-me',
-          householdId: 'household-1',
-          fromUid: 'kevin',
-          toUid: 'me',
+          expenseId: 'expense-1',
+          debtorUid: 'kevin',
+          creditorUid: 'me',
           amount: owedToMe,
+          creditsApplied: 0,
           status: DebtStatus.pending,
           createdAt: DateTime.utc(2026, 10, 20),
         ),
         Debt(
           id: 'owed-by-me',
-          householdId: 'household-1',
-          fromUid: 'me',
-          toUid: 'kevin',
+          expenseId: 'expense-2',
+          debtorUid: 'me',
+          creditorUid: 'kevin',
           amount: owedByMe,
+          creditsApplied: 0,
           status: DebtStatus.pending,
           createdAt: DateTime.utc(2026, 10, 20),
         ),
