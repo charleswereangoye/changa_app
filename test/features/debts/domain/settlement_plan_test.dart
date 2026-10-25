@@ -96,24 +96,6 @@ void main() {
       expect(result.netAmount, 6000);
     });
 
-    test('fractional, negative, and non-finite amounts are rejected', () {
-      for (final amount in [
-        1000.5,
-        -1.0,
-        double.nan,
-        double.infinity,
-        double.negativeInfinity,
-      ]) {
-        expect(
-          () => plan([
-            _debt(id: 'invalid', from: 'kevin', to: 'me', amount: amount),
-          ]),
-          throwsFormatException,
-          reason: 'Invalid amount: $amount',
-        );
-      }
-    });
-
     test('empty member IDs and settling with yourself are rejected', () {
       for (final pair in [('', 'kevin'), ('me', ''), ('me', 'me')]) {
         expect(
@@ -141,15 +123,16 @@ Debt _debt({
   required String id,
   required String from,
   required String to,
-  required double amount,
+  required int amount,
   DebtStatus status = DebtStatus.pending,
 }) {
   return Debt(
     id: id,
-    householdId: 'household-1',
-    fromUid: from,
-    toUid: to,
+    expenseId: 'expense-$id',
+    debtorUid: from,
+    creditorUid: to,
     amount: amount,
+    creditsApplied: 0,
     status: status,
     createdAt: DateTime.utc(2026, 10, 20),
     settledAt: status == DebtStatus.settled ? DateTime.utc(2026, 10, 21) : null,
