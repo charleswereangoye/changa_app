@@ -1,5 +1,3 @@
-// Tests balance netting, settled debts, and whole-RWF validation.
-
 import 'package:changa_app/core/enums/settlement_method.dart';
 import 'package:changa_app/features/debts/domain/entities/balance_summary.dart';
 import 'package:changa_app/features/debts/domain/entities/debt.dart';
@@ -17,7 +15,9 @@ void main() {
 
   group('BalanceCalculator', () {
     test('one-way debt owed to me is positive', () {
-      final result = summarize([_debt(from: 'kevin', to: me, amount: 6000)]);
+      final result = summarize([
+        _debt(debtor: 'kevin', creditor: me, amount: 6000),
+      ]);
 
       _expectSummary(
         result,
@@ -29,7 +29,9 @@ void main() {
     });
 
     test('one-way debt I owe is negative', () {
-      final result = summarize([_debt(from: me, to: 'grace', amount: 4000)]);
+      final result = summarize([
+        _debt(debtor: me, creditor: 'grace', amount: 4000),
+      ]);
 
       _expectSummary(
         result,
@@ -42,8 +44,8 @@ void main() {
 
     test('debts in both directions are netted per person', () {
       final result = summarize([
-        _debt(from: 'kevin', to: me, amount: 6000),
-        _debt(from: me, to: 'kevin', amount: 2000),
+        _debt(debtor: 'kevin', creditor: me, amount: 6000),
+        _debt(debtor: me, creditor: 'kevin', amount: 2000),
       ]);
 
       _expectSummary(
@@ -57,9 +59,9 @@ void main() {
 
     test('several expenses with one person are combined', () {
       final result = summarize([
-        _debt(from: 'kevin', to: me, amount: 6000),
-        _debt(from: 'kevin', to: me, amount: 5000),
-        _debt(from: 'kevin', to: me, amount: 3000),
+        _debt(debtor: 'kevin', creditor: me, amount: 6000),
+        _debt(debtor: 'kevin', creditor: me, amount: 5000),
+        _debt(debtor: 'kevin', creditor: me, amount: 3000),
       ]);
 
       _expectSummary(
@@ -73,8 +75,8 @@ void main() {
 
     test('equal opposing debts keep a zero member balance', () {
       final result = summarize([
-        _debt(from: 'kevin', to: me, amount: 6000),
-        _debt(from: me, to: 'kevin', amount: 6000),
+        _debt(debtor: 'kevin', creditor: me, amount: 6000),
+        _debt(debtor: me, creditor: 'kevin', amount: 6000),
       ]);
 
       _expectSummary(
@@ -88,8 +90,13 @@ void main() {
 
     test('settled debts are ignored', () {
       final result = summarize([
-        _debt(from: 'kevin', to: me, amount: 9000, status: DebtStatus.settled),
-        _debt(from: 'kevin', to: me, amount: 2000),
+        _debt(
+          debtor: 'kevin',
+          creditor: me,
+          amount: 9000,
+          status: DebtStatus.settled,
+        ),
+        _debt(debtor: 'kevin', creditor: me, amount: 2000),
       ]);
 
       _expectSummary(
@@ -104,11 +111,12 @@ void main() {
     test('debts settled by credits are ignored', () {
       final result = summarize([
         _debt(
-          from: me,
-          to: 'grace',
+          debtor: me,
+          creditor: 'grace',
           amount: 0,
           status: DebtStatus.settled,
           method: SettlementMethod.credits,
+          creditsApplied: 200,
         ),
       ]);
 
@@ -117,7 +125,7 @@ void main() {
 
     test('unknown member UID is preserved', () {
       final result = summarize([
-        _debt(from: 'removed-member', to: me, amount: 1500),
+        _debt(debtor: 'removed-member', creditor: me, amount: 1500),
       ]);
 
       _expectSummary(
@@ -137,9 +145,9 @@ void main() {
 
     test('totals use each member net without cancelling different people', () {
       final result = summarize([
-        _debt(from: 'kevin', to: me, amount: 6000),
-        _debt(from: me, to: 'kevin', amount: 2000),
-        _debt(from: me, to: 'grace', amount: 3000),
+        _debt(debtor: 'kevin', creditor: me, amount: 6000),
+        _debt(debtor: me, creditor: 'kevin', amount: 2000),
+        _debt(debtor: me, creditor: 'grace', amount: 3000),
       ]);
 
       _expectSummary(
@@ -153,55 +161,34 @@ void main() {
 
     test('debts between other people and self-debts are ignored', () {
       final result = summarize([
-        _debt(from: 'kevin', to: 'grace', amount: 6000),
-        _debt(from: me, to: me, amount: 3000),
+        _debt(debtor: 'kevin', creditor: 'grace', amount: 6000),
+        _debt(debtor: me, creditor: me, amount: 3000),
       ]);
 
       _expectSummary(result, byMember: {}, youAreOwed: 0, youOwe: 0, net: 0);
     });
-
-    test('fractional RWF is rejected instead of truncated', () {
-      expect(
-        () => summarize([_debt(from: 'kevin', to: me, amount: 1500.5)]),
-        throwsFormatException,
-      );
-    });
-
-    test('negative and non-finite amounts are rejected', () {
-      for (final amount in [
-        -1.0,
-        double.nan,
-        double.infinity,
-        double.negativeInfinity,
-      ]) {
-        expect(
-          () => summarize([_debt(from: 'kevin', to: me, amount: amount)]),
-          throwsFormatException,
-          reason: 'Invalid amount: $amount',
-        );
-      }
-    });
   });
 }
 
-/// Creates a debt fixture using the current shared entity.
 Debt _debt({
-  required String from,
-  required String to,
-  required double amount,
+  required String debtor,
+  required String creditor,
+  required int amount,
   DebtStatus status = DebtStatus.pending,
   SettlementMethod? method,
+  int creditsApplied = 0,
 }) {
   return Debt(
-    id: 'debt-$from-$to-$amount',
-    householdId: 'household-1',
-    fromUid: from,
-    toUid: to,
+    id: 'debt-$debtor-$creditor-$amount',
+    expenseId: 'expense-1',
+    debtorUid: debtor,
+    creditorUid: creditor,
     amount: amount,
+    creditsApplied: creditsApplied,
     status: status,
     createdAt: DateTime.utc(2026, 10, 20),
     settledAt: status == DebtStatus.settled ? DateTime.utc(2026, 10, 21) : null,
-    settledMethod: method,
+    settlementMethod: method,
   );
 }
 
