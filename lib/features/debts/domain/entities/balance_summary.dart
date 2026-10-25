@@ -1,18 +1,21 @@
-// Owner: D - Person D (Debts, Settling, Nudges, Notifications, Release Build)
-// Description: BalanceSummary entity (youAreOwed, youOwe, net, byMember)
+import 'package:equatable/equatable.dart';
 
-// TODO(D): Implement BalanceSummary according to project specification
-
-class BalanceSummary {
-  final int youAreOwed;
-  final int youOwe;
-  final int net;
-  final Map<String, int> byMember;
-
+class BalanceSummary extends Equatable {
   BalanceSummary({
     required this.youAreOwed,
     required this.youOwe,
     required this.net,
     required Map<String, int> byMember,
   }) : byMember = Map<String, int>.unmodifiable(byMember);
+
+  final int youAreOwed;
+  final int youOwe;
+  final int net;
+
+  /// Positive: this member owes me.
+  /// Negative: I owe this member.
+  final Map<String, int> byMember;
+
+  @override
+  List<Object?> get props => [youAreOwed, youOwe, net, byMember];
 }

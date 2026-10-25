@@ -88,7 +88,7 @@ class CalculateHarmonyScore {
   bool _isHealthy(Debt debt, DateTime now, Duration settleWindow) {
     if (debt.status == DebtStatus.settled) {
       // Paid for by chore credits from the start, so it was never late.
-      if (debt.settledMethod == SettlementMethod.credits) return true;
+      if (debt.settlementMethod == SettlementMethod.credits) return true;
       final settledAt = debt.settledAt;
       return settledAt == null ||
           settledAt.difference(debt.createdAt) <= settleWindow;
