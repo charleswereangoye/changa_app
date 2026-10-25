@@ -106,18 +106,18 @@ class DebtRemoteDataSource {
     final paymentMethod = switch (method) {
       'cash' => SettlementMethod.cash,
       'momo' => SettlementMethod.momo,
-      'bankTransfer' => SettlementMethod.bankTransfer,
+      'bank' => SettlementMethod.bank,
       _ => throw ArgumentError.value(
         method,
         'method',
-        'Choose cash, momo, or bankTransfer.',
+        'Choose cash, momo, or bank.',
       ),
     };
 
     final methodLabel = switch (paymentMethod) {
       SettlementMethod.cash => 'Cash',
       SettlementMethod.momo => 'Mobile Money',
-      SettlementMethod.bankTransfer => 'Bank Transfer',
+      SettlementMethod.bank => 'Bank Transfer',
       SettlementMethod.credits => throw StateError(
         'Credits cannot be selected for a manual settlement.',
       ),
