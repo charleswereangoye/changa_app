@@ -1,5 +1,3 @@
-// Calculates per-member net balances in whole RWF.
-
 import '../entities/balance_summary.dart';
 import '../entities/debt.dart';
 import '../entities/debt_status.dart';
@@ -20,29 +18,21 @@ class BalanceCalculator {
         continue;
       }
 
-      // Self-debts do not contribute to a balance.
-      if (debt.fromUid == debt.toUid) {
+      if (debt.debtorUid == debt.creditorUid) {
         continue;
       }
 
-      // Ignore debts between other housemates.
-      if (debt.fromUid != meUid && debt.toUid != meUid) {
-        continue;
-      }
-
-      final amount = _wholeRwf(debt);
-
-      if (debt.toUid == meUid) {
+      if (debt.creditorUid == meUid) {
         byMember.update(
-          debt.fromUid,
-          (balance) => balance + amount,
-          ifAbsent: () => amount,
+          debt.debtorUid,
+          (balance) => balance + debt.amount,
+          ifAbsent: () => debt.amount,
         );
-      } else {
+      } else if (debt.debtorUid == meUid) {
         byMember.update(
-          debt.toUid,
-          (balance) => balance - amount,
-          ifAbsent: () => -amount,
+          debt.creditorUid,
+          (balance) => balance - debt.amount,
+          ifAbsent: () => -debt.amount,
         );
       }
     }
@@ -64,19 +54,5 @@ class BalanceCalculator {
       net: youAreOwed - youOwe,
       byMember: byMember,
     );
-  }
-
-  /// The shared entity currently stores a double, but RWF must be whole.
-  /// Reject invalid amounts instead of silently rounding or truncating.
-  int _wholeRwf(Debt debt) {
-    final amount = debt.amount;
-
-    if (!amount.isFinite || amount < 0 || amount != amount.truncateToDouble()) {
-      throw FormatException(
-        'Debt ${debt.id} must have a finite, non-negative whole RWF amount.',
-      );
-    }
-
-    return amount.toInt();
   }
 }
