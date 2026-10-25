@@ -1,1 +1,1 @@
-enum SettlementMethod { cash, momo, bankTransfer, credits }
+enum SettlementMethod { momo, cash, bank, credits }
