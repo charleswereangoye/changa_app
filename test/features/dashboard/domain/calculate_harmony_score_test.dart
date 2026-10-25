@@ -39,12 +39,13 @@ Debt _debt({
 }) {
   return Debt(
     id: 'd-${created.microsecondsSinceEpoch}-${settledAt?.day}',
-    householdId: 'h1',
-    fromUid: 'u2',
-    toUid: 'u1',
+    expenseId: 'expense-1',
+    debtorUid: 'u2',
+    creditorUid: 'u1',
     amount: 4000,
+    creditsApplied: 0,
     status: status,
-    settledMethod: method,
+    settlementMethod: method,
     settledAt: settledAt,
     createdAt: created,
   );
