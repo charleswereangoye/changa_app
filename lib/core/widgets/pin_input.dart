@@ -33,12 +33,36 @@ class _PinInputState extends State<PinInput> {
     super.dispose();
   }
 
+  void _checkCompletion() {
+    final pin = _controllers.map((c) => c.text).join();
+    if (pin.length == 6) {
+      widget.onCompleted(pin);
+    }
+  }
+
   void _onChanged(String value, int index) {
     if (value.isEmpty) return;
 
-    // Handle Paste: Intercept strings > 1 char, sanitize, and distribute
-    if (value.length > 1) {
+    // Handle single character replacement (e.g., box had '5', user types '7' -> value is '57')
+    if (value.length == 2) {
+      // Keep only the newly typed digit
+      _controllers[index].text = value.substring(1);
+
+      if (index < 5) {
+        _focusNodes[index + 1].requestFocus();
+      } else {
+        _focusNodes[index].unfocus();
+        _checkCompletion();
+      }
+      return;
+    }
+
+    // Handle Paste: Intercept strings > 2 chars, sanitize, and distribute
+    if (value.length > 2) {
       final pastedText = value.replaceAll(RegExp(r'[^0-9]'), '');
+
+      // Clear the box that received the paste so it doesn't hold the raw long string
+      _controllers[index].text = '';
 
       for (int i = 0; i < 6; i++) {
         if (i < pastedText.length) {
@@ -48,24 +72,19 @@ class _PinInputState extends State<PinInput> {
 
       if (pastedText.length >= 6) {
         _focusNodes[5].unfocus();
-        widget.onCompleted(
-          _controllers.map((c) => c.text).join().substring(0, 6),
-        );
+        _checkCompletion();
       } else {
         _focusNodes[pastedText.length].requestFocus();
       }
       return;
     }
 
-    // Handle normal typing auto-advance
+    // Handle normal typing auto-advance (length == 1)
     if (index < 5) {
       _focusNodes[index + 1].requestFocus();
     } else {
       _focusNodes[index].unfocus();
-      final pin = _controllers.map((c) => c.text).join();
-      if (pin.length == 6) {
-        widget.onCompleted(pin);
-      }
+      _checkCompletion();
     }
   }
 
@@ -97,8 +116,7 @@ class _PinInputState extends State<PinInput> {
               focusNode: _focusNodes[index],
               keyboardType: TextInputType.number,
               textAlign: TextAlign.center,
-              maxLength:
-                  6, // Unlocks paste capacity (counter text hidden below)
+              maxLength: 6, // Unlocks paste capacity
               inputFormatters: [FilteringTextInputFormatter.digitsOnly],
               style: TextStyle(
                 fontSize: 24,
