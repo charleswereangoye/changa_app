@@ -12,15 +12,15 @@ Matcher _ruleError(ChoreRuleKind kind) =>
     throwsA(isA<ChoreRuleException>().having((e) => e.kind, 'kind', kind));
 
 ChoreModel _edited() => ChoreModel(
-      id: choreId,
-      title: 'Mopping',
-      difficulty: ChoreDifficulty.hard,
-      assignedToUid: 'u2',
-      dueDate: DateTime(2026, 10, 27, 15, 30),
-      status: ChoreStatus.pending,
-      createdByUid: 'u1',
-      createdAt: DateTime(2026, 10, 1),
-    );
+  id: choreId,
+  title: 'Mopping',
+  difficulty: ChoreDifficulty.hard,
+  assignedToUid: 'u2',
+  dueDate: DateTime(2026, 10, 27, 15, 30),
+  status: ChoreStatus.pending,
+  createdByUid: 'u1',
+  createdAt: DateTime(2026, 10, 1),
+);
 
 void main() {
   late ChoreFixture f;
@@ -61,17 +61,22 @@ void main() {
     expect(after?[ChoreFields.assignedToUid], 'u1');
     expect(after?[ChoreFields.dueDate], before?[ChoreFields.dueDate]);
     expect(after?[ChoreFields.title], 'Dishes');
-    expect(after?[ChoreFields.creditsAwarded], before?[ChoreFields.creditsAwarded]);
-  });
-
-  test('editing a chore that no longer exists is reported as not found',
-      () async {
-    await f.seedChore();
-    await f.db.doc(FirestorePaths.chore(householdId, choreId)).delete();
-
-    await expectLater(
-      f.source.update(householdId, _edited()),
-      _ruleError(ChoreRuleKind.notFound),
+    expect(
+      after?[ChoreFields.creditsAwarded],
+      before?[ChoreFields.creditsAwarded],
     );
   });
+
+  test(
+    'editing a chore that no longer exists is reported as not found',
+    () async {
+      await f.seedChore();
+      await f.db.doc(FirestorePaths.chore(householdId, choreId)).delete();
+
+      await expectLater(
+        f.source.update(householdId, _edited()),
+        _ruleError(ChoreRuleKind.notFound),
+      );
+    },
+  );
 }

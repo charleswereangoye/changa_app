@@ -94,7 +94,7 @@ class ChoreRemoteDataSource {
       );
     }
 
-    // All four weeks are written together, so there is no background job.
+    // All four weeks are written together, so there is no background job
     final seriesId = chores.doc().id;
     final slots = RotationPlanner.plan(
       firstDueDate: input.dueDate,
@@ -122,18 +122,22 @@ class ChoreRemoteDataSource {
 
   Future<void> update(String householdId, ChoreModel chore) async {
     final ref = _chores(householdId).doc(chore.id);
-    final snap = await ref.get();
-    if (!snap.exists) {
-      throw const ChoreRuleException.notFound(
-        'That chore is no longer available.',
-      );
-    }
-    if (snap.data()?[ChoreFields.status] == ChoreStatus.done.name) {
-      throw const ChoreRuleException.validation(
-        'Finished chores can’t be edited.',
-      );
-    }
-    await ref.update(chore.toEditMap());
+
+    // Read, check and write in one transaction. If the chore is completed
+    await _db.runTransaction((tx) async {
+      final snap = await tx.get(ref);
+      if (!snap.exists) {
+        throw const ChoreRuleException.notFound(
+          'That chore is no longer available.',
+        );
+      }
+      if (snap.data()?[ChoreFields.status] == ChoreStatus.done.name) {
+        throw const ChoreRuleException.validation(
+          'Finished chores can’t be edited.',
+        );
+      }
+      tx.update(ref, chore.toEditMap());
+    });
   }
 
   Future<void> delete(
@@ -255,7 +259,7 @@ class ChoreRemoteDataSource {
   List<ChoreModel> _toSortedModels(QuerySnapshot<Map<String, dynamic>> snap) {
     final models = snap.docs.map(ChoreModel.fromFirestore).toList();
     models.sort((a, b) {
-      // Open chores first, then alphabetical, so the list stays steady.
+      // Open chores first, then alphabetical
       final byStatus = a.status.index.compareTo(b.status.index);
       return byStatus != 0
           ? byStatus
