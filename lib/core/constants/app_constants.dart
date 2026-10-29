@@ -1,7 +1,7 @@
 class AppConstants {
-  static const int creditsEasy = 5;
-  static const int creditsMedium = 10;
-  static const int creditsHard = 20;
+  static const int creditsEasy = 10;
+  static const int creditsMedium = 20;
+  static const int creditsHard = 30;
   static const int harmonySteadyMin = 50;
   static const int harmonyThrivingMin = 80;
   static const int recurringChoreInstances = 4;
