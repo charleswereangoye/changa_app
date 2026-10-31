@@ -78,7 +78,11 @@ class CalculateHarmonyScore {
     var total = 0;
     var healthy = 0;
     for (final debt in debts) {
-      if (debt.createdAt.isBefore(windowStart)) continue;
+      // Old settled debts leave the window, but unpaid debts still count.
+      if (debt.createdAt.isBefore(windowStart) &&
+          debt.status == DebtStatus.settled) {
+        continue;
+      }
       total++;
       if (_isHealthy(debt, now, settleWindow)) healthy++;
     }
