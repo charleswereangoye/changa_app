@@ -1,41 +1,59 @@
-import 'package:equatable/equatable.dart';
 import 'package:changa_app/core/enums/settlement_method.dart';
+import 'package:equatable/equatable.dart';
 
 import 'debt_status.dart';
 
 class Debt extends Equatable {
   const Debt({
     required this.id,
-    required this.householdId,
-    required this.fromUid,
-    required this.toUid,
+    required this.expenseId,
+    required this.debtorUid,
+    required this.creditorUid,
     required this.amount,
+    required this.creditsApplied,
     required this.status,
     required this.createdAt,
+    this.settlementMethod,
     this.settledAt,
-    this.settledMethod,
   });
 
   final String id;
-  final String householdId;
-  final String fromUid;
-  final String toUid;
-  final double amount;
+
+  /// The expense that created this debt.
+  final String expenseId;
+
+  /// The person who owes money.
+  final String debtorUid;
+
+  /// The person who paid the expense.
+  final String creditorUid;
+
+  /// Whole RWF remaining after credits were applied.
+  final int amount;
+
+  /// Number of house credits used, not their RWF value.
+  final int creditsApplied;
+
   final DebtStatus status;
-  final DateTime createdAt;
+  final SettlementMethod? settlementMethod;
   final DateTime? settledAt;
-  final SettlementMethod? settledMethod;
+  final DateTime createdAt;
+
+  bool get isPending => status == DebtStatus.pending;
+
+  bool get isSettled => status == DebtStatus.settled;
 
   @override
   List<Object?> get props => [
     id,
-    householdId,
-    fromUid,
-    toUid,
+    expenseId,
+    debtorUid,
+    creditorUid,
     amount,
+    creditsApplied,
     status,
-    createdAt,
+    settlementMethod,
     settledAt,
-    settledMethod,
+    createdAt,
   ];
 }

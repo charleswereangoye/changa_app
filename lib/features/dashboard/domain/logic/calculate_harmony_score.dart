@@ -78,7 +78,11 @@ class CalculateHarmonyScore {
     var total = 0;
     var healthy = 0;
     for (final debt in debts) {
-      if (debt.createdAt.isBefore(windowStart)) continue;
+      // Old settled debts leave the window, but unpaid debts still count.
+      if (debt.createdAt.isBefore(windowStart) &&
+          debt.status == DebtStatus.settled) {
+        continue;
+      }
       total++;
       if (_isHealthy(debt, now, settleWindow)) healthy++;
     }
@@ -88,7 +92,7 @@ class CalculateHarmonyScore {
   bool _isHealthy(Debt debt, DateTime now, Duration settleWindow) {
     if (debt.status == DebtStatus.settled) {
       // Paid for by chore credits from the start, so it was never late.
-      if (debt.settledMethod == SettlementMethod.credits) return true;
+      if (debt.settlementMethod == SettlementMethod.credits) return true;
       final settledAt = debt.settledAt;
       return settledAt == null ||
           settledAt.difference(debt.createdAt) <= settleWindow;

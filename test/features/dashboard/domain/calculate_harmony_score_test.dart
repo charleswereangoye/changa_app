@@ -39,12 +39,13 @@ Debt _debt({
 }) {
   return Debt(
     id: 'd-${created.microsecondsSinceEpoch}-${settledAt?.day}',
-    householdId: 'h1',
-    fromUid: 'u2',
-    toUid: 'u1',
+    expenseId: 'expense-1',
+    debtorUid: 'u2',
+    creditorUid: 'u1',
     amount: 4000,
+    creditsApplied: 0,
     status: status,
-    settledMethod: method,
+    settlementMethod: method,
     settledAt: settledAt,
     createdAt: created,
   );
@@ -185,13 +186,60 @@ void main() {
       expect(score.value, 100);
     });
 
-    test('debts older than 30 days are ignored', () {
+    test('pending debts older than 30 days still count against harmony', () {
       final score = _calculate(
         chores: [],
-        debts: [_debt(created: DateTime(2026, 9, 1))],
+        debts: [_debt(created: _now.subtract(const Duration(days: 31)))],
+        now: _now,
+      )!;
+
+      expect(score.paymentScore, 0);
+      expect(score.value, 0);
+      expect(score.tier, HarmonyTier.needsAttention);
+    });
+
+    test('settled debts older than 30 days are excluded', () {
+      final created = _now.subtract(const Duration(days: 40));
+
+      final score = _calculate(
+        chores: [],
+        debts: [
+          _debt(
+            created: created,
+            status: DebtStatus.settled,
+            settledAt: created.add(const Duration(days: 3)),
+            method: SettlementMethod.cash,
+          ),
+        ],
         now: _now,
       );
+
       expect(score, isNull);
+    });
+
+    test('old unpaid debt prevents recent healthy debt from scoring 100', () {
+      final oldCreated = _now.subtract(const Duration(days: 40));
+
+      final score = _calculate(
+        chores: [],
+        debts: [
+          _debt(created: oldCreated),
+          _debt(created: _now.subtract(const Duration(days: 2))),
+          _debt(
+            created: oldCreated,
+            status: DebtStatus.settled,
+            settledAt: oldCreated.add(const Duration(days: 3)),
+            method: SettlementMethod.cash,
+          ),
+        ],
+        now: _now,
+      )!;
+
+      // One healthy recent debt and one unhealthy old pending debt.
+      // The old settled debt is excluded.
+      expect(score.paymentScore, 50);
+      expect(score.value, 50);
+      expect(score.tier, HarmonyTier.steady);
     });
   });
 
