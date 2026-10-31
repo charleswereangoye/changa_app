@@ -1,4 +1,12 @@
-// Owner: D - Person D (Debts, Settling, Nudges, Notifications, Release Build)
-// Description: UseCase: Stream unread notifications for current user
+import '../entities/app_notification.dart';
+import '../repositories/notification_repository.dart';
 
-// TODO(D): Implement WatchUnreadNotifications according to project specification
+class WatchUnreadNotifications {
+  const WatchUnreadNotifications(this._repository);
+
+  final NotificationRepository _repository;
+
+  Stream<List<AppNotification>> call(String uid) {
+    return _repository.watchUnread(uid);
+  }
+}
