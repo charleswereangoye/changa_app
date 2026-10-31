@@ -12,6 +12,7 @@ class AppConstants {
   static const int harmonyChoreWindowDays = 14;
   static const int harmonyDebtWindowDays = 30;
   static const int harmonySettleWindowDays = 7;
+  static const int nudgeCooldownHours = 24;
 
   // Google Sign-In Web Client ID (serverClientId required by Android Credential Manager)
   static const String googleServerClientId =
