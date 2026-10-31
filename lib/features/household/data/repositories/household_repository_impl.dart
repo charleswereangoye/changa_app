@@ -13,12 +13,10 @@ class HouseholdRepositoryImpl implements HouseholdRepository {
   final String? Function()? _currentUidResolver;
 
   HouseholdRepositoryImpl({
-    required HouseholdRemoteDataSource remoteDataSource,
-    FirebaseAuth? firebaseAuth,
-    String? Function()? currentUidResolver,
-  }) : _remoteDataSource = remoteDataSource,
-       _firebaseAuth = firebaseAuth,
-       _currentUidResolver = currentUidResolver;
+    required this._remoteDataSource,
+    this._firebaseAuth,
+    this._currentUidResolver,
+  });
 
   String _requireCurrentUid() {
     if (_currentUidResolver != null) {
