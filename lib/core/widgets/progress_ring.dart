@@ -2,7 +2,7 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 
-import 'package:changa_app/features/dashboard/domain/entities/harmony_score.dart';
+import 'package:changa_app/core/enums/harmony_tier.dart';
 
 /// A ring that sweeps up to [value] (0 to 100). A null value draws an empty
 /// outline with a dash, which is how the dashboard looks before any data.
@@ -39,7 +39,7 @@ class ProgressRing extends StatelessWidget {
     final scheme = theme.colorScheme;
     final current = value?.clamp(0, 100);
 
-    final arcColor = color ?? _tierColor(scheme, current);
+    final arcColor = color ?? tierColor(scheme, current);
     final track = trackColor ?? scheme.outlineVariant;
     final textColor = labelColor ?? scheme.onSurface;
 
@@ -88,7 +88,10 @@ class ProgressRing extends StatelessWidget {
     );
   }
 
-  Color _tierColor(ColorScheme scheme, int? current) {
+  /// The arc colour for a score: green when thriving, gold when steady and
+  /// coral when it needs attention. Public so the theme mapping can be tested.
+  @visibleForTesting
+  static Color tierColor(ColorScheme scheme, int? current) {
     if (current == null) return scheme.outline;
     return switch (HarmonyTier.fromValue(current)) {
       HarmonyTier.needsAttention => scheme.error,
