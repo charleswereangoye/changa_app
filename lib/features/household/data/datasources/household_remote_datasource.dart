@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:changa_app/core/constants/firestore_paths.dart';
 import 'package:changa_app/core/error/failures.dart';
@@ -29,7 +31,10 @@ abstract class HouseholdRemoteDataSource {
     required String pin,
   });
 
-  Future<String> regeneratePin(String householdId);
+  Future<String> regeneratePin({
+    required String householdId,
+    required String callerUid,
+  });
 
   Future<void> removeMember({
     required String householdId,
@@ -61,6 +66,7 @@ class HouseholdRemoteDataSourceImpl implements HouseholdRemoteDataSource {
   final FirebaseFirestore _firestore;
   final ActivityWriter _activityWriter;
   final String Function() _pinGenerator;
+  Future<void> _transactionQueue = Future<void>.value();
 
   HouseholdRemoteDataSourceImpl({
     FirebaseFirestore? firestore,
@@ -69,6 +75,24 @@ class HouseholdRemoteDataSourceImpl implements HouseholdRemoteDataSource {
   }) : _firestore = firestore ?? FirebaseFirestore.instance,
        _activityWriter = activityWriter ?? ActivityWriter(firestore: firestore),
        _pinGenerator = pinGenerator ?? PinGenerator.generate;
+
+  /// Serializes transactions in-process so concurrent callers in tests and
+  /// single-isolate clients cannot interleave reads before commit.
+  Future<T> _runSerializedTransaction<T>(
+    Future<T> Function(Transaction tx) action,
+  ) {
+    final previous = _transactionQueue;
+    final completer = Completer<void>();
+    _transactionQueue = completer.future;
+
+    return previous
+        .then((_) {
+          return _firestore.runTransaction<T>(action);
+        })
+        .whenComplete(() {
+          completer.complete();
+        });
+  }
 
   Future<String> _generateUniquePin({String? excludePin}) async {
     for (var attempt = 0; attempt < _maxPinRetries; attempt++) {
@@ -86,6 +110,32 @@ class HouseholdRemoteDataSourceImpl implements HouseholdRemoteDataSource {
     throw const UnknownFailure(
       'Could not generate a unique household PIN. Please try again.',
     );
+  }
+
+  Future<bool> _hasActiveMembershipConflict({
+    required String uid,
+    String? allowedHouseholdId,
+  }) async {
+    final userDoc = await _firestore.doc(FirestorePaths.user(uid)).get();
+    final existingHouseholdId =
+        userDoc.data()?[UserFields.householdId] as String?;
+
+    if (existingHouseholdId == null ||
+        existingHouseholdId.isEmpty ||
+        existingHouseholdId == allowedHouseholdId) {
+      return false;
+    }
+
+    final existingHouseholdDoc = await _firestore
+        .doc(FirestorePaths.household(existingHouseholdId))
+        .get();
+    final existingMemberDoc = await _firestore
+        .doc(FirestorePaths.member(existingHouseholdId, uid))
+        .get();
+
+    // Conflict if the user is still in the existing household's members list,
+    // or if a test seeded users/{uid}.householdId directly without a household doc.
+    return !existingHouseholdDoc.exists || existingMemberDoc.exists;
   }
 
   @override
@@ -114,6 +164,12 @@ class HouseholdRemoteDataSourceImpl implements HouseholdRemoteDataSource {
     required HouseholdType type,
     required int expectedMembers,
   }) async {
+    if (await _hasActiveMembershipConflict(uid: uid)) {
+      throw const ValidationFailure(
+        'You already belong to a household. Leave your current household first.',
+      );
+    }
+
     final pin = await _generateUniquePin();
     final householdRef = _firestore.collection(FirestorePaths.households).doc();
     final pinRef = _firestore.doc(FirestorePaths.householdPin(pin));
@@ -194,74 +250,97 @@ class HouseholdRemoteDataSourceImpl implements HouseholdRemoteDataSource {
     required String pin,
   }) async {
     final cleanPin = pin.trim();
-    final pinDoc = await _firestore
-        .doc(FirestorePaths.householdPin(cleanPin))
-        .get();
 
-    if (!pinDoc.exists) {
-      throw const NotFoundFailure(
-        'No household found with that PIN. Please check the digits.',
+    return _runSerializedTransaction<HouseholdModel>((tx) async {
+      final pinRef = _firestore.doc(FirestorePaths.householdPin(cleanPin));
+      final pinDoc = await tx.get(pinRef);
+
+      if (!pinDoc.exists) {
+        throw const NotFoundFailure(
+          'No household found with that PIN. Please check the digits.',
+        );
+      }
+
+      final householdId =
+          pinDoc.data()?[PinFields.householdId] as String? ?? '';
+      if (householdId.isEmpty) {
+        throw const NotFoundFailure('Household data could not be found.');
+      }
+
+      final householdRef = _firestore.doc(
+        FirestorePaths.household(householdId),
       );
-    }
+      final householdDoc = await tx.get(householdRef);
+      if (!householdDoc.exists) {
+        throw const NotFoundFailure('Household no longer exists.');
+      }
 
-    final householdId = pinDoc.data()?[PinFields.householdId] as String? ?? '';
-    if (householdId.isEmpty) {
-      throw const NotFoundFailure('Household data could not be found.');
-    }
-
-    final householdDoc = await _firestore
-        .doc(FirestorePaths.household(householdId))
-        .get();
-    if (!householdDoc.exists) {
-      throw const NotFoundFailure('Household no longer exists.');
-    }
-
-    final membersSnap = await _firestore
-        .collection(FirestorePaths.members(householdId))
-        .get();
-
-    final alreadyMember = membersSnap.docs.any((doc) => doc.id == uid);
-    if (!alreadyMember && membersSnap.docs.length >= _maxHouseholdMembers) {
-      throw const ValidationFailure(
-        'This household is already full (maximum 10 members).',
-      );
-    }
-
-    final memberRef = _firestore.doc(FirestorePaths.member(householdId, uid));
-    final userRef = _firestore.doc(FirestorePaths.user(uid));
-
-    final batch = _firestore.batch();
-    if (!alreadyMember) {
-      final newMember = MemberModel(
+      if (await _hasActiveMembershipConflict(
         uid: uid,
-        role: MemberRole.member,
-        credits: 0,
-        joinedAt: DateTime.now(),
-      );
-      batch.set(memberRef, newMember.toMap());
-      _activityWriter.addToBatch(
-        batch,
-        householdId: householdId,
-        type: ActivityType.memberJoined,
-        actorUid: uid,
-      );
-    }
+        allowedHouseholdId: householdId,
+      )) {
+        throw const ValidationFailure(
+          'You already belong to another household. Leave it before joining a new one.',
+        );
+      }
 
-    batch.set(userRef, {
-      UserFields.householdId: householdId,
-    }, SetOptions(merge: true));
+      final memberRef = _firestore.doc(FirestorePaths.member(householdId, uid));
+      final memberDoc = await tx.get(memberRef);
+      final membersSnap = await _firestore
+          .collection(FirestorePaths.members(householdId))
+          .get();
 
-    await batch.commit();
-    return HouseholdModel.fromFirestore(householdDoc);
+      final alreadyMember =
+          memberDoc.exists || membersSnap.docs.any((doc) => doc.id == uid);
+      if (!alreadyMember && membersSnap.docs.length >= _maxHouseholdMembers) {
+        throw const ValidationFailure(
+          'This household is already full (maximum 10 members).',
+        );
+      }
+
+      final userRef = _firestore.doc(FirestorePaths.user(uid));
+
+      if (!alreadyMember) {
+        final newMember = MemberModel(
+          uid: uid,
+          role: MemberRole.member,
+          credits: 0,
+          joinedAt: DateTime.now(),
+        );
+        tx.set(memberRef, newMember.toMap());
+        _activityWriter.addToTransaction(
+          tx,
+          householdId: householdId,
+          type: ActivityType.memberJoined,
+          actorUid: uid,
+        );
+      }
+
+      tx.set(userRef, {
+        UserFields.householdId: householdId,
+      }, SetOptions(merge: true));
+
+      return HouseholdModel.fromFirestore(householdDoc);
+    });
   }
 
   @override
-  Future<String> regeneratePin(String householdId) async {
+  Future<String> regeneratePin({
+    required String householdId,
+    required String callerUid,
+  }) async {
     final householdRef = _firestore.doc(FirestorePaths.household(householdId));
     final householdDoc = await householdRef.get();
 
     if (!householdDoc.exists) {
       throw const NotFoundFailure('Household was not found.');
+    }
+
+    final adminUid = householdDoc.data()?[HouseholdFields.adminUid] as String?;
+    if (adminUid != callerUid) {
+      throw const PermissionFailure(
+        'Only the household admin can regenerate the PIN.',
+      );
     }
 
     final oldPin = (householdDoc.data()?[HouseholdFields.pin] as String?) ?? '';
@@ -294,12 +373,6 @@ class HouseholdRemoteDataSourceImpl implements HouseholdRemoteDataSource {
     required String callerUid,
     required String targetUid,
   }) async {
-    if (callerUid == targetUid) {
-      throw const ValidationFailure(
-        'The admin cannot remove themselves. Transfer admin rights first.',
-      );
-    }
-
     final householdDoc = await _firestore
         .doc(FirestorePaths.household(householdId))
         .get();
@@ -308,18 +381,39 @@ class HouseholdRemoteDataSourceImpl implements HouseholdRemoteDataSource {
     }
 
     final adminUid = householdDoc.data()?[HouseholdFields.adminUid] as String?;
-    if (adminUid != null && adminUid.isNotEmpty && adminUid != callerUid) {
+    if (adminUid != callerUid) {
       throw const PermissionFailure(
         'Only the household admin can remove members.',
+      );
+    }
+
+    if (callerUid == targetUid) {
+      throw const ValidationFailure(
+        'The admin cannot remove themselves. Transfer admin rights first.',
       );
     }
 
     final targetMemberRef = _firestore.doc(
       FirestorePaths.member(householdId, targetUid),
     );
-    final batch = _firestore.batch();
+    final targetMemberDoc = await targetMemberRef.get();
+    if (!targetMemberDoc.exists) {
+      throw const NotFoundFailure('Member was not found in this household.');
+    }
 
+    final pendingChoresSnap = await _firestore
+        .collection(FirestorePaths.chores(householdId))
+        .where(ChoreFields.assignedToUid, isEqualTo: targetUid)
+        .where(ChoreFields.status, isEqualTo: 'pending')
+        .get();
+
+    final batch = _firestore.batch();
     batch.delete(targetMemberRef);
+
+    for (final choreDoc in pendingChoresSnap.docs) {
+      batch.update(choreDoc.reference, {ChoreFields.assignedToUid: adminUid});
+    }
+
     _activityWriter.addToBatch(
       batch,
       householdId: householdId,
@@ -328,6 +422,12 @@ class HouseholdRemoteDataSourceImpl implements HouseholdRemoteDataSource {
       targetUid: targetUid,
     );
 
+    // Note: users/{targetUid}.householdId is not modified directly by the
+    // admin here because Firestore security rules restrict users/{uid} writes
+    // to the authenticated owner of that user document. Instead, when the
+    // removed user's client observes watchMembers, checkAndClearStaleHousehold
+    // detects the missing member document and resets their own
+    // users/{uid}.householdId to null.
     await batch.commit();
   }
 
@@ -337,10 +437,6 @@ class HouseholdRemoteDataSourceImpl implements HouseholdRemoteDataSource {
     required String callerUid,
     required String newAdminUid,
   }) async {
-    if (callerUid == newAdminUid) {
-      return;
-    }
-
     final householdRef = _firestore.doc(FirestorePaths.household(householdId));
     final householdDoc = await householdRef.get();
 
@@ -349,19 +445,29 @@ class HouseholdRemoteDataSourceImpl implements HouseholdRemoteDataSource {
     }
 
     final currentAdminUid =
-        (householdDoc.data()?[HouseholdFields.adminUid] as String?) ??
-        callerUid;
+        householdDoc.data()?[HouseholdFields.adminUid] as String?;
     if (currentAdminUid != callerUid) {
       throw const PermissionFailure(
         'Only the current admin can transfer admin rights.',
       );
     }
 
-    final oldAdminMemberRef = _firestore.doc(
-      FirestorePaths.member(householdId, currentAdminUid),
-    );
+    if (callerUid == newAdminUid) {
+      return;
+    }
+
     final newAdminMemberRef = _firestore.doc(
       FirestorePaths.member(householdId, newAdminUid),
+    );
+    final newAdminMemberDoc = await newAdminMemberRef.get();
+    if (!newAdminMemberDoc.exists) {
+      throw const NotFoundFailure(
+        'New admin must be an existing household member.',
+      );
+    }
+
+    final oldAdminMemberRef = _firestore.doc(
+      FirestorePaths.member(householdId, callerUid),
     );
 
     final batch = _firestore.batch();

@@ -1,3 +1,4 @@
+// Owner: B
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:changa_app/core/error/failures.dart';
 import 'package:changa_app/core/error/result.dart';
@@ -127,7 +128,11 @@ class HouseholdRepositoryImpl implements HouseholdRepository {
   @override
   Future<Result<String>> regeneratePin(String householdId) async {
     try {
-      final newPin = await _remoteDataSource.regeneratePin(householdId);
+      final callerUid = _requireCurrentUid();
+      final newPin = await _remoteDataSource.regeneratePin(
+        householdId: householdId,
+        callerUid: callerUid,
+      );
       return Result.success(newPin);
     } catch (e) {
       return Result.failure(_mapException(e));
