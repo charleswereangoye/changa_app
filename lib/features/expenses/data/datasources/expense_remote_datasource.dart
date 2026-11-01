@@ -1,8 +1,8 @@
 // Owner: C - Person C (Expenses, Dashboard, Documentation)
 // Description: Firestore datasource for expenses: atomic add, delete, note edit
-// ignore_for_file: prefer_initializing_formals
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 
 import 'package:changa_app/core/constants/firestore_paths.dart';
 import 'package:changa_app/core/enums/settlement_method.dart';
@@ -31,14 +31,11 @@ class ExpenseException implements Exception {
 
 class ExpenseRemoteDataSource {
   ExpenseRemoteDataSource({
-    required FirebaseFirestore firestore,
-    required ActivityWriter activityWriter,
-    required NotificationWriter notificationWriter,
-    required String? Function() currentUid,
-  }) : _firestore = firestore,
-       _activityWriter = activityWriter,
-       _notificationWriter = notificationWriter,
-       _currentUid = currentUid;
+    required this._firestore,
+    required this._activityWriter,
+    required this._notificationWriter,
+    required this._currentUid,
+  });
 
   final FirebaseFirestore _firestore;
   final ActivityWriter _activityWriter;
@@ -48,6 +45,12 @@ class ExpenseRemoteDataSource {
   static const int _maxAmount = 100000000;
   static const int _minTitleLength = 3;
   static const int _maxTitleLength = 60;
+
+  /// Runs after the debts have been looked up and before the delete
+  /// transaction starts. Tests use it to change data in that gap and prove
+  /// that the transaction checks everything again.
+  @visibleForTesting
+  Future<void> Function()? beforeDeleteTransaction;
 
   /// Saves the expense, one debt per housemate who owes, the credits those
   /// debts used, the activity line and the notifications in ONE batch.
@@ -165,7 +168,8 @@ class ExpenseRemoteDataSource {
 
   /// Deletes an expense and its debts and gives the credits back.
   /// Only the person who paid can delete, and only while no debt on it has
-  /// been paid.
+  /// been paid. Everything is checked again inside one transaction, so a
+  /// payment or a second delete that happens meanwhile cannot slip through.
   Future<void> deleteExpense({
     required String householdId,
     required String expenseId,
@@ -175,74 +179,96 @@ class ExpenseRemoteDataSource {
       FirestorePaths.expense(householdId, expenseId),
     );
 
-    final expenseSnap = await expenseRef.get();
-    if (!expenseSnap.exists) {
-      throw const ExpenseException(
-        NotFoundFailure('This expense no longer exists.'),
-      );
-    }
-    final expense = ExpenseModel.fromFirestore(expenseSnap);
-    if (expense.paidByUid != actorUid) {
-      throw const ExpenseException(
-        PermissionFailure('Only the person who paid can delete this expense.'),
-      );
-    }
-
+    // A transaction cannot run a query, so find which debts belong to this
+    // expense first. Debts are only created together with their expense, so
+    // this list cannot change. Their contents are read again below.
     final debtsSnap = await _firestore
         .collection(FirestorePaths.debts(householdId))
         .where(DebtFields.expenseId, isEqualTo: expenseId)
         .get();
+    final debtRefs = debtsSnap.docs.map((doc) => doc.reference).toList();
 
-    // A debt that credits covered completely when the expense was added has
-    // amount 0 and is already "settled"; it does not block deleting.
-    final hasPaidDebt = debtsSnap.docs.any((doc) {
-      final data = doc.data();
-      final amount = (data[DebtFields.amount] as num?)?.toInt() ?? 0;
-      return data[DebtFields.status] == DebtStatus.settled.name && amount > 0;
-    });
-    if (hasPaidDebt) {
-      throw const ExpenseException(
-        ValidationFailure(
-          'This expense cannot be deleted because someone has already paid their share.',
-        ),
-      );
-    }
+    await beforeDeleteTransaction?.call();
 
-    final batch = _firestore.batch();
-    batch.delete(expenseRef);
+    await _firestore.runTransaction((transaction) async {
+      // All reads first: Firestore needs every read before the first write.
+      final expenseSnap = await transaction.get(expenseRef);
+      if (!expenseSnap.exists) {
+        throw const ExpenseException(
+          NotFoundFailure('This expense no longer exists.'),
+        );
+      }
+      final expense = ExpenseModel.fromFirestore(expenseSnap);
+      if (expense.paidByUid != actorUid) {
+        throw const ExpenseException(
+          PermissionFailure(
+            'Only the person who paid can delete this expense.',
+          ),
+        );
+      }
 
-    for (final doc in debtsSnap.docs) {
-      final data = doc.data();
-      batch.delete(doc.reference);
+      final debtSnaps = <DocumentSnapshot<Map<String, dynamic>>>[];
+      for (final ref in debtRefs) {
+        debtSnaps.add(await transaction.get(ref));
+      }
 
-      final creditsApplied =
-          (data[DebtFields.creditsApplied] as num?)?.toInt() ?? 0;
-      if (creditsApplied <= 0) continue;
+      // A debt that credits covered completely when the expense was added has
+      // amount 0 and is already "settled"; it does not block deleting.
+      final hasPaidDebt = debtSnaps.any((snap) {
+        final data = snap.data();
+        if (data == null) return false;
+        final amount = (data[DebtFields.amount] as num?)?.toInt() ?? 0;
+        return data[DebtFields.status] == DebtStatus.settled.name && amount > 0;
+      });
+      if (hasPaidDebt) {
+        throw const ExpenseException(
+          ValidationFailure(
+            'This expense cannot be deleted because someone has already paid their share.',
+          ),
+        );
+      }
 
       // Skip the refund if the debtor has since left the household.
-      final memberRef = _firestore.doc(
-        FirestorePaths.member(
-          householdId,
-          data[DebtFields.debtorUid] as String,
-        ),
-      );
-      if ((await memberRef.get()).exists) {
-        batch.update(memberRef, {
-          MemberFields.credits: FieldValue.increment(creditsApplied),
+      final refunds =
+          <({DocumentReference<Map<String, dynamic>> ref, int credits})>[];
+      for (final snap in debtSnaps) {
+        final data = snap.data();
+        if (data == null) continue;
+
+        final creditsApplied =
+            (data[DebtFields.creditsApplied] as num?)?.toInt() ?? 0;
+        if (creditsApplied <= 0) continue;
+
+        final memberRef = _firestore.doc(
+          FirestorePaths.member(
+            householdId,
+            data[DebtFields.debtorUid] as String,
+          ),
+        );
+        if ((await transaction.get(memberRef)).exists) {
+          refunds.add((ref: memberRef, credits: creditsApplied));
+        }
+      }
+
+      // Now the writes.
+      transaction.delete(expenseRef);
+      for (final snap in debtSnaps) {
+        if (snap.exists) transaction.delete(snap.reference);
+      }
+      for (final refund in refunds) {
+        transaction.update(refund.ref, {
+          MemberFields.credits: FieldValue.increment(refund.credits),
         });
       }
-    }
-
-    _activityWriter.addToBatch(
-      batch,
-      householdId: householdId,
-      type: ActivityType.expenseDeleted,
-      actorUid: actorUid,
-      refId: expenseId,
-      amount: expense.totalAmount,
-    );
-
-    await batch.commit();
+      _activityWriter.addToTransaction(
+        transaction,
+        householdId: householdId,
+        type: ActivityType.expenseDeleted,
+        actorUid: actorUid,
+        refId: expenseId,
+        amount: expense.totalAmount,
+      );
+    });
   }
 
   /// Changes only the title and the note.

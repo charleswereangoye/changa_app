@@ -231,6 +231,91 @@ void main() {
       expect(await docsOf(FirestorePaths.expenses(hid)), hasLength(1));
       expect(await creditsOf('bob'), 0);
     });
+
+    test('re-checks the debts inside the transaction: a payment made after '
+        'they were looked up still blocks the delete', () async {
+      final expense = await amaraSource.addExpense(equalInput());
+
+      // Chloe pays her share after the debts were looked up but before the
+      // delete transaction starts.
+      amaraSource.beforeDeleteTransaction = () async {
+        final debts = await db.collection(FirestorePaths.debts(hid)).get();
+        final chloeDebt = debts.docs.firstWhere(
+          (d) => d.data()[DebtFields.debtorUid] == 'chloe',
+        );
+        await chloeDebt.reference.update({DebtFields.status: 'settled'});
+      };
+
+      await expectLater(
+        amaraSource.deleteExpense(householdId: hid, expenseId: expense.id),
+        throwsA(
+          isA<ExpenseException>().having(
+            (e) => e.failure,
+            'failure',
+            isA<ValidationFailure>(),
+          ),
+        ),
+      );
+
+      expect(await docsOf(FirestorePaths.expenses(hid)), hasLength(1));
+      expect(await docsOf(FirestorePaths.debts(hid)), hasLength(2));
+      expect(await creditsOf('bob'), 0); // nothing was refunded
+    });
+
+    test(
+      'deleting the same expense twice refunds the credits only once',
+      () async {
+        final expense = await amaraSource.addExpense(equalInput());
+
+        await amaraSource.deleteExpense(
+          householdId: hid,
+          expenseId: expense.id,
+        );
+        expect(await creditsOf('bob'), 340);
+
+        await expectLater(
+          amaraSource.deleteExpense(householdId: hid, expenseId: expense.id),
+          throwsA(
+            isA<ExpenseException>().having(
+              (e) => e.failure,
+              'failure',
+              isA<NotFoundFailure>(),
+            ),
+          ),
+        );
+        expect(await creditsOf('bob'), 340); // not 680
+      },
+    );
+
+    test('a delete that finishes in the gap makes the other one fail '
+        'without a second refund', () async {
+      final expense = await amaraSource.addExpense(equalInput());
+
+      // A second delete (another device, say) completes after this one has
+      // looked up the debts but before its transaction starts.
+      amaraSource.beforeDeleteTransaction = () async {
+        await sourceFor('amara')
+            .deleteExpense(householdId: hid, expenseId: expense.id);
+      };
+
+      await expectLater(
+        amaraSource.deleteExpense(householdId: hid, expenseId: expense.id),
+        throwsA(
+          isA<ExpenseException>().having(
+            (e) => e.failure,
+            'failure',
+            isA<NotFoundFailure>(),
+          ),
+        ),
+      );
+
+      expect(await creditsOf('bob'), 340);
+      final activities = await docsOf(FirestorePaths.activities(hid));
+      expect(
+        activities.where((a) => a[ActivityFields.type] == 'expenseDeleted'),
+        hasLength(1),
+      );
+    });
   });
 
   group('updateExpenseNote', () {
