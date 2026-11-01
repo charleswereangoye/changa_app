@@ -18,6 +18,7 @@ class ShareInputRow extends StatelessWidget {
     required this.splitType,
     required this.initialText,
     required this.onChanged,
+    this.enabled = true,
   });
 
   final ExpenseParticipant participant;
@@ -26,6 +27,9 @@ class ShareInputRow extends StatelessWidget {
   final SplitType splitType;
   final String initialText;
   final ValueChanged<String> onChanged;
+
+  /// False while the expense is being saved.
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
@@ -53,6 +57,7 @@ class ShareInputRow extends StatelessWidget {
               // The split type is in the key so the box resets when it changes.
               key: ValueKey('share-${participant.uid}-${splitType.name}'),
               initialValue: initialText,
+              enabled: enabled,
               keyboardType: TextInputType.number,
               inputFormatters: [
                 FilteringTextInputFormatter.digitsOnly,

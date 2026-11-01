@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:changa_app/core/error/failures.dart';
@@ -13,6 +15,10 @@ import 'package:changa_app/features/expenses/presentation/cubit/add_expense_stat
 
 class FakeExpenseRepository implements ExpenseRepository {
   NewExpenseInput? lastInput;
+  int addCalls = 0;
+
+  /// When set, addExpense waits until the test completes this.
+  Completer<Result<Expense>>? gate;
 
   Result<Expense> nextResult = Result.success(
     Expense(
@@ -27,9 +33,12 @@ class FakeExpenseRepository implements ExpenseRepository {
   );
 
   @override
-  Future<Result<Expense>> addExpense(NewExpenseInput input) async {
+  Future<Result<Expense>> addExpense(NewExpenseInput input) {
     lastInput = input;
-    return nextResult;
+    addCalls++;
+    final waiting = gate;
+    if (waiting != null) return waiting.future;
+    return Future.value(nextResult);
   }
 
   @override
@@ -223,5 +232,51 @@ void main() {
 
     expect(repo.lastInput, isNull);
     expect(cubit.state.status, AddExpenseStatus.editing);
+  });
+
+  test(
+    'edits and a second save are ignored while the save is running',
+    () async {
+      repo.gate = Completer<Result<Expense>>();
+      final cubit = buildCubit();
+      fillBasics(cubit);
+
+      final saving = cubit.submit();
+      expect(cubit.state.status, AddExpenseStatus.submitting);
+
+      cubit.amountChanged('999');
+      cubit.titleChanged('Changed');
+      cubit.toggleParticipant('bob');
+      cubit.splitTypeChanged(SplitType.percent);
+
+      // Still saving, and the values being saved did not change.
+      expect(cubit.state.status, AddExpenseStatus.submitting);
+      expect(cubit.state.amountText, '12000');
+      expect(cubit.state.title, 'Groceries');
+      expect(cubit.state.selectedUids, ['amara', 'bob', 'chloe']);
+      expect(cubit.state.splitType, SplitType.equal);
+
+      await cubit.submit(); // a second save while the first runs
+      expect(repo.addCalls, 1);
+
+      repo.gate!.complete(repo.nextResult);
+      await saving;
+      expect(cubit.state.status, AddExpenseStatus.success);
+    },
+  );
+
+  test('finishing a save after the cubit was closed does not emit', () async {
+    repo.gate = Completer<Result<Expense>>();
+    final cubit = buildCubit();
+    fillBasics(cubit);
+
+    final saving = cubit.submit();
+    await cubit.close(); // the sheet was dismissed mid-save
+
+    repo.gate!.complete(repo.nextResult);
+
+    // Emitting on a closed cubit would throw here.
+    await expectLater(saving, completes);
+    expect(cubit.isClosed, isTrue);
   });
 }

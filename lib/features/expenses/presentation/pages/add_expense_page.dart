@@ -82,104 +82,126 @@ class AddExpensePage extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        return SafeArea(
-          child: SingleChildScrollView(
-            padding: EdgeInsets.fromLTRB(
-              AppSpacing.lg,
-              AppSpacing.sm,
-              AppSpacing.lg,
-              AppSpacing.lg + MediaQuery.viewInsetsOf(context).bottom,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('Add expense', style: AppTextStyles.heading2),
-                const SizedBox(height: AppSpacing.lg),
-                TextField(
-                  key: const Key('amount-field'),
-                  keyboardType: TextInputType.number,
-                  inputFormatters: [
-                    FilteringTextInputFormatter.digitsOnly,
-                    LengthLimitingTextInputFormatter(9),
-                  ],
-                  style: AppTextStyles.heading2,
-                  onChanged: cubit.amountChanged,
-                  decoration: _decoration(
-                    hint: '0',
-                    prefixText: 'RWF ',
-                    errorText: state.amountError,
-                  ),
-                ),
-                const SizedBox(height: AppSpacing.md),
-                TextField(
-                  key: const Key('title-field'),
-                  textCapitalization: TextCapitalization.sentences,
-                  inputFormatters: [LengthLimitingTextInputFormatter(60)],
-                  style: AppTextStyles.bodyMedium,
-                  onChanged: cubit.titleChanged,
-                  decoration: _decoration(
-                    hint: 'Groceries, Simba Supermarket',
-                    errorText: state.titleError,
-                  ),
-                ),
-                const _SectionLabel('Category'),
-                CategoryChips(
-                  selected: state.category,
-                  onSelected: cubit.categoryChanged,
-                ),
-                const _SectionLabel('Paid by'),
-                ParticipantSelector(
-                  keyPrefix: 'paid-by',
-                  participants: state.participants,
-                  selectedUids: [state.paidByUid],
-                  onTap: cubit.paidByChanged,
-                ),
-                const _SectionLabel('Split'),
-                SplitTypeSelector(
-                  selected: state.splitType,
-                  onChanged: cubit.splitTypeChanged,
-                ),
-                const _SectionLabel('Split with'),
-                ParticipantSelector(
-                  keyPrefix: 'split-with',
-                  participants: state.participants,
-                  selectedUids: state.selectedUids,
-                  onTap: cubit.toggleParticipant,
-                ),
-                if (state.participantsProblem != null) ...[
-                  const SizedBox(height: AppSpacing.sm),
-                  _ProblemText(state.participantsProblem!),
-                ],
-                if (state.splitType != SplitType.equal) ...[
+        // While the save runs the form is locked and cannot be dismissed with
+        // the back button or by tapping outside.
+        final busy = state.status == AddExpenseStatus.submitting;
+
+        return PopScope(
+          canPop: !busy,
+          child: SafeArea(
+            child: SingleChildScrollView(
+              padding: EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                AppSpacing.sm,
+                AppSpacing.lg,
+                AppSpacing.lg + MediaQuery.viewInsetsOf(context).bottom,
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text('Add expense', style: AppTextStyles.heading2),
                   const SizedBox(height: AppSpacing.lg),
-                  for (final person in state.participants.where(
-                    (p) => state.selectedUids.contains(p.uid),
-                  ))
-                    ShareInputRow(
-                      participant: person,
-                      splitType: state.splitType,
-                      initialText: state.weightTexts[person.uid] ?? '',
-                      onChanged: (text) =>
-                          cubit.weightChanged(person.uid, text),
+                  TextField(
+                    key: const Key('amount-field'),
+                    enabled: !busy,
+                    keyboardType: TextInputType.number,
+                    inputFormatters: [
+                      FilteringTextInputFormatter.digitsOnly,
+                      LengthLimitingTextInputFormatter(9),
+                    ],
+                    style: AppTextStyles.heading2,
+                    onChanged: cubit.amountChanged,
+                    decoration: _decoration(
+                      hint: '0',
+                      prefixText: 'RWF ',
+                      errorText: state.amountError,
                     ),
-                  _TotalLine(state: state),
-                  if (state.visibleSplitProblem != null)
-                    _ProblemText(state.visibleSplitProblem!),
-                ],
-                const SizedBox(height: AppSpacing.lg),
-                _PreviewBox(state: state),
-                if (state.status == AddExpenseStatus.failure &&
-                    state.failureMessage != null) ...[
+                  ),
                   const SizedBox(height: AppSpacing.md),
-                  _ProblemText(state.failureMessage!),
+                  TextField(
+                    key: const Key('title-field'),
+                    enabled: !busy,
+                    textCapitalization: TextCapitalization.sentences,
+                    inputFormatters: [LengthLimitingTextInputFormatter(60)],
+                    style: AppTextStyles.bodyMedium,
+                    onChanged: cubit.titleChanged,
+                    decoration: _decoration(
+                      hint: 'Groceries, Simba Supermarket',
+                      errorText: state.titleError,
+                    ),
+                  ),
+                  const _SectionLabel('Category'),
+                  IgnorePointer(
+                    ignoring: busy,
+                    child: CategoryChips(
+                      selected: state.category,
+                      onSelected: cubit.categoryChanged,
+                    ),
+                  ),
+                  const _SectionLabel('Paid by'),
+                  IgnorePointer(
+                    ignoring: busy,
+                    child: ParticipantSelector(
+                      keyPrefix: 'paid-by',
+                      participants: state.participants,
+                      selectedUids: [state.paidByUid],
+                      onTap: cubit.paidByChanged,
+                    ),
+                  ),
+                  const _SectionLabel('Split'),
+                  IgnorePointer(
+                    ignoring: busy,
+                    child: SplitTypeSelector(
+                      selected: state.splitType,
+                      onChanged: cubit.splitTypeChanged,
+                    ),
+                  ),
+                  const _SectionLabel('Split with'),
+                  IgnorePointer(
+                    ignoring: busy,
+                    child: ParticipantSelector(
+                      keyPrefix: 'split-with',
+                      participants: state.participants,
+                      selectedUids: state.selectedUids,
+                      onTap: cubit.toggleParticipant,
+                    ),
+                  ),
+                  if (state.participantsProblem != null) ...[
+                    const SizedBox(height: AppSpacing.sm),
+                    _ProblemText(state.participantsProblem!),
+                  ],
+                  if (state.splitType != SplitType.equal) ...[
+                    const SizedBox(height: AppSpacing.lg),
+                    for (final person in state.participants.where(
+                      (p) => state.selectedUids.contains(p.uid),
+                    ))
+                      ShareInputRow(
+                        participant: person,
+                        splitType: state.splitType,
+                        initialText: state.weightTexts[person.uid] ?? '',
+                        enabled: !busy,
+                        onChanged: (text) =>
+                            cubit.weightChanged(person.uid, text),
+                      ),
+                    _TotalLine(state: state),
+                    if (state.visibleSplitProblem != null)
+                      _ProblemText(state.visibleSplitProblem!),
+                  ],
+                  const SizedBox(height: AppSpacing.lg),
+                  _PreviewBox(state: state),
+                  if (state.status == AddExpenseStatus.failure &&
+                      state.failureMessage != null) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    _ProblemText(state.failureMessage!),
+                  ],
+                  const SizedBox(height: AppSpacing.lg),
+                  PrimaryButton(
+                    text: 'Save expense',
+                    isLoading: busy,
+                    onPressed: state.isValid ? cubit.submit : null,
+                  ),
                 ],
-                const SizedBox(height: AppSpacing.lg),
-                PrimaryButton(
-                  text: 'Save expense',
-                  isLoading: state.status == AddExpenseStatus.submitting,
-                  onPressed: state.isValid ? cubit.submit : null,
-                ),
-              ],
+              ),
             ),
           ),
         );

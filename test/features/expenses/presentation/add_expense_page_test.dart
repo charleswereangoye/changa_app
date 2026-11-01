@@ -1,7 +1,11 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import 'package:changa_app/core/error/result.dart';
+import 'package:changa_app/features/expenses/domain/entities/expense.dart';
 import 'package:changa_app/features/expenses/domain/entities/split_type.dart';
 import 'package:changa_app/features/expenses/domain/usecases/add_expense.dart';
 import 'package:changa_app/features/expenses/presentation/cubit/add_expense_cubit.dart';
@@ -11,11 +15,13 @@ import 'package:changa_app/features/expenses/presentation/pages/add_expense_page
 import 'add_expense_cubit_test.dart' show FakeExpenseRepository;
 
 void main() {
+  late FakeExpenseRepository repo;
   late AddExpenseCubit cubit;
 
   setUp(() {
+    repo = FakeExpenseRepository();
     cubit = AddExpenseCubit(
-      addExpense: AddExpense(FakeExpenseRepository()),
+      addExpense: AddExpense(repo),
       householdId: 'house1',
       participants: const [
         ExpenseParticipant(uid: 'amara', name: 'Amara K'),
@@ -94,5 +100,32 @@ void main() {
 
     expect(find.text('Total: 100%'), findsOneWidget);
     expect(saveButton(tester).onPressed, isNotNull);
+  });
+
+  testWidgets('the form is locked while the save is running', (tester) async {
+    repo.gate = Completer<Result<Expense>>();
+    await pumpPage(tester);
+    await tester.enterText(find.byKey(const Key('amount-field')), '12000');
+    await tester.enterText(find.byKey(const Key('title-field')), 'Groceries');
+    await tester.pump();
+
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Save expense'));
+    await tester.pump();
+
+    expect(cubit.state.status, AddExpenseStatus.submitting);
+    expect(
+      tester.widget<TextField>(find.byKey(const Key('amount-field'))).enabled,
+      isFalse,
+    );
+    expect(
+      tester.widget<TextField>(find.byKey(const Key('title-field'))).enabled,
+      isFalse,
+    );
+
+    // Tapping an avatar while saving changes nothing.
+    await tester.tap(find.byKey(const ValueKey('split-with-bob')));
+    await tester.pump();
+    expect(cubit.state.selectedUids, ['amara', 'bob', 'chloe']);
+    expect(repo.addCalls, 1);
   });
 }

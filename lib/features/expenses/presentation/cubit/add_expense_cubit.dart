@@ -1,6 +1,5 @@
 // Owner: C - Person C (Expenses, Dashboard, Documentation)
 // Description: Cubit for the Add Expense form: edits, live preview, submit
-// ignore_for_file: prefer_initializing_formals
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,14 +12,12 @@ import 'add_expense_state.dart';
 
 class AddExpenseCubit extends Cubit<AddExpenseState> {
   AddExpenseCubit({
-    required AddExpense addExpense,
-    required String householdId,
+    required this._addExpense,
+    required this._householdId,
     required List<ExpenseParticipant> participants,
     required String currentUid,
     SplitType initialSplitType = SplitType.equal,
-  }) : _addExpense = addExpense,
-       _householdId = householdId,
-       super(
+  }) : super(
          AddExpenseState(
            participants: participants,
            paidByUid: currentUid,
@@ -93,8 +90,11 @@ class AddExpenseCubit extends Cubit<AddExpenseState> {
     );
 
     final result = await _addExpense(input);
-    final failure = result.failureOrNull;
 
+    // The sheet may have been dismissed while the request was running.
+    if (isClosed) return;
+
+    final failure = result.failureOrNull;
     if (failure == null) {
       emit(state.copyWith(status: AddExpenseStatus.success));
     } else {
@@ -107,7 +107,11 @@ class AddExpenseCubit extends Cubit<AddExpenseState> {
     }
   }
 
-  /// Any edit puts the form back into the editing state.
-  void _edit(AddExpenseState next) =>
-      emit(next.copyWith(status: AddExpenseStatus.editing));
+  /// Any edit puts the form back into the editing state, except while a save
+  /// is running: then the form is locked so the values being saved cannot
+  /// change and Save cannot be pressed again.
+  void _edit(AddExpenseState next) {
+    if (state.status == AddExpenseStatus.submitting) return;
+    emit(next.copyWith(status: AddExpenseStatus.editing));
+  }
 }
