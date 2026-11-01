@@ -6,9 +6,9 @@ import 'package:changa_app/core/theme/app_theme.dart';
 import 'package:changa_app/core/widgets/credit_badge.dart';
 
 Widget _wrap(Widget child) => MaterialApp(
-      theme: AppTheme.lightTheme,
-      home: Scaffold(body: Center(child: child)),
-    );
+  theme: AppTheme.lightTheme,
+  home: Scaffold(body: Center(child: child)),
+);
 
 void main() {
   testWidgets('shows a reward with a plus sign', (tester) async {
