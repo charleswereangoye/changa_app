@@ -1,4 +1,5 @@
-// Tests debt queries, settlement writes, and sequential nudges.
+// Owner: D
+// Tests debt queries, settlement writes, and activity-based nudge cooldown.
 
 import 'package:changa_app/core/constants/firestore_paths.dart';
 import 'package:changa_app/core/error/failures.dart';
@@ -70,6 +71,7 @@ void main() {
       creditor: 'me',
       amount: 6000,
     );
+
     await seedDebt(
       id: 'settled',
       debtor: 'kevin',
@@ -91,6 +93,7 @@ void main() {
       amount: 6000,
       createdAt: DateTime.utc(2026, 10, 22),
     );
+
     await seedDebt(
       id: 'recent-settled',
       debtor: 'kevin',
@@ -99,6 +102,7 @@ void main() {
       status: 'settled',
       createdAt: DateTime.utc(2026, 10, 23),
     );
+
     await seedDebt(
       id: 'old',
       debtor: 'kevin',
@@ -125,6 +129,7 @@ void main() {
       amount: 6000,
       createdAt: DateTime.utc(2026, 10, 20),
     );
+
     await seedDebt(
       id: 'newer',
       debtor: 'me',
@@ -132,6 +137,7 @@ void main() {
       amount: 2000,
       createdAt: DateTime.utc(2026, 10, 21),
     );
+
     await seedDebt(
       id: 'other-person',
       debtor: 'grace',
@@ -155,12 +161,14 @@ void main() {
         creditor: 'me',
         amount: 6000,
       );
+
       await seedDebt(
         id: 'outgoing',
         debtor: 'me',
         creditor: 'kevin',
         amount: 2000,
       );
+
       await seedDebt(
         id: 'unrelated',
         debtor: 'grace',
@@ -179,6 +187,7 @@ void main() {
         final document = await firestore
             .doc(FirestorePaths.debt(householdId, id))
             .get();
+
         final data = document.data()!;
 
         expect(data[DebtFields.status], 'settled');
@@ -186,26 +195,32 @@ void main() {
         expect(data[DebtFields.settledAt], isA<Timestamp>());
         expect(data[DebtFields.expenseId], 'expense-$id');
         expect(data[DebtFields.creditsApplied], 0);
+
         expect(
           data[DebtFields.createdAt],
           Timestamp.fromDate(DateTime.utc(2026, 10, 20)),
         );
+
         expect(data[DebtFields.amount], id == 'incoming' ? 6000 : 2000);
       }
 
       final unrelated = await firestore
           .doc(FirestorePaths.debt(householdId, 'unrelated'))
           .get();
+
       expect(unrelated.data()![DebtFields.status], 'pending');
 
       final logs = await activities();
+
       expect(logs.docs, hasLength(1));
       expect(logs.docs.single.data()[ActivityFields.amount], 4000);
 
       final notices = await notifications();
+
       expect(notices.docs, hasLength(1));
 
       final notice = notices.docs.single.data();
+
       expect(notice[NotificationFields.type], 'settled');
       expect(notice[NotificationFields.actorUid], 'me');
       expect(notice[NotificationFields.recipientUid], 'kevin');
@@ -236,6 +251,7 @@ void main() {
       creditor: 'me',
       amount: 6000,
     );
+
     await seedDebt(
       id: 'outgoing',
       debtor: 'me',
@@ -252,9 +268,11 @@ void main() {
     expect(first, isNull);
 
     final notices = await notifications();
+
     expect(notices.docs, hasLength(1));
 
     final notice = notices.docs.single.data();
+
     expect(notice[NotificationFields.type], 'nudge');
     expect(notice[NotificationFields.actorUid], 'me');
     expect(notice[NotificationFields.recipientUid], 'kevin');
@@ -262,6 +280,7 @@ void main() {
     expect(notice[NotificationFields.body], contains('RWF 4,000'));
 
     final logs = await activities();
+
     expect(logs.docs, hasLength(1));
     expect(logs.docs.single.data()[ActivityFields.amount], isNull);
 
@@ -294,4 +313,116 @@ void main() {
     expect((await notifications()).docs, isEmpty);
     expect((await activities()).docs, isEmpty);
   });
+
+  test(
+    'recent nudge activity blocks sending without a notification record',
+    () async {
+      await seedDebt(
+        id: 'incoming',
+        debtor: 'kevin',
+        creditor: 'me',
+        amount: 6000,
+      );
+
+      await firestore.collection(FirestorePaths.activities(householdId)).add({
+        ActivityFields.type: 'nudgeSent',
+        ActivityFields.actorUid: 'me',
+        ActivityFields.targetUid: 'kevin',
+        ActivityFields.createdAt: Timestamp.fromDate(
+          DateTime.now().subtract(const Duration(hours: 23)),
+        ),
+      });
+
+      final failure = await source.sendNudge(
+        householdId: householdId,
+        fromUid: 'me',
+        toUid: 'kevin',
+      );
+
+      expect(failure, isA<NudgeCooldownFailure>());
+      expect((await notifications()).docs, isEmpty);
+      expect((await activities()).docs, hasLength(1));
+    },
+  );
+
+  test('nudge activity older than 24 hours allows another nudge', () async {
+    await seedDebt(
+      id: 'incoming',
+      debtor: 'kevin',
+      creditor: 'me',
+      amount: 6000,
+    );
+
+    await firestore.collection(FirestorePaths.activities(householdId)).add({
+      ActivityFields.type: 'nudgeSent',
+      ActivityFields.actorUid: 'me',
+      ActivityFields.targetUid: 'kevin',
+      ActivityFields.createdAt: Timestamp.fromDate(
+        DateTime.now().subtract(const Duration(hours: 25)),
+      ),
+    });
+
+    final failure = await source.sendNudge(
+      householdId: householdId,
+      fromUid: 'me',
+      toUid: 'kevin',
+    );
+
+    expect(failure, isNull);
+    expect((await notifications()).docs, hasLength(1));
+    expect((await activities()).docs, hasLength(2));
+  });
+
+  test(
+    'other senders recipients and activity types do not block a nudge',
+    () async {
+      await seedDebt(
+        id: 'incoming',
+        debtor: 'kevin',
+        creditor: 'me',
+        amount: 6000,
+      );
+
+      final recentTime = Timestamp.fromDate(
+        DateTime.now().subtract(const Duration(hours: 1)),
+      );
+
+      final unrelatedActivities = [
+        {
+          ActivityFields.type: 'nudgeSent',
+          ActivityFields.actorUid: 'me',
+          ActivityFields.targetUid: 'grace',
+          ActivityFields.createdAt: recentTime,
+        },
+        {
+          ActivityFields.type: 'nudgeSent',
+          ActivityFields.actorUid: 'grace',
+          ActivityFields.targetUid: 'kevin',
+          ActivityFields.createdAt: recentTime,
+        },
+        {
+          ActivityFields.type: 'debtSettled',
+          ActivityFields.actorUid: 'me',
+          ActivityFields.targetUid: 'kevin',
+          ActivityFields.createdAt: recentTime,
+        },
+      ];
+
+      for (final activity in unrelatedActivities) {
+        await firestore
+            .collection(FirestorePaths.activities(householdId))
+            .add(activity);
+      }
+
+      final failure = await source.sendNudge(
+        householdId: householdId,
+        fromUid: 'me',
+        toUid: 'kevin',
+      );
+
+      expect(failure, isNull);
+      expect((await notifications()).docs, hasLength(1));
+      expect((await activities()).docs, hasLength(4));
+    },
+  );
 }
