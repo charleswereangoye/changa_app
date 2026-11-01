@@ -85,7 +85,6 @@ class DebtRemoteDataSource {
   }
 
   /// Settles all pending debts between the pair in one batch.
-  ///
   /// The batch also writes one activity and one notification.
   Future<void> settleBetween({
     required String householdId,
@@ -260,16 +259,17 @@ class DebtRemoteDataSource {
 
     final cutoff = now.subtract(policy.cooldown);
 
+    // Check sent nudges through readable household activity.
     final recentNudges = await _firestore
-        .collection(FirestorePaths.notifications(householdId))
-        .where(NotificationFields.actorUid, isEqualTo: fromUid)
-        .where(NotificationFields.recipientUid, isEqualTo: toUid)
-        .where(NotificationFields.type, isEqualTo: 'nudge')
+        .collection(FirestorePaths.activities(householdId))
+        .where(ActivityFields.actorUid, isEqualTo: fromUid)
+        .where(ActivityFields.targetUid, isEqualTo: toUid)
+        .where(ActivityFields.type, isEqualTo: ActivityType.nudgeSent.name)
         .where(
-          NotificationFields.createdAt,
+          ActivityFields.createdAt,
           isGreaterThanOrEqualTo: Timestamp.fromDate(cutoff),
         )
-        .orderBy(NotificationFields.createdAt, descending: true)
+        .orderBy(ActivityFields.createdAt, descending: true)
         .limit(1)
         .get(const GetOptions(source: Source.server));
 
@@ -277,7 +277,7 @@ class DebtRemoteDataSource {
 
     if (recentNudges.docs.isNotEmpty) {
       lastNudgedAt =
-          (recentNudges.docs.first.data()[NotificationFields.createdAt]
+          (recentNudges.docs.first.data()[ActivityFields.createdAt]
                   as Timestamp)
               .toDate();
     }
