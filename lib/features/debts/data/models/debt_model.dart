@@ -1,34 +1,24 @@
-// Owner: D - Person D (Debts, Settling, Nudges, Notifications, Release Build)
-// Description: DebtModel DTO for Firestore serialization
-
-// TODO(D): Implement DebtModel according to project specification
-
-// Owner: D
-// Converts between Firestore documents and the Debt domain entity.
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/constants/firestore_paths.dart';
+import '../../../../core/enums/settlement_method.dart';
 import '../../domain/entities/debt.dart';
 import '../../domain/entities/debt_status.dart';
-import '../../../../core/enums/settlement_method.dart';
 
 class DebtModel extends Debt {
   const DebtModel({
     required super.id,
-    required super.householdId,
-    required super.fromUid,
-    required super.toUid,
+    required super.expenseId,
+    required super.debtorUid,
+    required super.creditorUid,
     required super.amount,
+    required super.creditsApplied,
     required super.status,
     required super.createdAt,
-    super.settledMethod,
+    super.settlementMethod,
     super.settledAt,
   });
 
-  /// Reads a debt document.
-  ///
-  /// Firestore may temporarily return null for a pending server timestamp.
   factory DebtModel.fromFirestore(
     DocumentSnapshot<Map<String, dynamic>> document,
   ) {
@@ -38,25 +28,22 @@ class DebtModel extends Debt {
       throw StateError('Debt document ${document.id} has no data.');
     }
 
-    final householdId = document.reference.parent.parent?.id;
-    if (householdId == null) {
-      throw StateError(
-        'Debt document ${document.id} is not inside a household.',
-      );
-    }
-
     return DebtModel(
       id: document.id,
-      householdId: householdId,
-      fromUid: data[DebtFields.debtorUid] as String,
-      toUid: data[DebtFields.creditorUid] as String,
-      amount: (data[DebtFields.amount] as num).toDouble(),
+      expenseId: data[DebtFields.expenseId] as String,
+      debtorUid: data[DebtFields.debtorUid] as String,
+      creditorUid: data[DebtFields.creditorUid] as String,
+      amount: _readNonNegativeInt(data[DebtFields.amount], DebtFields.amount),
+      creditsApplied: _readNonNegativeInt(
+        data[DebtFields.creditsApplied],
+        DebtFields.creditsApplied,
+      ),
       status: _enumValue(
         DebtStatus.values,
         data[DebtFields.status],
         DebtFields.status,
       ),
-      settledMethod: _nullableEnumValue(
+      settlementMethod: _nullableEnumValue(
         SettlementMethod.values,
         data[DebtFields.settlementMethod],
         DebtFields.settlementMethod,
@@ -68,32 +55,32 @@ class DebtModel extends Debt {
     );
   }
 
-  /// Builds a data-layer model from a domain entity.
   factory DebtModel.fromEntity(Debt debt) {
     return DebtModel(
       id: debt.id,
-      householdId: debt.householdId,
-      fromUid: debt.fromUid,
-      toUid: debt.toUid,
+      expenseId: debt.expenseId,
+      debtorUid: debt.debtorUid,
+      creditorUid: debt.creditorUid,
       amount: debt.amount,
+      creditsApplied: debt.creditsApplied,
       status: debt.status,
-      settledMethod: debt.settledMethod,
+      settlementMethod: debt.settlementMethod,
       settledAt: debt.settledAt,
       createdAt: debt.createdAt,
     );
   }
 
-  /// Converts dates to Firestore timestamps.
-  ///
-  /// Set [useServerTimestamp] to true when creating a new document.
-  /// Keep it false when preserving an existing creation date.
+  /// Use a server timestamp when creating a new document.
+  /// Otherwise preserve the existing creation date.
   Map<String, dynamic> toMap({bool useServerTimestamp = false}) {
     return {
-      DebtFields.debtorUid: fromUid,
-      DebtFields.creditorUid: toUid,
+      DebtFields.expenseId: expenseId,
+      DebtFields.debtorUid: debtorUid,
+      DebtFields.creditorUid: creditorUid,
       DebtFields.amount: amount,
+      DebtFields.creditsApplied: creditsApplied,
       DebtFields.status: status.name,
-      DebtFields.settlementMethod: settledMethod?.name,
+      DebtFields.settlementMethod: settlementMethod?.name,
       DebtFields.settledAt: settledAt == null
           ? null
           : Timestamp.fromDate(settledAt!),
@@ -103,18 +90,41 @@ class DebtModel extends Debt {
     };
   }
 
-  /// Returns a plain domain entity without Firebase types.
   Debt toEntity() {
     return Debt(
       id: id,
-      householdId: householdId,
-      fromUid: fromUid,
-      toUid: toUid,
+      expenseId: expenseId,
+      debtorUid: debtorUid,
+      creditorUid: creditorUid,
       amount: amount,
+      creditsApplied: creditsApplied,
       status: status,
-      settledMethod: settledMethod,
+      settlementMethod: settlementMethod,
       settledAt: settledAt,
       createdAt: createdAt,
+    );
+  }
+
+  /// Accepts whole-valued numbers without silently truncating fractions.
+  /// The domain entity always receives an int.
+  static int _readNonNegativeInt(Object? value, String field) {
+    if (value is int && value >= 0) {
+      return value;
+    }
+
+    if (value is double &&
+        value.isFinite &&
+        value >= 0 &&
+        value == value.truncateToDouble()) {
+      final converted = value.toInt();
+
+      if (converted.toDouble() == value) {
+        return converted;
+      }
+    }
+
+    throw FormatException(
+      '$field must be a finite, non-negative whole number.',
     );
   }
 
@@ -125,8 +135,12 @@ class DebtModel extends Debt {
   ) {
     if (rawValue is String) {
       final value = values.asNameMap()[rawValue];
-      if (value != null) return value;
+
+      if (value != null) {
+        return value;
+      }
     }
+
     throw FormatException('Invalid $field value: $rawValue');
   }
 
@@ -135,7 +149,10 @@ class DebtModel extends Debt {
     Object? rawValue,
     String field,
   ) {
-    if (rawValue == null) return null;
+    if (rawValue == null) {
+      return null;
+    }
+
     return _enumValue(values, rawValue, field);
   }
 }
