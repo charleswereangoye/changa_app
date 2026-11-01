@@ -1,5 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
+import 'dart:async';
+
 import '../../../../core/error/failures.dart';
 import '../../../../core/error/result.dart';
 import '../../domain/entities/app_notification.dart';
@@ -23,15 +25,25 @@ class NotificationRepositoryImpl implements NotificationRepository {
         return;
       }
 
-      yield* _remoteDataSource
+      final notifications = _remoteDataSource
           .watchUnread(householdId: householdId, uid: currentUid)
           .map(
             (models) => List<AppNotification>.unmodifiable(
               models.map((model) => model.toEntity()),
             ),
           );
+
+      yield* notifications.transform(
+        StreamTransformer<
+          List<AppNotification>,
+          List<AppNotification>
+        >.fromHandlers(
+          handleError: (error, stackTrace, sink) {
+            sink.addError(_mapFailure(error), stackTrace);
+          },
+        ),
+      );
     } catch (error, stackTrace) {
-      // Surface the failure instead of showing an incorrect empty inbox.
       yield* Stream<List<AppNotification>>.error(
         _mapFailure(error),
         stackTrace,
