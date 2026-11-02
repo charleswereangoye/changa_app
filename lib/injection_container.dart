@@ -17,7 +17,7 @@ final sl = GetIt.instance;
 Future<void> initDependencies() async {
   await initAuth();
   await initProfile();
-  await initHousehold();
+  initHousehold(sl);
   await initActivity();
   await initExpenses();
   await initDashboard();
