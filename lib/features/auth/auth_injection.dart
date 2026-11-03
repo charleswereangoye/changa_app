@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'data/datasources/auth_remote_datasource.dart';
 import 'data/repositories/auth_repository_impl.dart';
 import 'domain/repositories/auth_repository.dart';
+import 'presentation/cubit/auth_cubit.dart';
 import 'presentation/cubit/login_cubit.dart';
 import 'presentation/cubit/sign_up_cubit.dart';
 
@@ -29,5 +30,10 @@ Future<void> initAuth() async {
   }
   if (!sl.isRegistered<LoginCubit>()) {
     sl.registerFactory(() => LoginCubit(authRepository: sl()));
+  }
+  if (!sl.isRegistered<AuthCubit>()) {
+    sl.registerLazySingleton<AuthCubit>(
+      () => AuthCubit(authRepository: sl<AuthRepository>()),
+    );
   }
 }
