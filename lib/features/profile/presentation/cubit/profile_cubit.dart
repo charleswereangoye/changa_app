@@ -22,10 +22,10 @@ class ProfileCubit extends Cubit<ProfileState> {
 
   void loadProfile(String uid) {
     if (uid.isEmpty) return;
-    emit(const ProfileStateLoading());
     _userSubscription?.cancel();
     final watcher = watchUser;
     if (watcher != null) {
+      emit(const ProfileStateLoading());
       _userSubscription = watcher(uid).listen(
         (user) {
           if (user != null) {

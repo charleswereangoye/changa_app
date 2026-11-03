@@ -6,6 +6,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import '../../../../core/constants/firestore_paths.dart';
+import '../../../../core/error/failures.dart';
 import '../../../auth/data/models/user_model.dart';
 
 abstract class UserRemoteDataSource {
@@ -63,7 +64,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
             fullName: 'Former member',
             email: '',
             phone: '',
-            createdAt: DateTime.now(),
+            createdAt: DateTime.fromMillisecondsSinceEpoch(0),
           ),
         );
       }
@@ -80,10 +81,18 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     final docRef = _firestore.doc(FirestorePaths.user(uid));
     final updates = <String, dynamic>{};
     if (fullName != null) {
-      updates[UserFields.fullName] = fullName.trim();
+      final trimmed = fullName.trim();
+      if (trimmed.isEmpty) {
+        throw const ValidationFailure('Full name cannot be empty.');
+      }
+      updates[UserFields.fullName] = trimmed;
     }
     if (phone != null) {
-      updates[UserFields.phone] = phone.trim();
+      final trimmed = phone.trim();
+      if (trimmed.isEmpty) {
+        throw const ValidationFailure('Phone number cannot be empty.');
+      }
+      updates[UserFields.phone] = trimmed;
     }
 
     if (updates.isNotEmpty) {

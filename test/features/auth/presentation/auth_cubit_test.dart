@@ -4,6 +4,7 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:changa_app/core/error/failures.dart';
 import 'package:changa_app/core/error/result.dart';
 import 'package:changa_app/features/auth/domain/entities/app_user.dart';
 import 'package:changa_app/features/auth/domain/repositories/auth_repository.dart';
@@ -73,6 +74,21 @@ void main() {
         return AuthCubit(authRepository: mockAuthRepository);
       },
       act: (cubit) async => cubit.signOut(),
+      verify: (_) {
+        verify(() => mockAuthRepository.signOut()).called(1);
+      },
+    );
+
+    blocTest<AuthCubit, AuthState>(
+      'emits AuthFailureState when signOut returns failure',
+      build: () {
+        when(() => mockAuthRepository.signOut()).thenAnswer(
+          (_) async => Result.failure(const UnknownFailure('Sign out failed')),
+        );
+        return AuthCubit(authRepository: mockAuthRepository);
+      },
+      act: (cubit) async => cubit.signOut(),
+      expect: () => [const AuthFailureState('Sign out failed')],
       verify: (_) {
         verify(() => mockAuthRepository.signOut()).called(1);
       },

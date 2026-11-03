@@ -72,16 +72,20 @@ void main() {
       expect(users[1].fullName, 'Bob Kayitesi');
     });
 
-    test('falls back gracefully to Former member for missing user', () async {
+    test('falls back gracefully to Former member for missing user with stable createdAt', () async {
       final repo = createRepo();
-      final result = await repo.getUsersByIds([user1Uid, unknownUid]);
+      final result1 = await repo.getUsersByIds([unknownUid]);
+      final result2 = await repo.getUsersByIds([unknownUid]);
 
-      expect(result.isSuccess, true);
-      final users = result.dataOrNull!;
-      expect(users.length, 2);
-      expect(users[0].fullName, 'Alice Mukamana');
-      expect(users[1].uid, unknownUid);
-      expect(users[1].fullName, 'Former member');
+      expect(result1.isSuccess, true);
+      expect(result2.isSuccess, true);
+      final user1 = result1.dataOrNull!.first;
+      final user2 = result2.dataOrNull!.first;
+
+      expect(user1.fullName, 'Former member');
+      expect(user1.createdAt, DateTime.fromMillisecondsSinceEpoch(0));
+      // AppUser uses Equatable props: verify user1 == user2 across calls
+      expect(user1, equals(user2));
     });
 
     test('GetUsersByIds use case forwards call to repository', () async {
@@ -137,6 +141,24 @@ void main() {
       final result = await repo.updateProfile(fullName: 'New Name');
       expect(result.isFailure, true);
       expect(result.failureOrNull, isA<AuthFailure>());
+    });
+
+    test('rejects updateProfile when fullName is blank whitespace', () async {
+      final repo = createRepo(user1Uid);
+      final result = await repo.updateProfile(fullName: '   ');
+
+      expect(result.isFailure, true);
+      expect(result.failureOrNull, isA<ValidationFailure>());
+      expect(result.failureOrNull!.message, 'Full name cannot be empty.');
+    });
+
+    test('rejects updateProfile when phone is blank whitespace', () async {
+      final repo = createRepo(user1Uid);
+      final result = await repo.updateProfile(phone: '   ');
+
+      expect(result.isFailure, true);
+      expect(result.failureOrNull, isA<ValidationFailure>());
+      expect(result.failureOrNull!.message, 'Phone number cannot be empty.');
     });
 
     test('UpdateProfile use case forwards call to repository', () async {
