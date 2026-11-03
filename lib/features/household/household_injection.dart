@@ -14,6 +14,10 @@ import 'package:changa_app/features/household/domain/usecases/remove_member.dart
 import 'package:changa_app/features/household/domain/usecases/transfer_admin.dart';
 import 'package:changa_app/features/household/domain/usecases/watch_household.dart';
 import 'package:changa_app/features/household/domain/usecases/watch_members.dart';
+import 'package:changa_app/features/household/presentation/cubit/create_household_cubit.dart';
+import 'package:changa_app/features/household/presentation/cubit/household_cubit.dart';
+import 'package:changa_app/features/household/presentation/cubit/join_household_cubit.dart';
+import 'package:changa_app/features/profile/domain/usecases/get_users_by_ids.dart';
 
 void initHousehold(GetIt sl) {
   // Data sources
@@ -71,5 +75,37 @@ void initHousehold(GetIt sl) {
   }
   if (!sl.isRegistered<WatchMembers>()) {
     sl.registerLazySingleton(() => WatchMembers(sl<HouseholdRepository>()));
+  }
+
+  // Cubits
+  if (!sl.isRegistered<HouseholdCubit>()) {
+    sl.registerLazySingleton<HouseholdCubit>(
+      () => HouseholdCubit(
+        watchHousehold: sl<WatchHousehold>(),
+        watchMembers: sl<WatchMembers>(),
+        getUsersByIds: sl.isRegistered<GetUsersByIds>()
+            ? sl<GetUsersByIds>()
+            : null,
+        firestore: sl.isRegistered<FirebaseFirestore>()
+            ? sl<FirebaseFirestore>()
+            : FirebaseFirestore.instance,
+        firebaseAuth: sl.isRegistered<FirebaseAuth>()
+            ? sl<FirebaseAuth>()
+            : FirebaseAuth.instance,
+      ),
+    );
+  }
+  if (!sl.isRegistered<CreateHouseholdCubit>()) {
+    sl.registerFactory<CreateHouseholdCubit>(
+      () => CreateHouseholdCubit(createHousehold: sl<CreateHousehold>()),
+    );
+  }
+  if (!sl.isRegistered<JoinHouseholdCubit>()) {
+    sl.registerFactory<JoinHouseholdCubit>(
+      () => JoinHouseholdCubit(
+        previewHouseholdByPin: sl<PreviewHouseholdByPin>(),
+        joinHousehold: sl<JoinHousehold>(),
+      ),
+    );
   }
 }
