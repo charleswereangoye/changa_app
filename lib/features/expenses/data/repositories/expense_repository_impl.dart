@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:changa_app/core/error/failures.dart';
 import 'package:changa_app/core/error/result.dart';
 import 'package:changa_app/features/expenses/data/datasources/expense_remote_datasource.dart';
+import 'package:changa_app/features/debts/domain/entities/debt.dart';
 import 'package:changa_app/features/expenses/domain/entities/expense.dart';
 import 'package:changa_app/features/expenses/domain/entities/new_expense_input.dart';
 import 'package:changa_app/features/expenses/domain/logic/split_calculator.dart';
@@ -34,6 +35,17 @@ class ExpenseRepositoryImpl implements ExpenseRepository {
   @override
   Stream<List<Expense>> watchExpenses(String householdId) {
     return _remote.watchExpenses(householdId);
+  }
+
+  @override
+  Stream<List<Debt>> watchExpenseDebts({
+    required String householdId,
+    required String expenseId,
+  }) {
+    return _remote.watchExpenseDebts(
+      householdId: householdId,
+      expenseId: expenseId,
+    );
   }
 
   @override

@@ -1,13 +1,18 @@
 // Owner: C - Person C (Expenses, Dashboard, Documentation)
 // Description: Cubit managing Expense Details modal and deletion
 
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'package:changa_app/core/error/failures.dart';
+import 'package:changa_app/features/debts/domain/entities/debt.dart';
 import 'package:changa_app/features/expenses/domain/entities/expense.dart';
+import 'package:changa_app/features/expenses/domain/logic/expense_shares.dart';
 import 'package:changa_app/features/expenses/domain/usecases/delete_expense.dart';
 import 'package:changa_app/features/expenses/domain/usecases/update_expense_note.dart';
+import 'package:changa_app/features/expenses/domain/usecases/watch_expense_debts.dart';
 
 part 'expense_detail_state.dart';
 
@@ -15,6 +20,7 @@ class ExpenseDetailCubit extends Cubit<ExpenseDetailState> {
   ExpenseDetailCubit({
     required this._updateExpenseNote,
     required this._deleteExpense,
+    required this._watchExpenseDebts,
     required this._householdId,
     required Expense expense,
     required String currentUid,
@@ -23,11 +29,42 @@ class ExpenseDetailCubit extends Cubit<ExpenseDetailState> {
            expense: expense,
            canManage: expense.paidByUid == currentUid,
          ),
-       );
+       ) {
+    _listenToDebts(expense.id);
+  }
 
   final UpdateExpenseNote _updateExpenseNote;
   final DeleteExpense _deleteExpense;
+  final WatchExpenseDebts _watchExpenseDebts;
   final String _householdId;
+
+  StreamSubscription<List<Debt>>? _debtsSubscription;
+
+  void _listenToDebts(String expenseId) {
+    try {
+      _debtsSubscription =
+          _watchExpenseDebts(
+            householdId: _householdId,
+            expenseId: expenseId,
+          ).listen(
+            (debts) {
+              if (isClosed) return;
+              emit(
+                state.copyWith(
+                  debtsStatus: ExpenseDebtsStatus.ready,
+                  debts: List<Debt>.unmodifiable(debts),
+                ),
+              );
+            },
+            onError: (Object error, StackTrace stackTrace) {
+              if (isClosed) return;
+              emit(state.copyWith(debtsStatus: ExpenseDebtsStatus.failed));
+            },
+          );
+    } catch (_) {
+      emit(state.copyWith(debtsStatus: ExpenseDebtsStatus.failed));
+    }
+  }
 
   void startEdit() {
     if (!state.canManage || state.isBusy || state.isEditing) return;
@@ -106,9 +143,10 @@ class ExpenseDetailCubit extends Cubit<ExpenseDetailState> {
   }
 
   Future<void> delete() async {
-    if (!state.canManage ||
-        state.isBusy ||
-        state.status == ExpenseDetailStatus.deleted) {
+    // The button is disabled in these cases too. This guard keeps a stray
+    // call from reaching the data layer; the data layer still checks again
+    // inside its transaction in case a payment lands at the same moment.
+    if (!state.canDelete || state.status == ExpenseDetailStatus.deleted) {
       return;
     }
 
@@ -133,5 +171,12 @@ class ExpenseDetailCubit extends Cubit<ExpenseDetailState> {
     emit(
       state.copyWith(status: ExpenseDetailStatus.deleted, clearFailure: true),
     );
+  }
+
+  @override
+  Future<void> close() async {
+    await _debtsSubscription?.cancel();
+    _debtsSubscription = null;
+    return super.close();
   }
 }

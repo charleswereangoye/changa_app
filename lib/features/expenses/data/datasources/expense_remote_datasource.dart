@@ -10,6 +10,7 @@ import 'package:changa_app/core/error/failures.dart';
 import 'package:changa_app/features/activity/data/activity_writer.dart';
 import 'package:changa_app/features/activity/domain/entities/activity.dart';
 import 'package:changa_app/features/debts/domain/entities/debt_status.dart';
+import 'package:changa_app/features/debts/data/models/debt_model.dart';
 import 'package:changa_app/features/expenses/data/models/expense_model.dart';
 import 'package:changa_app/features/expenses/domain/entities/new_expense_input.dart';
 import 'package:changa_app/features/expenses/domain/logic/apply_credits.dart';
@@ -296,6 +297,18 @@ class ExpenseRemoteDataSource {
         .map(
           (snapshot) => snapshot.docs.map(ExpenseModel.fromFirestore).toList(),
         );
+  }
+
+  /// The debts created by one expense.
+  Stream<List<DebtModel>> watchExpenseDebts({
+    required String householdId,
+    required String expenseId,
+  }) {
+    return _firestore
+        .collection(FirestorePaths.debts(householdId))
+        .where(DebtFields.expenseId, isEqualTo: expenseId)
+        .snapshots()
+        .map((snapshot) => snapshot.docs.map(DebtModel.fromFirestore).toList());
   }
 
   String _requireUid() {

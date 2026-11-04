@@ -6,33 +6,44 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:intl/intl.dart';
 
+import 'package:changa_app/core/enums/settlement_method.dart';
 import 'package:changa_app/core/theme/app_colors.dart';
 import 'package:changa_app/core/theme/app_spacing.dart';
 import 'package:changa_app/core/theme/app_text_styles.dart';
+import 'package:changa_app/core/utils/currency_formatter.dart';
 import 'package:changa_app/core/widgets/app_snackbar.dart';
+import 'package:changa_app/core/widgets/member_avatar.dart';
 import 'package:changa_app/core/widgets/money_text.dart';
 import 'package:changa_app/core/widgets/primary_button.dart';
 import 'package:changa_app/features/expenses/domain/entities/expense.dart';
 import 'package:changa_app/features/expenses/domain/entities/split_type.dart';
+import 'package:changa_app/features/expenses/domain/logic/expense_shares.dart';
 import 'package:changa_app/features/expenses/domain/usecases/delete_expense.dart';
 import 'package:changa_app/features/expenses/domain/usecases/update_expense_note.dart';
+import 'package:changa_app/features/expenses/domain/usecases/watch_expense_debts.dart';
 import 'package:changa_app/features/expenses/presentation/cubit/expense_detail_cubit.dart';
 import 'package:changa_app/features/expenses/presentation/widgets/category_chips.dart';
 
 /// The content of the Expense Details bottom sheet. It needs an
 /// [ExpenseDetailCubit] above it; [ExpenseDetailSheet.show] creates one.
 class ExpenseDetailSheet extends StatelessWidget {
-  const ExpenseDetailSheet({super.key, this.payerName});
+  const ExpenseDetailSheet({
+    super.key,
+    required this.currentUid,
+    this.names = const {},
+  });
 
-  /// Shown when someone else paid. The payer sees "You".
-  final String? payerName;
+  final String currentUid;
+
+  /// uid to display name. Unknown people show as "Housemate".
+  final Map<String, String> names;
 
   static Future<void> show(
     BuildContext context, {
     required String householdId,
     required String currentUid,
     required Expense expense,
-    String? payerName,
+    Map<String, String> names = const {},
   }) {
     return showModalBottomSheet<void>(
       context: context,
@@ -44,13 +55,19 @@ class ExpenseDetailSheet extends StatelessWidget {
         create: (_) => ExpenseDetailCubit(
           updateExpenseNote: GetIt.instance<UpdateExpenseNote>(),
           deleteExpense: GetIt.instance<DeleteExpense>(),
+          watchExpenseDebts: GetIt.instance<WatchExpenseDebts>(),
           householdId: householdId,
           expense: expense,
           currentUid: currentUid,
         ),
-        child: ExpenseDetailSheet(payerName: payerName),
+        child: ExpenseDetailSheet(currentUid: currentUid, names: names),
       ),
     );
+  }
+
+  String _nameOf(String uid) {
+    if (uid == currentUid) return 'You';
+    return names[uid] ?? 'Housemate';
   }
 
   void _onChange(BuildContext context, ExpenseDetailState state) {
@@ -113,7 +130,6 @@ class ExpenseDetailSheet extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<ExpenseDetailCubit>();
         final expense = state.expense;
-        final paidBy = state.canManage ? 'You' : (payerName ?? 'A housemate');
 
         return PopScope(
           canPop: !state.isBusy,
@@ -173,7 +189,10 @@ class ExpenseDetailSheet extends StatelessWidget {
                     label: 'Category',
                     value: CategoryChips.label(expense.category),
                   ),
-                  _DetailRow(label: 'Paid by', value: paidBy),
+                  _DetailRow(
+                    label: 'Paid by',
+                    value: _nameOf(expense.paidByUid),
+                  ),
                   _DetailRow(
                     label: 'Split',
                     value: _splitLabel(expense.splitType),
@@ -184,6 +203,10 @@ class ExpenseDetailSheet extends StatelessWidget {
                         .format(expense.createdAt),
                   ),
                   if (!state.isEditing) ...[
+                    const SizedBox(height: AppSpacing.md),
+                    const Text('Who pays what', style: AppTextStyles.bodyLarge),
+                    const SizedBox(height: AppSpacing.xs),
+                    _Shares(state: state, nameOf: _nameOf),
                     const SizedBox(height: AppSpacing.md),
                     Text('Note', style: AppTextStyles.bodySmall),
                     const SizedBox(height: AppSpacing.xs),
@@ -224,9 +247,9 @@ class ExpenseDetailSheet extends StatelessWidget {
                     Center(
                       child: TextButton(
                         key: const Key('detail-delete'),
-                        onPressed: state.isBusy
-                            ? null
-                            : () => _confirmDelete(context),
+                        onPressed: state.canDelete
+                            ? () => _confirmDelete(context)
+                            : null,
                         style: TextButton.styleFrom(
                           foregroundColor: AppColors.sunglo,
                         ),
@@ -237,6 +260,20 @@ class ExpenseDetailSheet extends StatelessWidget {
                         ),
                       ),
                     ),
+                    if (state.deleteBlockedReason != null)
+                      Text(
+                        state.deleteBlockedReason!,
+                        key: const Key('detail-delete-blocked'),
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.bodySmall,
+                      )
+                    else if (state.debtsStatus == ExpenseDebtsStatus.loading)
+                      Text(
+                        'Checking payments...',
+                        key: const Key('detail-delete-checking'),
+                        textAlign: TextAlign.center,
+                        style: AppTextStyles.bodySmall,
+                      ),
                   ],
                 ],
               ),
@@ -268,6 +305,112 @@ class _DetailRow extends StatelessWidget {
               textAlign: TextAlign.end,
               style: AppTextStyles.bodyMedium,
             ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Shares extends StatelessWidget {
+  const _Shares({required this.state, required this.nameOf});
+
+  final ExpenseDetailState state;
+  final String Function(String uid) nameOf;
+
+  @override
+  Widget build(BuildContext context) {
+    return switch (state.debtsStatus) {
+      ExpenseDebtsStatus.loading => const Padding(
+        key: Key('shares-loading'),
+        padding: EdgeInsets.all(AppSpacing.md),
+        child: Center(
+          child: SizedBox.square(
+            dimension: 20,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      ),
+      ExpenseDebtsStatus.failed => const Text(
+        "Couldn't load who has paid yet.",
+        key: Key('shares-failed'),
+        style: AppTextStyles.bodyMedium,
+      ),
+      ExpenseDebtsStatus.ready => Column(
+        children: [
+          for (final share in state.shares)
+            _ShareRow(share: share, name: nameOf(share.uid)),
+        ],
+      ),
+    };
+  }
+}
+
+class _ShareRow extends StatelessWidget {
+  const _ShareRow({required this.share, required this.name});
+
+  final ExpenseShare share;
+  final String name;
+
+  static String _methodLabel(SettlementMethod? method) => switch (method) {
+    SettlementMethod.momo => 'Mobile Money',
+    SettlementMethod.cash => 'Cash',
+    SettlementMethod.bank => 'Bank',
+    SettlementMethod.credits => 'credits',
+    null => '',
+  };
+
+  String get _statusText => switch (share.payment) {
+    SharePayment.payer => 'Paid the bill',
+    SharePayment.pending => 'Pending',
+    SharePayment.paid =>
+      share.method == null ? 'Paid' : 'Paid with ${_methodLabel(share.method)}',
+    SharePayment.coveredByCredits => 'Covered by credits',
+  };
+
+  Color get _statusColor => switch (share.payment) {
+    SharePayment.payer => AppColors.edward,
+    SharePayment.pending => AppColors.sunglo,
+    SharePayment.paid => AppColors.leafGreen,
+    SharePayment.coveredByCredits => AppColors.leafGreen,
+  };
+
+  @override
+  Widget build(BuildContext context) {
+    final showCredits =
+        share.payment == SharePayment.pending && share.creditsApplied > 0;
+
+    return Padding(
+      key: Key('share-${share.uid}'),
+      padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
+      child: Row(
+        children: [
+          MemberAvatar(uid: share.uid, name: name, radius: 16),
+          const SizedBox(width: AppSpacing.md),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name, style: AppTextStyles.bodyMedium),
+                Text(
+                  _statusText,
+                  key: Key('share-status-${share.uid}'),
+                  style: AppTextStyles.bodySmall.copyWith(color: _statusColor),
+                ),
+              ],
+            ),
+          ),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              MoneyText(share.amount, style: AppTextStyles.label),
+              if (showCredits)
+                Text(
+                  '${CurrencyFormatter.format(share.amountDue)} after '
+                  '${share.creditsApplied} pts',
+                  style: AppTextStyles.bodySmall,
+                ),
+            ],
           ),
         ],
       ),
