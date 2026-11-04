@@ -27,6 +27,14 @@ typedef WatchRecentActivityFn = Stream<List<Activity>> Function(
   String householdId,
 );
 
+/// Balances and activity each load on their own.
+///
+/// The Harmony Score needs three sources: all pending debts (an old unpaid
+/// debt must still count), debts from the last 30 days (recent settled ones)
+/// and chores. If ANY of them fails, Harmony is reported as failed
+/// (unavailable) instead of a score built from the sources that did load,
+/// because that could show a perfect 100 for a house with unpaid bills.
+/// The next successful event from the failed source brings it back.
 class DashboardCubit extends Cubit<DashboardState> {
   DashboardCubit({
     required this._watchPendingDebts,
@@ -52,11 +60,13 @@ class DashboardCubit extends Cubit<DashboardState> {
   String? _householdId;
   String? _uid;
 
-  // The Harmony Score needs both of these, so keep the latest of each.
-  List<Chore>? _chores;
+  // Latest value from each Harmony source (null until it first emits).
+  List<Debt>? _pendingDebts;
   List<Debt>? _debtsSince;
+  List<Chore>? _chores;
+  bool _pendingFailed = false;
+  bool _sinceFailed = false;
   bool _choresFailed = false;
-  bool _debtsFailed = false;
 
   /// Call when the signed-in person or their household changes. Pass null
   /// for either when there is no household yet or after sign-out.
@@ -82,10 +92,12 @@ class DashboardCubit extends Cubit<DashboardState> {
     final version = ++_session;
     _householdId = nextHousehold;
     _uid = nextUid;
-    _chores = null;
+    _pendingDebts = null;
     _debtsSince = null;
+    _chores = null;
+    _pendingFailed = false;
+    _sinceFailed = false;
     _choresFailed = false;
-    _debtsFailed = false;
 
     await _cancelAll();
     if (!_isCurrent(version)) return;
@@ -101,32 +113,42 @@ class DashboardCubit extends Cubit<DashboardState> {
       const Duration(days: AppConstants.harmonyDebtWindowDays),
     );
 
+    // All pending debts: drives the balance AND the Harmony payment score.
     _listen<List<Debt>>(
       version,
       () => _watchPendingDebts(nextHousehold),
-      (debts) => emit(
-        state.copyWith(
-          balanceStatus: DashboardSection.ready,
-          balance: _balanceCalculator.summarize(
-            pendingDebts: debts,
-            meUid: nextUid,
+      (debts) {
+        _pendingDebts = debts;
+        _pendingFailed = false;
+        emit(
+          state.copyWith(
+            balanceStatus: DashboardSection.ready,
+            balance: _balanceCalculator.summarize(
+              pendingDebts: debts,
+              meUid: nextUid,
+            ),
           ),
-        ),
-      ),
-      (_) => emit(state.copyWith(balanceStatus: DashboardSection.failed)),
+        );
+        _recomputeHarmony();
+      },
+      (_) {
+        _pendingFailed = true;
+        emit(state.copyWith(balanceStatus: DashboardSection.failed));
+        _recomputeHarmony();
+      },
     );
 
+    // Recent debts, including settled ones, for the payment score.
     _listen<List<Debt>>(
       version,
       () => _watchDebtsSince(nextHousehold, since),
       (debts) {
         _debtsSince = debts;
-        _debtsFailed = false;
+        _sinceFailed = false;
         _recomputeHarmony();
       },
       (_) {
-        _debtsSince = const [];
-        _debtsFailed = true;
+        _sinceFailed = true;
         _recomputeHarmony();
       },
     );
@@ -140,7 +162,6 @@ class DashboardCubit extends Cubit<DashboardState> {
         _recomputeHarmony();
       },
       (_) {
-        _chores = const [];
         _choresFailed = true;
         _recomputeHarmony();
       },
@@ -185,12 +206,23 @@ class DashboardCubit extends Cubit<DashboardState> {
     }
   }
 
-  void _recomputeHarmony() {
-    final debts = _debtsSince;
-    final chores = _chores;
-    if (debts == null || chores == null) return;
+  /// Pending debts plus recent debts, one entry per debt ID. If both streams
+  /// carry the same debt, a settled copy wins because settling cannot be
+  /// undone and one stream may be a moment behind the other.
+  static List<Debt> _mergeDebts(List<Debt> pending, List<Debt> recent) {
+    final byId = <String, Debt>{for (final debt in pending) debt.id: debt};
+    for (final debt in recent) {
+      final existing = byId[debt.id];
+      if (existing == null || !existing.isSettled) {
+        byId[debt.id] = debt;
+      }
+    }
+    return byId.values.toList();
+  }
 
-    if (_debtsFailed && _choresFailed) {
+  void _recomputeHarmony() {
+    // A failed source means the score would be incomplete: unavailable.
+    if (_pendingFailed || _sinceFailed || _choresFailed) {
       emit(
         state.copyWith(
           harmonyStatus: DashboardSection.failed,
@@ -200,9 +232,25 @@ class DashboardCubit extends Cubit<DashboardState> {
       return;
     }
 
+    final pending = _pendingDebts;
+    final recent = _debtsSince;
+    final chores = _chores;
+    if (pending == null || recent == null || chores == null) {
+      // A source recovered but another one has not loaded yet.
+      if (state.harmonyStatus == DashboardSection.failed) {
+        emit(
+          state.copyWith(
+            harmonyStatus: DashboardSection.loading,
+            clearHarmony: true,
+          ),
+        );
+      }
+      return;
+    }
+
     final score = _calculateHarmony(
       chores: chores,
-      debts: debts,
+      debts: _mergeDebts(pending, recent),
       now: _clock(),
     );
     emit(

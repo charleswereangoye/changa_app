@@ -3,6 +3,7 @@
 
 import 'dart:async';
 
+import 'package:changa_app/core/enums/settlement_method.dart';
 import 'package:changa_app/features/activity/domain/entities/activity.dart';
 import 'package:changa_app/features/chores/domain/entities/chore.dart';
 import 'package:changa_app/features/dashboard/domain/entities/harmony_score.dart';
@@ -13,15 +14,26 @@ import 'package:flutter_test/flutter_test.dart';
 
 final _now = DateTime(2026, 11, 2, 12);
 
-Debt _debt(String debtor, String creditor, int amount) => Debt(
-  id: '$debtor-$creditor-$amount',
+Debt _debt(
+  String debtor,
+  String creditor,
+  int amount, {
+  String? id,
+  DateTime? created,
+  DebtStatus status = DebtStatus.pending,
+  DateTime? settledAt,
+  SettlementMethod? method,
+}) => Debt(
+  id: id ?? '$debtor-$creditor-$amount',
   expenseId: 'e1',
   debtorUid: debtor,
   creditorUid: creditor,
   amount: amount,
   creditsApplied: 0,
-  status: DebtStatus.pending,
-  createdAt: DateTime(2026, 11, 1),
+  status: status,
+  settlementMethod: method,
+  settledAt: settledAt,
+  createdAt: created ?? DateTime(2026, 11, 1),
 );
 
 Chore _doneOnTime() => Chore(
@@ -66,6 +78,18 @@ void main() {
       watchRecentActivity: watchActivity ?? (_) => activity.stream,
       clock: () => _now,
     );
+  }
+
+  /// Gives every Harmony source its first value.
+  Future<void> loadAll({
+    List<Debt> pendingDebts = const [],
+    List<Debt> recentDebts = const [],
+    List<Chore> choreList = const [],
+  }) async {
+    pending.add(pendingDebts);
+    debtsSince.add(recentDebts);
+    chores.add(choreList);
+    await pumpEventQueue();
   }
 
   setUp(() {
@@ -115,23 +139,22 @@ void main() {
     expect(balance.byMember, {'chloe': 4000, 'dan': -1500});
   });
 
-  test('harmony is empty (a dash) when there is nothing to judge', () async {
+  test('harmony is empty (a dash) when there is genuinely no data', () async {
     await cubit.start(householdId: 'h1', uid: 'amara');
-    debtsSince.add(const []);
-    chores.add(const []);
-    await pumpEventQueue();
+    await loadAll();
 
     expect(cubit.state.harmonyStatus, DashboardSection.ready);
     expect(cubit.state.harmony, isNull);
   });
 
-  test('harmony waits for both chores and debts', () async {
+  test('harmony waits for all three sources', () async {
     await cubit.start(householdId: 'h1', uid: 'amara');
     chores.add([_doneOnTime()]);
+    debtsSince.add(const []);
     await pumpEventQueue();
     expect(cubit.state.harmonyStatus, DashboardSection.loading);
 
-    debtsSince.add(const []);
+    pending.add(const []);
     await pumpEventQueue();
     expect(cubit.state.harmonyStatus, DashboardSection.ready);
     expect(cubit.state.harmony!.value, 100);
@@ -147,27 +170,227 @@ void main() {
     expect(cubit.state.recentActivity.map((a) => a.id), ['a1', 'a2']);
   });
 
-  test('a failing chores stream still lets payments score the house', () async {
-    await cubit.start(householdId: 'h1', uid: 'amara');
-    pending.add(const []);
-    chores.addError(Exception('chores not ready'));
-    debtsSince.add([_debt('chloe', 'amara', 4000)]);
-    await pumpEventQueue();
+  group('combining pending and recent debts', () {
+    test('a 40-day-old unpaid debt still reduces the score', () async {
+      // Older than the 30-day window, so only the pending stream has it.
+      final old = _debt(
+        'chloe',
+        'amara',
+        4000,
+        id: 'old',
+        created: _now.subtract(const Duration(days: 40)),
+      );
 
-    expect(cubit.state.balanceStatus, DashboardSection.ready);
-    expect(cubit.state.harmonyStatus, DashboardSection.ready);
-    expect(cubit.state.harmony!.choreScore, isNull);
-    expect(cubit.state.harmony!.paymentScore, 100);
+      await cubit.start(householdId: 'h1', uid: 'amara');
+      await loadAll(pendingDebts: [old]);
+
+      final harmony = cubit.state.harmony!;
+      expect(harmony.paymentScore, 0);
+      expect(harmony.value, 0);
+      expect(harmony.tier, HarmonyTier.needsAttention);
+      expect(harmony.choreScore, isNull);
+    });
+
+    test('the same debt in both streams is counted once', () async {
+      final unpaid = _debt(
+        'chloe',
+        'amara',
+        4000,
+        id: 'd1',
+        created: DateTime(2026, 10, 23, 12), // 10 days old, still unpaid
+      );
+      final paidOnTime = _debt(
+        'dan',
+        'amara',
+        2000,
+        id: 'd2',
+        created: DateTime(2026, 10, 30),
+        status: DebtStatus.settled,
+        settledAt: DateTime(2026, 10, 31),
+        method: SettlementMethod.cash,
+      );
+
+      await cubit.start(householdId: 'h1', uid: 'amara');
+      await loadAll(pendingDebts: [unpaid], recentDebts: [unpaid, paidOnTime]);
+
+      // Two debts, one healthy: 50. Counting d1 twice would give 33.
+      expect(cubit.state.harmony!.paymentScore, 50);
+    });
+
+    test('a settled copy wins when both streams carry the debt', () async {
+      final stale = _debt(
+        'chloe',
+        'amara',
+        4000,
+        id: 'd1',
+        created: DateTime(2026, 10, 23, 12),
+      );
+      final settled = _debt(
+        'chloe',
+        'amara',
+        4000,
+        id: 'd1',
+        created: DateTime(2026, 10, 23, 12),
+        status: DebtStatus.settled,
+        settledAt: DateTime(2026, 10, 24),
+        method: SettlementMethod.cash,
+      );
+
+      await cubit.start(householdId: 'h1', uid: 'amara');
+      await loadAll(pendingDebts: [stale], recentDebts: [settled]);
+
+      expect(cubit.state.harmony!.paymentScore, 100);
+    });
+
+    test('recomputes when either stream changes', () async {
+      final old = _debt(
+        'chloe',
+        'amara',
+        4000,
+        id: 'old',
+        created: _now.subtract(const Duration(days: 40)),
+      );
+      final paidOnTime = _debt(
+        'dan',
+        'amara',
+        2000,
+        id: 'd2',
+        created: DateTime(2026, 10, 30),
+        status: DebtStatus.settled,
+        settledAt: DateTime(2026, 10, 31),
+        method: SettlementMethod.cash,
+      );
+
+      await cubit.start(householdId: 'h1', uid: 'amara');
+      await loadAll();
+      expect(cubit.state.harmony, isNull);
+
+      pending.add([old]);
+      await pumpEventQueue();
+      expect(cubit.state.harmony!.value, 0);
+
+      debtsSince.add([paidOnTime]);
+      await pumpEventQueue();
+      expect(cubit.state.harmony!.value, 50);
+
+      pending.add(const []);
+      await pumpEventQueue();
+      expect(cubit.state.harmony!.value, 100);
+    });
   });
 
-  test('harmony fails only when both of its sources fail', () async {
-    await cubit.start(householdId: 'h1', uid: 'amara');
-    chores.addError(Exception('chores'));
-    debtsSince.addError(Exception('debts'));
-    await pumpEventQueue();
+  group('unavailable data is not the same as empty data', () {
+    test(
+      'chores failing makes Harmony unavailable, then it recovers',
+      () async {
+        await cubit.start(householdId: 'h1', uid: 'amara');
+        pending.add(const []);
+        debtsSince.add([_debt('chloe', 'amara', 4000)]);
+        activity.add([_activity('a1')]);
+        chores.addError(Exception('chores down'));
+        await pumpEventQueue();
 
-    expect(cubit.state.harmonyStatus, DashboardSection.failed);
-    expect(cubit.state.harmony, isNull);
+        // No score from the remaining sources (it would have been 100).
+        expect(cubit.state.harmonyStatus, DashboardSection.failed);
+        expect(cubit.state.harmony, isNull);
+        // Everything else keeps working.
+        expect(cubit.state.balanceStatus, DashboardSection.ready);
+        expect(cubit.state.activityStatus, DashboardSection.ready);
+        expect(cubit.state.recentActivity, hasLength(1));
+
+        chores.add(const []);
+        await pumpEventQueue();
+        expect(cubit.state.harmonyStatus, DashboardSection.ready);
+        expect(cubit.state.harmony!.paymentScore, 100);
+      },
+    );
+
+    test(
+      'the recent-debts stream failing is unavailable, then recovers',
+      () async {
+        await cubit.start(householdId: 'h1', uid: 'amara');
+        await loadAll();
+        expect(cubit.state.harmonyStatus, DashboardSection.ready);
+
+        debtsSince.addError(Exception('debts down'));
+        await pumpEventQueue();
+        expect(cubit.state.harmonyStatus, DashboardSection.failed);
+        expect(cubit.state.harmony, isNull);
+        expect(cubit.state.balanceStatus, DashboardSection.ready);
+
+        debtsSince.add(const []);
+        await pumpEventQueue();
+        expect(cubit.state.harmonyStatus, DashboardSection.ready);
+      },
+    );
+
+    test(
+      'pending debts failing hits balance and Harmony, not activity',
+      () async {
+        await cubit.start(householdId: 'h1', uid: 'amara');
+        await loadAll();
+
+        pending.addError(Exception('pending down'));
+        activity.add([_activity('a1')]);
+        await pumpEventQueue();
+
+        expect(cubit.state.balanceStatus, DashboardSection.failed);
+        expect(cubit.state.harmonyStatus, DashboardSection.failed);
+        expect(cubit.state.activityStatus, DashboardSection.ready);
+
+        pending.add([_debt('chloe', 'amara', 4000)]);
+        await pumpEventQueue();
+
+        expect(cubit.state.balanceStatus, DashboardSection.ready);
+        expect(cubit.state.balance!.youAreOwed, 4000);
+        expect(cubit.state.harmonyStatus, DashboardSection.ready);
+        expect(cubit.state.harmony!.paymentScore, 100);
+      },
+    );
+
+    test(
+      'a recovered source goes back to loading until the rest arrive',
+      () async {
+        await cubit.start(householdId: 'h1', uid: 'amara');
+        pending.addError(Exception('pending down'));
+        await pumpEventQueue();
+        expect(cubit.state.harmonyStatus, DashboardSection.failed);
+
+        pending.add(const []);
+        await pumpEventQueue();
+        expect(cubit.state.harmonyStatus, DashboardSection.loading);
+
+        debtsSince.add(const []);
+        chores.add(const []);
+        await pumpEventQueue();
+        expect(cubit.state.harmonyStatus, DashboardSection.ready);
+      },
+    );
+
+    test(
+      'a chores source that throws on open is unavailable until retry',
+      () async {
+        var choresBroken = true;
+        await cubit.close();
+        cubit = build(
+          watchChores: (_) {
+            if (choresBroken) throw StateError('chores not ready');
+            return chores.stream;
+          },
+        );
+
+        await cubit.start(householdId: 'h1', uid: 'amara');
+        pending.add(const []);
+        debtsSince.add(const []);
+        await pumpEventQueue();
+        expect(cubit.state.harmonyStatus, DashboardSection.failed);
+
+        choresBroken = false;
+        await cubit.retry();
+        await loadAll();
+        expect(cubit.state.harmonyStatus, DashboardSection.ready);
+      },
+    );
   });
 
   test('a source that throws on open only fails its own section', () async {
