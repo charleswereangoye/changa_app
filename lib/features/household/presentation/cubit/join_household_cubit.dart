@@ -2,7 +2,6 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:changa_app/features/household/domain/entities/household.dart';
 import 'package:changa_app/features/household/domain/entities/household_preview.dart';
 import 'package:changa_app/features/household/domain/usecases/join_household.dart';
@@ -13,34 +12,47 @@ part 'join_household_state.dart';
 class JoinHouseholdCubit extends Cubit<JoinHouseholdState> {
   static final RegExp _pinRegex = RegExp(r'^\d{6}$');
 
-  final PreviewHouseholdByPin? _previewHouseholdByPin;
-  final JoinHousehold? _joinHousehold;
+  final PreviewHouseholdByPin? previewHouseholdByPin;
+  final JoinHousehold? joinHouseholdUseCase;
 
-  JoinHouseholdCubit({this._previewHouseholdByPin, this._joinHousehold})
-    : super(const JoinHouseholdStateInitial());
+  int _activeRequestId = 0;
 
-  PreviewHouseholdByPin? _resolvePreviewUseCase() {
-    if (_previewHouseholdByPin != null) return _previewHouseholdByPin;
-    final sl = GetIt.instance;
-    if (sl.isRegistered<PreviewHouseholdByPin>()) {
-      return sl<PreviewHouseholdByPin>();
+  JoinHouseholdCubit({this.previewHouseholdByPin, JoinHousehold? joinHousehold})
+    : joinHouseholdUseCase = joinHousehold,
+      super(const JoinHouseholdStateInitial());
+
+  /// Invalidates any active preview or in-flight lookup whenever the PIN input
+  /// changes, while ignoring edits if a join request is already in-flight.
+  void onPinChanged(String rawPin) {
+    if (state is JoinHouseholdStateJoining || isClosed) return;
+
+    final cleanPin = rawPin.trim();
+    if (cleanPin == state.pin && state is JoinHouseholdStateInitial) {
+      return;
     }
-    return null;
-  }
 
-  JoinHousehold? _resolveJoinUseCase() {
-    if (_joinHousehold != null) return _joinHousehold;
-    final sl = GetIt.instance;
-    if (sl.isRegistered<JoinHousehold>()) {
-      return sl<JoinHousehold>();
+    if (cleanPin.length == 6 &&
+        cleanPin == state.pin &&
+        (state is JoinHouseholdStatePreviewLoading ||
+            state is JoinHouseholdStatePreviewLoaded)) {
+      return;
     }
-    return null;
+
+    _activeRequestId++;
+    emit(JoinHouseholdStateInitial(pin: cleanPin));
   }
 
   /// Triggered when 6 digits are entered in `PinInput`.
   Future<void> onPinCompleted(String rawPin) async {
+    if (state is JoinHouseholdStateJoining || isClosed) return;
+
     final cleanPin = rawPin.trim();
+    if (state is JoinHouseholdStatePreviewLoading && state.pin == cleanPin) {
+      return;
+    }
+
     if (!_pinRegex.hasMatch(cleanPin)) {
+      _activeRequestId++;
       emit(
         JoinHouseholdStateError(
           pin: cleanPin,
@@ -50,8 +62,9 @@ class JoinHouseholdCubit extends Cubit<JoinHouseholdState> {
       return;
     }
 
-    final previewUseCase = _resolvePreviewUseCase();
+    final previewUseCase = previewHouseholdByPin;
     if (previewUseCase == null) {
+      _activeRequestId++;
       emit(
         JoinHouseholdStateError(
           pin: cleanPin,
@@ -61,9 +74,15 @@ class JoinHouseholdCubit extends Cubit<JoinHouseholdState> {
       return;
     }
 
+    final requestId = ++_activeRequestId;
     emit(JoinHouseholdStatePreviewLoading(pin: cleanPin));
 
     final result = await previewUseCase(cleanPin);
+
+    if (isClosed || requestId != _activeRequestId || state.pin != cleanPin) {
+      return;
+    }
+
     if (result.isSuccess && result.dataOrNull != null) {
       emit(
         JoinHouseholdStatePreviewLoaded(
@@ -83,8 +102,14 @@ class JoinHouseholdCubit extends Cubit<JoinHouseholdState> {
     }
   }
 
-  /// Joins the household for the currently previewed (or provided) 6-digit PIN.
+  /// Joins the household for the currently previewed 6-digit PIN.
   Future<void> joinHousehold([String? pinOverride]) async {
+    if (state is JoinHouseholdStateJoining ||
+        state is JoinHouseholdStatePreviewLoading ||
+        isClosed) {
+      return;
+    }
+
     final cleanPin = (pinOverride ?? state.pin).trim();
     if (!_pinRegex.hasMatch(cleanPin)) {
       emit(
@@ -97,7 +122,7 @@ class JoinHouseholdCubit extends Cubit<JoinHouseholdState> {
       return;
     }
 
-    final joinUseCase = _resolveJoinUseCase();
+    final joinUseCase = joinHouseholdUseCase;
     if (joinUseCase == null) {
       emit(
         JoinHouseholdStateError(
@@ -110,9 +135,13 @@ class JoinHouseholdCubit extends Cubit<JoinHouseholdState> {
     }
 
     final currentPreview = state.preview;
+    final requestId = ++_activeRequestId;
     emit(JoinHouseholdStateJoining(pin: cleanPin, preview: currentPreview));
 
     final result = await joinUseCase(cleanPin);
+
+    if (isClosed || requestId != _activeRequestId) return;
+
     if (result.isSuccess && result.dataOrNull != null) {
       emit(
         JoinHouseholdStateSuccess(
@@ -135,6 +164,8 @@ class JoinHouseholdCubit extends Cubit<JoinHouseholdState> {
   }
 
   void reset() {
+    if (state is JoinHouseholdStateJoining || isClosed) return;
+    _activeRequestId++;
     emit(const JoinHouseholdStateInitial());
   }
 }

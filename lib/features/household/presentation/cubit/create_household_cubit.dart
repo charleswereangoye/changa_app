@@ -2,7 +2,6 @@
 
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:get_it/get_it.dart';
 import 'package:changa_app/features/household/domain/entities/household.dart';
 import 'package:changa_app/features/household/domain/usecases/create_household.dart';
 
@@ -14,19 +13,10 @@ class CreateHouseholdCubit extends Cubit<CreateHouseholdState> {
   static const int minRoommates = 2;
   static const int maxRoommates = 10;
 
-  final CreateHousehold? _createHousehold;
+  final CreateHousehold? createHousehold;
 
-  CreateHouseholdCubit({this._createHousehold})
+  CreateHouseholdCubit({this.createHousehold})
     : super(const CreateHouseholdStateInitial());
-
-  CreateHousehold? _resolveUseCase() {
-    if (_createHousehold != null) return _createHousehold;
-    final sl = GetIt.instance;
-    if (sl.isRegistered<CreateHousehold>()) {
-      return sl<CreateHousehold>();
-    }
-    return null;
-  }
 
   static String? validateName(String? value) {
     final trimmed = value?.trim() ?? '';
@@ -47,6 +37,7 @@ class CreateHouseholdCubit extends Cubit<CreateHouseholdState> {
   }
 
   void nameChanged(String value) {
+    if (state is CreateHouseholdStateSubmitting || isClosed) return;
     emit(
       CreateHouseholdStateInitial(
         name: value,
@@ -57,6 +48,7 @@ class CreateHouseholdCubit extends Cubit<CreateHouseholdState> {
   }
 
   void typeChanged(HouseholdType type) {
+    if (state is CreateHouseholdStateSubmitting || isClosed) return;
     emit(
       CreateHouseholdStateInitial(
         name: state.name,
@@ -67,6 +59,7 @@ class CreateHouseholdCubit extends Cubit<CreateHouseholdState> {
   }
 
   void expectedMembersChanged(int count) {
+    if (state is CreateHouseholdStateSubmitting || isClosed) return;
     final clamped = count.clamp(minRoommates, maxRoommates);
     emit(
       CreateHouseholdStateInitial(
@@ -78,12 +71,14 @@ class CreateHouseholdCubit extends Cubit<CreateHouseholdState> {
   }
 
   void incrementMembers() {
+    if (state is CreateHouseholdStateSubmitting || isClosed) return;
     if (state.expectedMembers < maxRoommates) {
       expectedMembersChanged(state.expectedMembers + 1);
     }
   }
 
   void decrementMembers() {
+    if (state is CreateHouseholdStateSubmitting || isClosed) return;
     if (state.expectedMembers > minRoommates) {
       expectedMembersChanged(state.expectedMembers - 1);
     }
@@ -94,6 +89,8 @@ class CreateHouseholdCubit extends Cubit<CreateHouseholdState> {
     HouseholdType? type,
     int? expectedMembers,
   }) async {
+    if (state is CreateHouseholdStateSubmitting || isClosed) return;
+
     final targetName = (name ?? state.name).trim();
     final targetType = type ?? state.type;
     final targetMembers = expectedMembers ?? state.expectedMembers;
@@ -124,7 +121,7 @@ class CreateHouseholdCubit extends Cubit<CreateHouseholdState> {
       return;
     }
 
-    final useCase = _resolveUseCase();
+    final useCase = createHousehold;
     if (useCase == null) {
       emit(
         CreateHouseholdStateFailure(
@@ -150,6 +147,8 @@ class CreateHouseholdCubit extends Cubit<CreateHouseholdState> {
       type: targetType,
       expectedMembers: targetMembers,
     );
+
+    if (isClosed) return;
 
     if (result.isSuccess && result.dataOrNull != null) {
       emit(

@@ -20,7 +20,7 @@ abstract class JoinHouseholdState extends Equatable {
 }
 
 class JoinHouseholdStateInitial extends JoinHouseholdState {
-  const JoinHouseholdStateInitial() : super();
+  const JoinHouseholdStateInitial({super.pin = ''});
 }
 
 class JoinHouseholdStatePreviewLoading extends JoinHouseholdState {
