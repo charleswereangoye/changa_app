@@ -78,14 +78,24 @@ class _TypeChipItem extends StatelessWidget {
           borderRadius: BorderRadius.circular(999),
           child: SizedBox(
             height: 44,
-            child: Center(
-              child: Text(
-                label,
-                style: TextStyle(
-                  fontFamily: 'Poppins',
-                  fontSize: 13,
-                  fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
-                  color: isSelected ? AppColors.white : AppColors.sherwoodGreen,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8),
+              child: Center(
+                child: FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    label,
+                    style: TextStyle(
+                      fontFamily: 'Poppins',
+                      fontSize: 13,
+                      fontWeight: isSelected
+                          ? FontWeight.w600
+                          : FontWeight.w500,
+                      color: isSelected
+                          ? AppColors.white
+                          : AppColors.sherwoodGreen,
+                    ),
+                  ),
                 ),
               ),
             ),

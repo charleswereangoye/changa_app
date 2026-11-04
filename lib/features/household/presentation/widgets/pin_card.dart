@@ -10,7 +10,11 @@ class PinCard extends StatelessWidget {
   final String pin;
   final VoidCallback? onCopyPin;
 
-  const PinCard({super.key, this.pin = '000000', this.onCopyPin});
+  const PinCard({super.key, this.pin = '', this.onCopyPin});
+
+  static final RegExp _validPinRegex = RegExp(r'^\d{6}$');
+
+  bool get hasValidPin => _validPinRegex.hasMatch(pin.trim());
 
   /// Formats `"482916"` into `"482 916"` for share messages.
   static String formatPinWithSpace(String rawPin) {
@@ -24,15 +28,16 @@ class PinCard extends StatelessWidget {
   /// Formats `"482916"` into `"4 8 2   9 1 6"` for the visual display card.
   static String formatPinForDisplay(String rawPin) {
     final digits = rawPin.trim();
-    if (digits.length == 6) {
+    if (_validPinRegex.hasMatch(digits)) {
       final left = digits.substring(0, 3).split('').join(' ');
       final right = digits.substring(3).split('').join(' ');
       return '$left   $right';
     }
-    return digits;
+    return '— — —   — — —';
   }
 
   Future<void> _handleCopy(BuildContext context) async {
+    if (!hasValidPin) return;
     if (onCopyPin != null) {
       onCopyPin!();
       return;
@@ -45,11 +50,13 @@ class PinCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final enabled = hasValidPin;
+
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.xxl,
-        vertical: AppSpacing.xxl,
+        horizontal: AppSpacing.xl,
+        vertical: AppSpacing.xl,
       ),
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -76,31 +83,34 @@ class PinCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: AppSpacing.md),
-          Text(
-            formatPinForDisplay(pin),
-            textAlign: TextAlign.center,
-            style: const TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 32,
-              fontWeight: FontWeight.w700,
-              color: AppColors.sherwoodGreen,
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              formatPinForDisplay(pin),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 32,
+                fontWeight: FontWeight.w700,
+                color: enabled ? AppColors.sherwoodGreen : AppColors.edward,
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.md),
           TextButton.icon(
-            onPressed: () => _handleCopy(context),
-            icon: const Icon(
+            onPressed: enabled ? () => _handleCopy(context) : null,
+            icon: Icon(
               Icons.copy_rounded,
               size: 16,
-              color: AppColors.leafGreen,
+              color: enabled ? AppColors.leafGreen : AppColors.edward,
             ),
-            label: const Text(
+            label: Text(
               'Copy PIN',
               style: TextStyle(
                 fontFamily: 'Poppins',
                 fontSize: 13,
                 fontWeight: FontWeight.w600,
-                color: AppColors.leafGreen,
+                color: enabled ? AppColors.leafGreen : AppColors.edward,
               ),
             ),
           ),
