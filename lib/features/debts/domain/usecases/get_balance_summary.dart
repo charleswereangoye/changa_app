@@ -1,6 +1,3 @@
-// Owner: D - Person D
-// Description: Watches pending debts and calculates member balances.
-
 import '../entities/balance_summary.dart';
 import '../logic/balance_calculator.dart';
 import '../repositories/debt_repository.dart';
