@@ -11,6 +11,8 @@ import 'domain/usecases/settle_between.dart';
 import 'domain/usecases/watch_debts_between.dart';
 import 'domain/usecases/watch_debts_since.dart';
 import 'domain/usecases/watch_pending_debts.dart';
+import 'domain/usecases/get_balance_summary.dart';
+import 'presentation/cubit/balances_cubit.dart';
 
 final sl = GetIt.instance;
 
@@ -69,6 +71,18 @@ Future<void> initDebts() async {
   if (!sl.isRegistered<GetOutstandingBalance>()) {
     sl.registerLazySingleton<GetOutstandingBalance>(
       () => GetOutstandingBalance(sl<DebtRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<GetBalanceSummary>()) {
+    sl.registerLazySingleton<GetBalanceSummary>(
+      () => GetBalanceSummary(sl<DebtRepository>()),
+    );
+  }
+
+  if (!sl.isRegistered<BalancesCubit>()) {
+    sl.registerFactory<BalancesCubit>(
+      () => BalancesCubit(sl<GetBalanceSummary>()),
     );
   }
 }
