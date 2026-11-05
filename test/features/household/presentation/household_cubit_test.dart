@@ -397,6 +397,87 @@ void main() {
       },
     );
 
+    test('immediately clears Account A state when switching to Account B with delayed profile response', () async {
+      final userAController = StreamController<AppUser?>.broadcast();
+      final delayedUserBController = StreamController<AppUser?>.broadcast();
+      final secondHouseController = StreamController<Household?>.broadcast();
+      final secondMembersController =
+          StreamController<List<Member>>.broadcast();
+
+      when(() => mockWatchUser(adminUid))
+          .thenAnswer((_) => userAController.stream);
+      when(() => mockWatchUser(memberUid))
+          .thenAnswer((_) => delayedUserBController.stream);
+      when(() => mockWatchHousehold('house_456'))
+          .thenAnswer((_) => secondHouseController.stream);
+      when(() => mockWatchMembers('house_456'))
+          .thenAnswer((_) => secondMembersController.stream);
+      when(
+        () => mockGetUsersByIds(any()),
+      ).thenAnswer((_) async => Result.success([adminAppUser, memberAppUser]));
+
+      final cubit = HouseholdCubit(
+        watchHousehold: mockWatchHousehold,
+        watchMembers: mockWatchMembers,
+        getUsersByIds: mockGetUsersByIds,
+        watchUser: mockWatchUser,
+        authCubit: mockAuthCubit,
+      );
+
+      // 1. Load Account A (admin with 120 credits)
+      cubit.onAuthUserChanged(adminUid);
+      userAController.add(adminAppUser);
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+
+      householdController.add(testHousehold);
+      membersController.add(testMembers);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+
+      expect(cubit.state, isA<HouseholdStateLoaded>());
+      expect(cubit.state.household?.id, 'house_123');
+      expect(cubit.state.members, isNotEmpty);
+      expect(cubit.state.myCredits, 120);
+      expect(cubit.state.isAdmin, isTrue);
+
+      // 2. Switch directly to Account B while delaying B's profile stream
+      cubit.onAuthUserChanged(memberUid);
+
+      // Verify Account A's household, members, credits, and admin status disappear immediately
+      expect(cubit.state, isA<HouseholdStateLoading>());
+      expect(cubit.state.household, isNull);
+      expect(cubit.state.members, isEmpty);
+      expect(cubit.state.memberNames, isEmpty);
+      expect(cubit.state.currentMember, isNull);
+      expect(cubit.state.myCredits, 0);
+      expect(cubit.state.isAdmin, isFalse);
+
+      // 3. Deliver Account B's delayed profile response and verify B loads cleanly
+      delayedUserBController.add(memberAppUser);
+      await Future<void>.delayed(const Duration(milliseconds: 10));
+      secondHouseController.add(secondHousehold);
+      secondMembersController.add([
+        Member(
+          uid: memberUid,
+          role: MemberRole.member,
+          credits: 40,
+          joinedAt: testDate,
+        ),
+      ]);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
+
+      expect(cubit.state, isA<HouseholdStateLoaded>());
+      expect(cubit.state.household?.id, 'house_456');
+      expect(cubit.state.currentMember?.uid, memberUid);
+      expect(cubit.state.myCredits, 40);
+      expect(cubit.state.isAdmin, isFalse);
+
+      await userAController.close();
+      await delayedUserBController.close();
+      await secondHouseController.close();
+      await secondMembersController.close();
+      await cubit.close();
+    });
+
     test('resets caches and caller overrides across account/household switches and ignores stale name lookups', () async {
       final slowNamesCompleter = Completer<Result<List<AppUser>>>();
       final secondHouseController = StreamController<Household?>.broadcast();

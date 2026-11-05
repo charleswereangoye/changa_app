@@ -101,8 +101,13 @@ class HouseholdCubit extends Cubit<HouseholdState> {
 
     final watcher = watchUser;
     if (watcher == null) {
+      emit(const HouseholdStateEmpty());
       return;
     }
+
+    // Immediately clear any previously published state before subscribing
+    // to the new user's profile stream.
+    emit(const HouseholdStateLoading());
 
     _userSubscription = watcher(cleanUid).listen(
       (user) {
@@ -269,6 +274,9 @@ class HouseholdCubit extends Cubit<HouseholdState> {
 
     if (showLoading) {
       emit(const HouseholdStateLoading());
+    } else if ((isHouseholdSwitch || isCallerSwitch) &&
+        !preserveInitialHousehold) {
+      emit(const HouseholdStateEmpty());
     }
 
     final householdWatcher = watchHousehold;
