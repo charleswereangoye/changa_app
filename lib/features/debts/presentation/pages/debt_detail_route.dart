@@ -72,63 +72,65 @@ class _UserDebtRouteState extends State<_UserDebtRoute> {
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<AppUser?>(
-      stream: _userStream,
-      builder: (context, snapshot) {
-        if (snapshot.hasError) {
-          return const _RouteMessage(
-            'Your profile could not be loaded. Please try again later.',
-          );
-        }
+      stream: _housemateStream,
+      builder: (context, housemateSnapshot) {
+        final fullName = housemateSnapshot.hasError
+            ? null
+            : housemateSnapshot.data?.fullName.trim();
 
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const _RouteLoading();
-        }
+        final loadingHousemate =
+            housemateSnapshot.connectionState == ConnectionState.waiting;
 
-        final user = snapshot.data;
+        final name = fullName != null && fullName.isNotEmpty
+            ? fullName
+            : loadingHousemate
+            ? 'Housemate'
+            : 'Former member';
 
-        if (user == null) {
-          return const _RouteMessage(
-            'Your profile is unavailable. Please sign in again.',
-          );
-        }
+        return StreamBuilder<AppUser?>(
+          stream: _userStream,
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return const _RouteMessage(
+                'Your profile could not be loaded. Please try again later.',
+              );
+            }
 
-        final householdId = user.householdId;
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const _RouteLoading();
+            }
 
-        if (householdId == null || householdId.isEmpty) {
-          return const _RouteMessage(
-            'Join a household to view shared balances.',
-          );
-        }
+            final user = snapshot.data;
 
-        final sl = GetIt.instance;
+            if (user == null) {
+              return const _RouteMessage(
+                'Your profile is unavailable. Please sign in again.',
+              );
+            }
 
-        return BlocProvider<DebtDetailCubit>(
-          // A household change disposes the old Cubit and its subscriptions.
-          key: ValueKey((householdId, widget.uid, widget.otherUid)),
-          create: (_) => DebtDetailCubit(
-            watchDebtsBetween: sl<WatchDebtsBetween>(),
-            watchExpenses: sl<WatchExpenses>(),
-            sendNudge: sl<SendNudge>(),
-            householdId: householdId,
-            meUid: widget.uid,
-            otherUid: widget.otherUid,
-          )..load(),
-          child: StreamBuilder<AppUser?>(
-            stream: _housemateStream,
-            builder: (context, housemateSnapshot) {
-              final fullName = housemateSnapshot.data?.fullName.trim();
-              final loading =
-                  housemateSnapshot.connectionState == ConnectionState.waiting;
+            final householdId = user.householdId;
 
-              final name = fullName != null && fullName.isNotEmpty
-                  ? fullName
-                  : loading
-                  ? 'Housemate'
-                  : 'Former member';
+            if (householdId == null || householdId.isEmpty) {
+              return const _RouteMessage(
+                'Join a household to view shared balances.',
+              );
+            }
 
-              return DebtDetailPage(housemateName: name);
-            },
-          ),
+            final sl = GetIt.instance;
+
+            return BlocProvider<DebtDetailCubit>(
+              key: ValueKey((householdId, widget.uid, widget.otherUid)),
+              create: (_) => DebtDetailCubit(
+                watchDebtsBetween: sl<WatchDebtsBetween>(),
+                watchExpenses: sl<WatchExpenses>(),
+                sendNudge: sl<SendNudge>(),
+                householdId: householdId,
+                meUid: widget.uid,
+                otherUid: widget.otherUid,
+              )..load(),
+              child: DebtDetailPage(housemateName: name),
+            );
+          },
         );
       },
     );
