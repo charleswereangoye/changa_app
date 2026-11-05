@@ -16,9 +16,7 @@ import 'package:changa_app/features/profile/domain/usecases/watch_user.dart';
 part 'household_state.dart';
 
 typedef MemberNameMap = Map<String, String>;
-typedef MemberNamesResolver = Future<MemberNameMap> Function(
-  List<String> uids,
-);
+typedef MemberNamesResolver = Future<MemberNameMap> Function(List<String> uids);
 typedef CurrentUidResolver = String? Function();
 
 class HouseholdCubit extends Cubit<HouseholdState> {
@@ -195,7 +193,8 @@ class HouseholdCubit extends Cubit<HouseholdState> {
     }
 
     final resolvedUid = _resolveCurrentUid() ?? household.adminUid;
-    final initialMember = _findCurrentMember(_latestMembers, resolvedUid) ??
+    final initialMember =
+        _findCurrentMember(_latestMembers, resolvedUid) ??
         Member(
           uid: resolvedUid,
           role: household.adminUid == resolvedUid
@@ -279,9 +278,7 @@ class HouseholdCubit extends Cubit<HouseholdState> {
       if (_latestHousehold != null && _latestHousehold!.id == trimmedId) {
         _emitCombinedState();
       } else {
-        emit(
-          const HouseholdStateError('Household streams are not available.'),
-        );
+        emit(const HouseholdStateError('Household streams are not available.'));
       }
       return;
     }

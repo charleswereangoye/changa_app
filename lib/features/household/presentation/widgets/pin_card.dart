@@ -19,10 +19,10 @@ class PinCard extends StatelessWidget {
   /// Formats `"482916"` into `"482 916"` for share messages.
   static String formatPinWithSpace(String rawPin) {
     final digits = rawPin.trim();
-    if (digits.length == 6) {
+    if (_validPinRegex.hasMatch(digits)) {
       return '${digits.substring(0, 3)} ${digits.substring(3)}';
     }
-    return digits;
+    return '';
   }
 
   /// Formats `"482916"` into `"4 8 2   9 1 6"` for the visual display card.
@@ -55,7 +55,7 @@ class PinCard extends StatelessWidget {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.symmetric(
-        horizontal: AppSpacing.xl,
+        horizontal: AppSpacing.lg,
         vertical: AppSpacing.xl,
       ),
       decoration: BoxDecoration(
@@ -72,14 +72,17 @@ class PinCard extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text(
-            'HOUSEHOLD PIN',
-            style: TextStyle(
-              fontFamily: 'Poppins',
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              letterSpacing: 1.2,
-              color: AppColors.edward,
+          const FittedBox(
+            fit: BoxFit.scaleDown,
+            child: Text(
+              'HOUSEHOLD PIN',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontSize: 11,
+                fontWeight: FontWeight.w600,
+                letterSpacing: 1.2,
+                color: AppColors.edward,
+              ),
             ),
           ),
           const SizedBox(height: AppSpacing.md),

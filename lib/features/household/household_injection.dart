@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:changa_app/features/activity/data/activity_writer.dart';
+import 'package:changa_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:changa_app/features/household/data/datasources/household_remote_datasource.dart';
 import 'package:changa_app/features/household/data/repositories/household_repository_impl.dart';
 import 'package:changa_app/features/household/domain/repositories/household_repository.dart';
@@ -18,6 +19,7 @@ import 'package:changa_app/features/household/presentation/cubit/create_househol
 import 'package:changa_app/features/household/presentation/cubit/household_cubit.dart';
 import 'package:changa_app/features/household/presentation/cubit/join_household_cubit.dart';
 import 'package:changa_app/features/profile/domain/usecases/get_users_by_ids.dart';
+import 'package:changa_app/features/profile/domain/usecases/watch_user.dart';
 
 void initHousehold(GetIt sl) {
   // Data sources
@@ -77,7 +79,7 @@ void initHousehold(GetIt sl) {
     sl.registerLazySingleton(() => WatchMembers(sl<HouseholdRepository>()));
   }
 
-  // Cubits
+  // Cubits (B8)
   if (!sl.isRegistered<HouseholdCubit>()) {
     sl.registerLazySingleton<HouseholdCubit>(
       () => HouseholdCubit(
@@ -86,12 +88,8 @@ void initHousehold(GetIt sl) {
         getUsersByIds: sl.isRegistered<GetUsersByIds>()
             ? sl<GetUsersByIds>()
             : null,
-        firestore: sl.isRegistered<FirebaseFirestore>()
-            ? sl<FirebaseFirestore>()
-            : FirebaseFirestore.instance,
-        firebaseAuth: sl.isRegistered<FirebaseAuth>()
-            ? sl<FirebaseAuth>()
-            : FirebaseAuth.instance,
+        watchUser: sl.isRegistered<WatchUser>() ? sl<WatchUser>() : null,
+        authCubit: sl.isRegistered<AuthCubit>() ? sl<AuthCubit>() : null,
       ),
     );
   }

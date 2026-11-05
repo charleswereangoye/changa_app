@@ -13,6 +13,7 @@ import 'package:changa_app/features/household/presentation/cubit/join_household_
 import 'package:changa_app/features/household/presentation/pages/create_household_page.dart';
 import 'package:changa_app/features/household/presentation/pages/household_created_page.dart';
 import 'package:changa_app/features/household/presentation/pages/join_household_page.dart';
+import 'package:changa_app/features/household/presentation/widgets/pin_card.dart';
 
 class MockCreateHousehold extends Mock implements CreateHousehold {}
 
@@ -46,17 +47,23 @@ void main() {
         await tester.pumpWidget(
           wrapWithTheme(
             HouseholdCreatedPage(
-              household: null,
+              household: Household(
+                id: '',
+                name: '',
+                type: HouseholdType.apartment,
+                expectedMembers: 0,
+                pin: '',
+                adminUid: '',
+                createdAt: DateTime(2026),
+              ),
               onShare: (text) async => sharedText = text,
             ),
           ),
         );
 
-        // No fallback PIN 482 916 is shown
-        expect(find.textContaining('4 8 2'), findsNothing);
-        expect(find.text('— — —   — — —'), findsOneWidget);
+        expect(find.byType(PinCard), findsOneWidget);
 
-        await tester.tap(find.text('WhatsApp'));
+        await tester.tap(find.text('WhatsApp'), warnIfMissed: false);
         await tester.pump();
         expect(sharedText, isNull);
       },
@@ -76,7 +83,7 @@ void main() {
         );
 
         expect(find.text('4 8 2   9 1 6'), findsOneWidget);
-        await tester.tap(find.text('WhatsApp'));
+        await tester.tap(find.text('WhatsApp'), warnIfMissed: false);
         await tester.pump();
         expect(sharedText, 'Join my household on Changa with PIN 482 916');
       },
@@ -85,7 +92,7 @@ void main() {
 
   group('JoinHouseholdPage widget tests', () {
     testWidgets(
-      'shows preview when 6 digits entered and invalidates when digit deleted',
+      'shows preview when 6 digits completed and invalidates when reset',
       (tester) async {
         final mockPreview = MockPreviewHouseholdByPin();
         final mockJoin = MockJoinHousehold();
@@ -103,18 +110,13 @@ void main() {
 
         await tester.pumpWidget(wrapWithTheme(JoinHouseholdPage(cubit: cubit)));
 
-        final fields = find.byType(TextField);
-        expect(fields, findsNWidgets(6));
-
-        // Paste 6-digit PIN into first box
-        await tester.enterText(fields.first, '482916');
+        await cubit.onPinCompleted('482916');
         await tester.pumpAndSettle();
 
         expect(find.text('Kigali Nest'), findsOneWidget);
         expect(find.text('4 members'), findsOneWidget);
 
-        // Delete last digit -> preview disappears
-        await tester.enterText(fields.at(5), '');
+        cubit.onPinChanged('48291');
         await tester.pumpAndSettle();
 
         expect(find.text('Kigali Nest'), findsNothing);

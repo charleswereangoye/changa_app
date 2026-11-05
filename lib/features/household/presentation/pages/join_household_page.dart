@@ -55,6 +55,8 @@ class _JoinHouseholdPageState extends State<JoinHouseholdPage> {
     try {
       if (context.canPop()) {
         context.pop();
+      } else {
+        context.goNamed(RouteNames.createHousehold);
       }
     } catch (_) {
       // Safe fallback when tested outside GoRouter
@@ -96,134 +98,134 @@ class _JoinHouseholdPageState extends State<JoinHouseholdPage> {
           return Scaffold(
             backgroundColor: AppColors.ginFizz,
             body: SafeArea(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.xxl,
-                  vertical: AppSpacing.lg,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    // Back Circle Button
-                    Material(
-                      color: AppColors.white,
-                      shape: const CircleBorder(),
-                      elevation: 1,
-                      shadowColor: AppColors.black.withValues(alpha: 0.08),
-                      child: InkWell(
-                        onTap: () => _handleBack(context),
-                        customBorder: const CircleBorder(),
-                        child: const SizedBox(
-                          width: 40,
-                          height: 40,
-                          child: Icon(
-                            Icons.arrow_back_rounded,
-                            size: 20,
-                            color: AppColors.sherwoodGreen,
-                          ),
-                        ),
-                      ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final horizontalPadding = constraints.maxWidth < 360
+                      ? AppSpacing.md
+                      : AppSpacing.xxl;
+
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: horizontalPadding,
+                      vertical: AppSpacing.md,
                     ),
-                    const SizedBox(height: AppSpacing.xl),
-
-                    // Title & Subtitle
-                    const Text(
-                      'Join your household',
-                      style: AppTextStyles.heading2,
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    Text(
-                      'Ask a roommate for the 6-digit household PIN',
-                      style: AppTextStyles.bodyMedium.copyWith(
-                        color: AppColors.edward,
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xxl),
-
-                    // 6-digit PinInput widget (B4)
-                    PinInput(
-                      hasError: state.hasError,
-                      onCompleted: _cubit.onPinCompleted,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-
-                    // Caption or Polite Error Text
-                    Center(
-                      child: Text(
-                        state.hasError
-                            ? (state.errorMessage ??
-                                  'No household found with that PIN.')
-                            : 'Enter the PIN shared by your roommate',
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 12,
-                          fontWeight: state.hasError
-                              ? FontWeight.w500
-                              : FontWeight.w400,
-                          color: state.hasError
-                              ? AppColors.sunglo
-                              : AppColors.edward,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.xxl),
-
-                    // Loading or Preview Card
-                    if (state.isPreviewLoading)
-                      const Center(
-                        child: Padding(
-                          padding: EdgeInsets.all(AppSpacing.xxl),
-                          child: CircularProgressIndicator(),
-                        ),
-                      )
-                    else if (state.preview != null)
-                      _HouseholdPreviewCard(preview: state.preview!),
-
-                    const Spacer(),
-
-                    // Join Household Button
-                    PrimaryButton(
-                      text: 'Join Household',
-                      isLoading: state.isJoining,
-                      onPressed: state.canJoin
-                          ? () => _cubit.joinHousehold()
-                          : null,
-                    ),
-                    const SizedBox(height: AppSpacing.md),
-
-                    // Bottom Link: "Don't have a PIN? Create your own household"
-                    Center(
-                      child: Wrap(
-                        alignment: WrapAlignment.center,
-                        crossAxisAlignment: WrapCrossAlignment.center,
-                        children: [
-                          const Text(
-                            "Don't have a PIN? ",
-                            style: TextStyle(
-                              fontFamily: 'Poppins',
-                              fontSize: 12,
-                              color: AppColors.edward,
-                            ),
-                          ),
-                          GestureDetector(
-                            onTap: () => _handleGoToCreate(context),
-                            child: const Text(
-                              'Create your own household',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.leafGreen,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Material(
+                          color: AppColors.white,
+                          shape: const CircleBorder(),
+                          elevation: 1,
+                          shadowColor: AppColors.black.withValues(alpha: 0.08),
+                          child: InkWell(
+                            onTap: state.isJoining
+                                ? null
+                                : () => _handleBack(context),
+                            customBorder: const CircleBorder(),
+                            child: const SizedBox(
+                              width: 40,
+                              height: 40,
+                              child: Icon(
+                                Icons.arrow_back_rounded,
+                                size: 20,
+                                color: AppColors.sherwoodGreen,
                               ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        const Text(
+                          'Join your household',
+                          style: AppTextStyles.heading2,
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          'Ask a roommate for the 6-digit household PIN',
+                          style: AppTextStyles.bodyMedium.copyWith(
+                            color: AppColors.edward,
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        PinInput(
+                          enabled: !state.isJoining,
+                          hasError: state.hasError,
+                          onChanged: _cubit.onPinChanged,
+                          onCompleted: _cubit.onPinCompleted,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Center(
+                          child: Text(
+                            state.hasError
+                                ? (state.errorMessage ??
+                                      'No household found with that PIN.')
+                                : 'Enter the PIN shared by your roommate',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                              fontWeight: state.hasError
+                                  ? FontWeight.w500
+                                  : FontWeight.w400,
+                              color: state.hasError
+                                  ? AppColors.sunglo
+                                  : AppColors.edward,
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                        if (state.isPreviewLoading)
+                          const Center(
+                            child: Padding(
+                              padding: EdgeInsets.all(AppSpacing.lg),
+                              child: CircularProgressIndicator(),
+                            ),
+                          )
+                        else if (state.preview != null)
+                          _HouseholdPreviewCard(preview: state.preview!),
+                        const SizedBox(height: AppSpacing.xl),
+                        PrimaryButton(
+                          text: 'Join Household',
+                          isLoading: state.isJoining,
+                          onPressed: state.canJoin
+                              ? () => _cubit.joinHousehold()
+                              : null,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Center(
+                          child: Wrap(
+                            alignment: WrapAlignment.center,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              const Text(
+                                "Don't have a PIN? ",
+                                style: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 12,
+                                  color: AppColors.edward,
+                                ),
+                              ),
+                              GestureDetector(
+                                onTap: state.isJoining
+                                    ? null
+                                    : () => _handleGoToCreate(context),
+                                child: const Text(
+                                  'Create your own household',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.leafGreen,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.md),
+                      ],
                     ),
-                    const SizedBox(height: AppSpacing.sm),
-                  ],
-                ),
+                  );
+                },
               ),
             ),
           );
@@ -245,10 +247,10 @@ class _HouseholdPreviewCard extends StatelessWidget {
 
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.xl),
+      padding: const EdgeInsets.all(AppSpacing.md),
       decoration: BoxDecoration(
         color: AppColors.white,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
             color: AppColors.black.withValues(alpha: 0.04),
@@ -263,16 +265,16 @@ class _HouseholdPreviewCard extends StatelessWidget {
           Row(
             children: [
               Container(
-                width: 48,
-                height: 48,
+                width: 40,
+                height: 40,
                 decoration: BoxDecoration(
                   color: AppColors.opal.withValues(alpha: 0.25),
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(10),
                 ),
                 child: const Icon(
                   Icons.home_rounded,
                   color: AppColors.sherwoodGreen,
-                  size: 24,
+                  size: 20,
                 ),
               ),
               const SizedBox(width: AppSpacing.md),
@@ -284,7 +286,7 @@ class _HouseholdPreviewCard extends StatelessWidget {
                       preview.name,
                       style: const TextStyle(
                         fontFamily: 'Poppins',
-                        fontSize: 16,
+                        fontSize: 15,
                         fontWeight: FontWeight.w700,
                         color: AppColors.sherwoodGreen,
                       ),
@@ -294,7 +296,7 @@ class _HouseholdPreviewCard extends StatelessWidget {
                       memberLabel,
                       style: const TextStyle(
                         fontFamily: 'Poppins',
-                        fontSize: 13,
+                        fontSize: 12,
                         fontWeight: FontWeight.w400,
                         color: AppColors.edward,
                       ),
@@ -305,7 +307,7 @@ class _HouseholdPreviewCard extends StatelessWidget {
             ],
           ),
           if (count > 0) ...[
-            const SizedBox(height: AppSpacing.md),
+            const SizedBox(height: AppSpacing.sm),
             _OverlappingMemberDots(memberCount: count),
           ],
         ],
@@ -327,16 +329,16 @@ class _OverlappingMemberDots extends StatelessWidget {
     final totalItems = visibleDots + (remaining > 0 ? 1 : 0);
 
     return SizedBox(
-      height: 28,
-      width: totalItems * 22.0 + 8,
+      height: 24,
+      width: totalItems * 20.0 + 6,
       child: Stack(
         children: [
           for (var i = 0; i < visibleDots; i++)
             Positioned(
-              left: i * 18.0,
+              left: i * 16.0,
               child: Container(
-                width: 28,
-                height: 28,
+                width: 24,
+                height: 24,
                 decoration: BoxDecoration(
                   color: circleColors[i % circleColors.length],
                   shape: BoxShape.circle,
@@ -346,10 +348,10 @@ class _OverlappingMemberDots extends StatelessWidget {
             ),
           if (remaining > 0)
             Positioned(
-              left: visibleDots * 18.0,
+              left: visibleDots * 16.0,
               child: Container(
-                width: 28,
-                height: 28,
+                width: 24,
+                height: 24,
                 decoration: BoxDecoration(
                   color: AppColors.lightGreen,
                   shape: BoxShape.circle,
@@ -360,7 +362,7 @@ class _OverlappingMemberDots extends StatelessWidget {
                     '+$remaining',
                     style: const TextStyle(
                       fontFamily: 'Poppins',
-                      fontSize: 10,
+                      fontSize: 9,
                       fontWeight: FontWeight.w700,
                       color: AppColors.white,
                     ),

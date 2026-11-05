@@ -55,6 +55,7 @@ class _CreateHouseholdPageState extends State<CreateHouseholdPage> {
   }
 
   void _handleCreatePressed() {
+    if (_cubit.state.isSubmitting) return;
     final isFormValid = _formKey.currentState?.validate() ?? false;
     if (!isFormValid) return;
     _cubit.submit(name: _nameController.text);
@@ -64,6 +65,8 @@ class _CreateHouseholdPageState extends State<CreateHouseholdPage> {
     try {
       if (context.canPop()) {
         context.pop();
+      } else {
+        context.goNamed(RouteNames.login);
       }
     } catch (_) {
       // Safe fallback when tested outside GoRouter
@@ -108,173 +111,179 @@ class _CreateHouseholdPageState extends State<CreateHouseholdPage> {
           return Scaffold(
             backgroundColor: AppColors.ginFizz,
             body: SafeArea(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppSpacing.xxl,
-                  vertical: AppSpacing.lg,
-                ),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Circular Back Button
-                      _BackCircleButton(onPressed: () => _handleBack(context)),
-                      const SizedBox(height: AppSpacing.xl),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final horizontalPadding = constraints.maxWidth < 360
+                      ? AppSpacing.md
+                      : AppSpacing.xxl;
 
-                      // Heading & Subtitle
-                      const Text(
-                        'Set up your household',
-                        style: AppTextStyles.heading2,
-                      ),
-                      const SizedBox(height: AppSpacing.xs),
-                      Text(
-                        'Give your home a name and invite your roommates',
-                        style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.edward,
-                        ),
-                      ),
-                      const SizedBox(height: AppSpacing.xl),
-
-                      // Illustration Placeholder matching Figma
-                      Container(
-                        width: double.infinity,
-                        height: 140,
-                        decoration: BoxDecoration(
-                          color: AppColors.athsSpecial,
-                          borderRadius: BorderRadius.circular(20),
-                          border: Border.all(
-                            color: AppColors.sherwoodGreen.withValues(
-                              alpha: 0.06,
+                  return SingleChildScrollView(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: horizontalPadding,
+                      vertical: AppSpacing.md,
+                    ),
+                    child: Form(
+                      key: _formKey,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _BackCircleButton(
+                            onPressed: () => _handleBack(context),
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          const Text(
+                            'Set up your household',
+                            style: AppTextStyles.heading2,
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            'Give your home a name and invite your roommates',
+                            style: AppTextStyles.bodyMedium.copyWith(
+                              color: AppColors.edward,
                             ),
                           ),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 52,
-                              height: 52,
-                              decoration: BoxDecoration(
-                                color: AppColors.leafGreen.withValues(
-                                  alpha: 0.15,
+                          const SizedBox(height: AppSpacing.md),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: AppSpacing.md,
+                              vertical: AppSpacing.md,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppColors.athsSpecial,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: AppColors.sherwoodGreen.withValues(
+                                  alpha: 0.06,
                                 ),
-                                shape: BoxShape.circle,
-                              ),
-                              child: const Icon(
-                                Icons.home_rounded,
-                                size: 28,
-                                color: AppColors.leafGreen,
                               ),
                             ),
-                            const SizedBox(height: AppSpacing.sm),
-                            const Text(
-                              'Build your shared space',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontSize: 13,
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.sherwoodGreen,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                      // Household Name Input
-                      AppTextField(
-                        label: 'Household Name',
-                        hintText: 'e.g. Kigali Nest',
-                        controller: _nameController,
-                        enabled: !state.isSubmitting,
-                        textInputAction: TextInputAction.done,
-                        prefixIcon: const Icon(
-                          Icons.home_outlined,
-                          color: AppColors.edward,
-                          size: 20,
-                        ),
-                        validator: CreateHouseholdCubit.validateName,
-                        onChanged: _cubit.nameChanged,
-                      ),
-                      const SizedBox(height: AppSpacing.xl),
-
-                      // Household Type Chips
-                      const Text(
-                        'Household Type',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.sherwoodGreen,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      HouseholdTypeChips(
-                        selectedType: state.type,
-                        enabled: !state.isSubmitting,
-                        onSelected: _cubit.typeChanged,
-                      ),
-                      const SizedBox(height: AppSpacing.xl),
-
-                      // Number of Roommates Stepper
-                      const Text(
-                        'Number of Roommates',
-                        style: TextStyle(
-                          fontFamily: 'Poppins',
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
-                          color: AppColors.sherwoodGreen,
-                        ),
-                      ),
-                      const SizedBox(height: 6),
-                      _RoommatesStepper(
-                        count: state.expectedMembers,
-                        enabled: !state.isSubmitting,
-                        onDecrement: _cubit.decrementMembers,
-                        onIncrement: _cubit.incrementMembers,
-                      ),
-                      const SizedBox(height: AppSpacing.xxl),
-
-                      // Create Household Button
-                      PrimaryButton(
-                        text: 'Create Household',
-                        isLoading: state.isSubmitting,
-                        onPressed: _handleCreatePressed,
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-
-                      // Join an existing household instead
-                      SizedBox(
-                        width: double.infinity,
-                        height: 52,
-                        child: OutlinedButton(
-                          onPressed: state.isSubmitting
-                              ? null
-                              : () => _handleGoToJoin(context),
-                          style: OutlinedButton.styleFrom(
-                            foregroundColor: AppColors.sherwoodGreen,
-                            side: const BorderSide(
-                              color: AppColors.sherwoodGreen,
-                              width: 1.2,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(14),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: 34,
+                                  height: 34,
+                                  decoration: BoxDecoration(
+                                    color: AppColors.leafGreen.withValues(
+                                      alpha: 0.15,
+                                    ),
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: const Icon(
+                                    Icons.home_rounded,
+                                    size: 18,
+                                    color: AppColors.leafGreen,
+                                  ),
+                                ),
+                                const SizedBox(width: AppSpacing.sm),
+                                const Flexible(
+                                  child: Text(
+                                    'Build your shared space',
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColors.sherwoodGreen,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                          child: const Text(
-                            'Join an existing household instead',
+                          const SizedBox(height: AppSpacing.md),
+                          AppTextField(
+                            label: 'Household Name',
+                            hintText: 'e.g. Kigali Nest',
+                            controller: _nameController,
+                            enabled: !state.isSubmitting,
+                            textInputAction: TextInputAction.done,
+                            prefixIcon: const Icon(
+                              Icons.home_outlined,
+                              color: AppColors.edward,
+                              size: 20,
+                            ),
+                            validator: CreateHouseholdCubit.validateName,
+                            onChanged: _cubit.nameChanged,
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                          const Text(
+                            'Household Type',
                             style: TextStyle(
                               fontFamily: 'Poppins',
-                              fontSize: 14,
+                              fontSize: 12,
                               fontWeight: FontWeight.w600,
                               color: AppColors.sherwoodGreen,
                             ),
                           ),
-                        ),
+                          const SizedBox(height: 4),
+                          HouseholdTypeChips(
+                            selectedType: state.type,
+                            enabled: !state.isSubmitting,
+                            onSelected: _cubit.typeChanged,
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                          const Text(
+                            'Number of Roommates',
+                            style: TextStyle(
+                              fontFamily: 'Poppins',
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: AppColors.sherwoodGreen,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          _RoommatesStepper(
+                            count: state.expectedMembers,
+                            enabled: !state.isSubmitting,
+                            onDecrement: _cubit.decrementMembers,
+                            onIncrement: _cubit.incrementMembers,
+                          ),
+                          const SizedBox(height: AppSpacing.xl),
+                          PrimaryButton(
+                            text: 'Create Household',
+                            isLoading: state.isSubmitting,
+                            onPressed: _handleCreatePressed,
+                          ),
+                          const SizedBox(height: AppSpacing.sm),
+                          SizedBox(
+                            width: double.infinity,
+                            height: 48,
+                            child: OutlinedButton(
+                              onPressed: state.isSubmitting
+                                  ? null
+                                  : () => _handleGoToJoin(context),
+                              style: OutlinedButton.styleFrom(
+                                foregroundColor: AppColors.sherwoodGreen,
+                                side: const BorderSide(
+                                  color: AppColors.sherwoodGreen,
+                                  width: 1.2,
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(14),
+                                ),
+                              ),
+                              child: const FittedBox(
+                                fit: BoxFit.scaleDown,
+                                child: Text(
+                                  'Join an existing household instead',
+                                  style: TextStyle(
+                                    fontFamily: 'Poppins',
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w600,
+                                    color: AppColors.sherwoodGreen,
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: AppSpacing.md),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
+                    ),
+                  );
+                },
               ),
             ),
           );
@@ -303,7 +312,7 @@ class _RoommatesStepper extends StatelessWidget {
     final canIncrement = enabled && count < CreateHouseholdCubit.maxRoommates;
 
     return Container(
-      height: 52,
+      height: 44,
       padding: const EdgeInsets.symmetric(horizontal: 8),
       decoration: BoxDecoration(
         color: AppColors.white,
@@ -375,11 +384,11 @@ class _StepperIconButton extends StatelessWidget {
           onTap: onPressed,
           borderRadius: BorderRadius.circular(10),
           child: SizedBox(
-            width: 38,
-            height: 38,
+            width: 32,
+            height: 32,
             child: Icon(
               icon,
-              size: 18,
+              size: 16,
               color: isEnabled ? iconColor : iconColor.withValues(alpha: 0.5),
             ),
           ),

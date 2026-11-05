@@ -147,24 +147,29 @@ void main() {
       await cubit.close();
     });
 
-    test('does not emit after cubit is closed during in-flight create', () async {
-      final completer = Completer<Result<Household>>();
-      when(
-        () => mockCreateHousehold(
-          name: 'Kigali Nest',
-          type: HouseholdType.apartment,
-          expectedMembers: 4,
-        ),
-      ).thenAnswer((_) => completer.future);
+    test(
+      'does not emit after cubit is closed during in-flight create',
+      () async {
+        final completer = Completer<Result<Household>>();
+        when(
+          () => mockCreateHousehold(
+            name: 'Kigali Nest',
+            type: HouseholdType.apartment,
+            expectedMembers: 4,
+          ),
+        ).thenAnswer((_) => completer.future);
 
-      final cubit = CreateHouseholdCubit(createHousehold: mockCreateHousehold);
-      final future = cubit.submit(name: 'Kigali Nest');
-      await cubit.close();
+        final cubit = CreateHouseholdCubit(
+          createHousehold: mockCreateHousehold,
+        );
+        final future = cubit.submit(name: 'Kigali Nest');
+        await cubit.close();
 
-      completer.complete(Result.success(testHousehold));
-      await future;
-      expect(cubit.isClosed, true);
-    });
+        completer.complete(Result.success(testHousehold));
+        await future;
+        expect(cubit.isClosed, true);
+      },
+    );
   });
 
   group('JoinHouseholdCubit', () {
@@ -211,72 +216,81 @@ void main() {
       await cubit.close();
     });
 
-    test('invalidates preview when deleting a PIN digit or changing PIN', () async {
-      when(() => mockPreview('482916'))
-          .thenAnswer((_) async => Result.success(preview1));
+    test(
+      'invalidates preview when deleting a PIN digit or changing PIN',
+      () async {
+        when(() => mockPreview('482916'))
+            .thenAnswer((_) async => Result.success(preview1));
 
-      final cubit = JoinHouseholdCubit(
-        previewHouseholdByPin: mockPreview,
-        joinHousehold: mockJoin,
-      );
+        final cubit = JoinHouseholdCubit(
+          previewHouseholdByPin: mockPreview,
+          joinHousehold: mockJoin,
+        );
 
-      await cubit.onPinCompleted('482916');
-      expect(cubit.state.preview, preview1);
-      expect(cubit.state.canJoin, true);
+        await cubit.onPinCompleted('482916');
+        expect(cubit.state.preview, preview1);
+        expect(cubit.state.canJoin, true);
 
-      cubit.onPinChanged('48291');
-      expect(cubit.state, const JoinHouseholdStateInitial(pin: '48291'));
-      expect(cubit.state.preview, isNull);
-      expect(cubit.state.canJoin, false);
+        cubit.onPinChanged('48291');
+        expect(cubit.state, const JoinHouseholdStateInitial(pin: '48291'));
+        expect(cubit.state.preview, isNull);
+        expect(cubit.state.canJoin, false);
 
-      await cubit.close();
-    });
+        await cubit.close();
+      },
+    );
 
-    test('prevents PIN changes and duplicate submissions during joining', () async {
-      when(() => mockPreview('482916'))
-          .thenAnswer((_) async => Result.success(preview1));
-      final joinCompleter = Completer<Result<Household>>();
-      when(() => mockJoin('482916')).thenAnswer((_) => joinCompleter.future);
+    test(
+      'prevents PIN changes and duplicate submissions during joining',
+      () async {
+        when(() => mockPreview('482916'))
+            .thenAnswer((_) async => Result.success(preview1));
+        final joinCompleter = Completer<Result<Household>>();
+        when(() => mockJoin('482916')).thenAnswer((_) => joinCompleter.future);
 
-      final cubit = JoinHouseholdCubit(
-        previewHouseholdByPin: mockPreview,
-        joinHousehold: mockJoin,
-      );
+        final cubit = JoinHouseholdCubit(
+          previewHouseholdByPin: mockPreview,
+          joinHousehold: mockJoin,
+        );
 
-      await cubit.onPinCompleted('482916');
+        await cubit.onPinCompleted('482916');
 
-      final join1 = cubit.joinHousehold();
-      final join2 = cubit.joinHousehold();
-      cubit.onPinChanged('48291');
-      await cubit.onPinCompleted('111111');
+        final join1 = cubit.joinHousehold();
+        final join2 = cubit.joinHousehold();
+        cubit.onPinChanged('48291');
+        await cubit.onPinCompleted('111111');
 
-      expect(cubit.state, isA<JoinHouseholdStateJoining>());
-      expect(cubit.state.pin, '482916');
+        expect(cubit.state, isA<JoinHouseholdStateJoining>());
+        expect(cubit.state.pin, '482916');
 
-      joinCompleter.complete(Result.success(testHousehold));
-      await Future.wait([join1, join2]);
+        joinCompleter.complete(Result.success(testHousehold));
+        await Future.wait([join1, join2]);
 
-      verify(() => mockJoin('482916')).called(1);
-      verifyNever(() => mockPreview('111111'));
-      await cubit.close();
-    });
+        verify(() => mockJoin('482916')).called(1);
+        verifyNever(() => mockPreview('111111'));
+        await cubit.close();
+      },
+    );
 
-    test('guards preview and join completions when cubit closes mid-request', () async {
-      final previewCompleter = Completer<Result<HouseholdPreview>>();
-      when(() => mockPreview('482916'))
-          .thenAnswer((_) => previewCompleter.future);
+    test(
+      'guards preview and join completions when cubit closes mid-request',
+      () async {
+        final previewCompleter = Completer<Result<HouseholdPreview>>();
+        when(() => mockPreview('482916'))
+            .thenAnswer((_) => previewCompleter.future);
 
-      final cubit = JoinHouseholdCubit(
-        previewHouseholdByPin: mockPreview,
-        joinHousehold: mockJoin,
-      );
+        final cubit = JoinHouseholdCubit(
+          previewHouseholdByPin: mockPreview,
+          joinHousehold: mockJoin,
+        );
 
-      final future = cubit.onPinCompleted('482916');
-      await cubit.close();
-      previewCompleter.complete(Result.success(preview1));
-      await future;
-      expect(cubit.isClosed, true);
-    });
+        final future = cubit.onPinCompleted('482916');
+        await cubit.close();
+        previewCompleter.complete(Result.success(preview1));
+        await future;
+        expect(cubit.isClosed, true);
+      },
+    );
   });
 
   group('HouseholdCubit session, streams, and race conditions', () {
@@ -383,61 +397,57 @@ void main() {
       },
     );
 
-    test(
-      'resets caches and caller overrides across account/household switches and ignores stale name lookups',
-      () async {
-        final slowNamesCompleter = Completer<Result<List<AppUser>>>();
-        final secondHouseController = StreamController<Household?>.broadcast();
-        final secondMembersController =
-            StreamController<List<Member>>.broadcast();
+    test('resets caches and caller overrides across account/household switches and ignores stale name lookups', () async {
+      final slowNamesCompleter = Completer<Result<List<AppUser>>>();
+      final secondHouseController = StreamController<Household?>.broadcast();
+      final secondMembersController =
+          StreamController<List<Member>>.broadcast();
 
-        when(() => mockWatchHousehold('house_456'))
-            .thenAnswer((_) => secondHouseController.stream);
-        when(() => mockWatchMembers('house_456'))
-            .thenAnswer((_) => secondMembersController.stream);
+      when(() => mockWatchHousehold('house_456'))
+          .thenAnswer((_) => secondHouseController.stream);
+      when(() => mockWatchMembers('house_456'))
+          .thenAnswer((_) => secondMembersController.stream);
 
-        when(() => mockGetUsersByIds([adminUid, memberUid]))
-            .thenAnswer((_) => slowNamesCompleter.future);
-        when(() => mockGetUsersByIds([memberUid])).thenAnswer(
-          (_) async => Result.success([memberAppUser]),
-        );
+      when(() => mockGetUsersByIds([adminUid, memberUid]))
+          .thenAnswer((_) => slowNamesCompleter.future);
+      when(() => mockGetUsersByIds([memberUid]))
+          .thenAnswer((_) async => Result.success([memberAppUser]));
 
-        final cubit = HouseholdCubit(
-          watchHousehold: mockWatchHousehold,
-          watchMembers: mockWatchMembers,
-          getUsersByIds: mockGetUsersByIds,
-        );
+      final cubit = HouseholdCubit(
+        watchHousehold: mockWatchHousehold,
+        watchMembers: mockWatchMembers,
+        getUsersByIds: mockGetUsersByIds,
+      );
 
-        cubit.loadHousehold('house_123', currentUid: adminUid);
-        householdController.add(testHousehold);
-        membersController.add(testMembers);
-        await Future<void>.delayed(const Duration(milliseconds: 10));
+      cubit.loadHousehold('house_123', currentUid: adminUid);
+      householdController.add(testHousehold);
+      membersController.add(testMembers);
+      await Future<void>.delayed(const Duration(milliseconds: 10));
 
-        cubit.loadHousehold('house_456', currentUid: memberUid);
-        secondHouseController.add(secondHousehold);
-        secondMembersController.add([
-          Member(
-            uid: memberUid,
-            role: MemberRole.admin,
-            credits: 50,
-            joinedAt: testDate,
-          ),
-        ]);
-        await Future<void>.delayed(const Duration(milliseconds: 20));
+      cubit.loadHousehold('house_456', currentUid: memberUid);
+      secondHouseController.add(secondHousehold);
+      secondMembersController.add([
+        Member(
+          uid: memberUid,
+          role: MemberRole.admin,
+          credits: 50,
+          joinedAt: testDate,
+        ),
+      ]);
+      await Future<void>.delayed(const Duration(milliseconds: 20));
 
-        slowNamesCompleter.complete(Result.success([adminAppUser]));
-        await Future<void>.delayed(const Duration(milliseconds: 20));
+      slowNamesCompleter.complete(Result.success([adminAppUser]));
+      await Future<void>.delayed(const Duration(milliseconds: 20));
 
-        expect(cubit.state.household?.id, 'house_456');
-        expect(cubit.state.currentMember?.uid, memberUid);
-        expect(cubit.state.memberNames.containsKey(adminUid), false);
-        expect(cubit.state.displayNameFor(memberUid), 'Alice Mukamana');
+      expect(cubit.state.household?.id, 'house_456');
+      expect(cubit.state.currentMember?.uid, memberUid);
+      expect(cubit.state.memberNames.containsKey(adminUid), false);
+      expect(cubit.state.displayNameFor(memberUid), 'Alice Mukamana');
 
-        await secondHouseController.close();
-        await secondMembersController.close();
-        await cubit.close();
-      },
-    );
+      await secondHouseController.close();
+      await secondMembersController.close();
+      await cubit.close();
+    });
 
     test('HouseholdCreatedPage formats share text per B8 spec', () {
       expect(
