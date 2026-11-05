@@ -1,24 +1,9 @@
 import 'package:equatable/equatable.dart';
 
-import 'package:changa_app/core/constants/app_constants.dart';
+import 'package:changa_app/core/enums/harmony_tier.dart';
 
-enum HarmonyTier {
-  needsAttention,
-  steady,
-  thriving;
-
-  static HarmonyTier fromValue(int value) {
-    if (value >= AppConstants.harmonyThrivingMin) return HarmonyTier.thriving;
-    if (value >= AppConstants.harmonySteadyMin) return HarmonyTier.steady;
-    return HarmonyTier.needsAttention;
-  }
-
-  String get label => switch (this) {
-    HarmonyTier.needsAttention => 'Needs attention',
-    HarmonyTier.steady => 'Steady',
-    HarmonyTier.thriving => 'Thriving',
-  };
-}
+// Re-exported so existing imports of this file keep seeing HarmonyTier.
+export 'package:changa_app/core/enums/harmony_tier.dart';
 
 class HarmonyScore extends Equatable {
   const HarmonyScore({
