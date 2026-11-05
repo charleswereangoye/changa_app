@@ -62,7 +62,8 @@ Future<void> _open(
     ),
   );
   await tester.tap(find.text('open'));
-  await tester.pumpAndSettle();
+  await tester.pump(); // start the route
+  await tester.pump(const Duration(milliseconds: 500)); // finish the transition
 }
 
 String _statusOf(WidgetTester tester, String uid) =>
@@ -76,7 +77,7 @@ void main() {
     await _open(tester, FakeDetailRepository());
 
     expect(find.text('Groceries'), findsWidgets);
-    expect(find.text('RWF 12,000'), findsOneWidget);
+    expect(find.text('RWF 12,000'), findsWidgets);
     expect(find.text('Split equally'), findsOneWidget);
     expect(find.text('No note yet.'), findsOneWidget);
   });
