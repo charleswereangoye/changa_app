@@ -10,6 +10,8 @@ import 'package:changa_app/features/expenses/domain/entities/expense_category.da
 import 'package:changa_app/features/expenses/domain/entities/new_expense_input.dart';
 import 'package:changa_app/features/expenses/domain/entities/split_type.dart';
 import 'package:changa_app/features/notifications/data/notification_writer.dart';
+import 'package:changa_app/core/enums/settlement_method.dart';
+import 'package:changa_app/features/debts/domain/entities/debt_status.dart';
 
 void main() {
   const hid = 'house1';
@@ -51,9 +53,11 @@ void main() {
   setUp(() async {
     db = FakeFirebaseFirestore();
     amaraSource = sourceFor('amara');
+
     await db.doc(FirestorePaths.user('amara')).set({
       UserFields.fullName: 'Amara K',
     });
+
     await seedMember('amara', 0);
     await seedMember('bob', 340); // 340 credits = RWF 3,400
     await seedMember('chloe', 0);
@@ -78,7 +82,8 @@ void main() {
         final bobDebt = debts.firstWhere(
           (d) => d[DebtFields.debtorUid] == 'bob',
         );
-        expect(bobDebt[DebtFields.amount], 600); // 4,000 - 3,400 of credits
+
+        expect(bobDebt[DebtFields.amount], 600);
         expect(bobDebt[DebtFields.creditsApplied], 340);
         expect(bobDebt[DebtFields.status], 'pending');
         expect(bobDebt[DebtFields.creditorUid], 'amara');
@@ -87,6 +92,7 @@ void main() {
         final chloeDebt = debts.firstWhere(
           (d) => d[DebtFields.debtorUid] == 'chloe',
         );
+
         expect(chloeDebt[DebtFields.amount], 4000);
         expect(chloeDebt[DebtFields.creditsApplied], 0);
 
@@ -94,11 +100,13 @@ void main() {
         expect(await creditsOf('chloe'), 0);
 
         final activities = await docsOf(FirestorePaths.activities(hid));
+
         expect(activities, hasLength(1));
         expect(activities.single[ActivityFields.type], 'expenseAdded');
         expect(activities.single[ActivityFields.refId], expense.id);
 
         final notifications = await docsOf(FirestorePaths.notifications(hid));
+
         expect(notifications, hasLength(2));
       },
     );
@@ -111,9 +119,11 @@ void main() {
         await amaraSource.addExpense(equalInput());
 
         final debts = await docsOf(FirestorePaths.debts(hid));
+
         final bobDebt = debts.firstWhere(
           (d) => d[DebtFields.debtorUid] == 'bob',
         );
+
         expect(bobDebt[DebtFields.amount], 0);
         expect(bobDebt[DebtFields.creditsApplied], 400);
         expect(bobDebt[DebtFields.status], 'settled');
@@ -137,6 +147,7 @@ void main() {
         amaraSource.addExpense(input),
         throwsA(isA<ExpenseException>()),
       );
+
       expect(await docsOf(FirestorePaths.expenses(hid)), isEmpty);
     });
   });
@@ -146,6 +157,7 @@ void main() {
       'turns a percent split that is not 100 into a ValidationFailure',
       () async {
         final repo = ExpenseRepositoryImpl(remoteDataSource: amaraSource);
+
         final input = NewExpenseInput(
           householdId: hid,
           title: 'Electricity',
@@ -178,6 +190,7 @@ void main() {
   group('deleteExpense', () {
     test('removes expense and debts, refunds credits, adds activity', () async {
       final expense = await amaraSource.addExpense(equalInput());
+
       expect(await creditsOf('bob'), 0);
 
       await amaraSource.deleteExpense(householdId: hid, expenseId: expense.id);
@@ -187,6 +200,7 @@ void main() {
       expect(await creditsOf('bob'), 340);
 
       final activities = await docsOf(FirestorePaths.activities(hid));
+
       expect(
         activities.map((a) => a[ActivityFields.type]),
         containsAll(['expenseAdded', 'expenseDeleted']),
@@ -206,6 +220,7 @@ void main() {
           ),
         ),
       );
+
       expect(await docsOf(FirestorePaths.expenses(hid)), hasLength(1));
     });
 
@@ -213,9 +228,11 @@ void main() {
       final expense = await amaraSource.addExpense(equalInput());
 
       final debts = await db.collection(FirestorePaths.debts(hid)).get();
+
       final chloeDebt = debts.docs.firstWhere(
         (d) => d.data()[DebtFields.debtorUid] == 'chloe',
       );
+
       await chloeDebt.reference.update({DebtFields.status: 'settled'});
 
       await expectLater(
@@ -228,6 +245,7 @@ void main() {
           ),
         ),
       );
+
       expect(await docsOf(FirestorePaths.expenses(hid)), hasLength(1));
       expect(await creditsOf('bob'), 0);
     });
@@ -236,13 +254,14 @@ void main() {
         'they were looked up still blocks the delete', () async {
       final expense = await amaraSource.addExpense(equalInput());
 
-      // Chloe pays her share after the debts were looked up but before the
-      // delete transaction starts.
+      // Chloe pays her share after debts were looked up.
       amaraSource.beforeDeleteTransaction = () async {
         final debts = await db.collection(FirestorePaths.debts(hid)).get();
+
         final chloeDebt = debts.docs.firstWhere(
           (d) => d.data()[DebtFields.debtorUid] == 'chloe',
         );
+
         await chloeDebt.reference.update({DebtFields.status: 'settled'});
       };
 
@@ -259,7 +278,7 @@ void main() {
 
       expect(await docsOf(FirestorePaths.expenses(hid)), hasLength(1));
       expect(await docsOf(FirestorePaths.debts(hid)), hasLength(2));
-      expect(await creditsOf('bob'), 0); // nothing was refunded
+      expect(await creditsOf('bob'), 0);
     });
 
     test(
@@ -271,6 +290,7 @@ void main() {
           householdId: hid,
           expenseId: expense.id,
         );
+
         expect(await creditsOf('bob'), 340);
 
         await expectLater(
@@ -283,7 +303,8 @@ void main() {
             ),
           ),
         );
-        expect(await creditsOf('bob'), 340); // not 680
+
+        expect(await creditsOf('bob'), 340);
       },
     );
 
@@ -291,8 +312,6 @@ void main() {
         'without a second refund', () async {
       final expense = await amaraSource.addExpense(equalInput());
 
-      // A second delete (another device, say) completes after this one has
-      // looked up the debts but before its transaction starts.
       amaraSource.beforeDeleteTransaction = () async {
         await sourceFor('amara')
             .deleteExpense(householdId: hid, expenseId: expense.id);
@@ -310,7 +329,9 @@ void main() {
       );
 
       expect(await creditsOf('bob'), 340);
+
       final activities = await docsOf(FirestorePaths.activities(hid));
+
       expect(
         activities.where((a) => a[ActivityFields.type] == 'expenseDeleted'),
         hasLength(1),
@@ -330,6 +351,7 @@ void main() {
       );
 
       final saved = (await docsOf(FirestorePaths.expenses(hid))).single;
+
       expect(saved[ExpenseFields.title], 'Simba Supermarket');
       expect(saved[ExpenseFields.note], 'bought rice');
       expect(saved[ExpenseFields.totalAmount], 12000);
@@ -344,6 +366,57 @@ void main() {
 
       expect(list, hasLength(1));
       expect(list.single.title, 'Groceries');
+    });
+  });
+
+  group('watchExpenseDebts', () {
+    test('emits only the debts of that expense', () async {
+      final first = await amaraSource.addExpense(equalInput());
+      final second = await amaraSource.addExpense(equalInput(total: 6000));
+
+      final firstDebts = await amaraSource
+          .watchExpenseDebts(householdId: hid, expenseId: first.id)
+          .first;
+
+      final secondDebts = await amaraSource
+          .watchExpenseDebts(householdId: hid, expenseId: second.id)
+          .first;
+
+      expect(firstDebts, hasLength(2));
+      expect(firstDebts.every((d) => d.expenseId == first.id), isTrue);
+
+      expect(
+        secondDebts.map((d) => d.debtorUid),
+        unorderedEquals(['bob', 'chloe']),
+      );
+
+      expect(secondDebts.every((d) => d.expenseId == second.id), isTrue);
+    });
+
+    test('a debt that was paid shows as settled with its method', () async {
+      final expense = await amaraSource.addExpense(equalInput());
+
+      final chloeDoc =
+          (await db
+                  .collection(FirestorePaths.debts(hid))
+                  .where(DebtFields.debtorUid, isEqualTo: 'chloe')
+                  .get())
+              .docs
+              .single;
+
+      await chloeDoc.reference.update({
+        DebtFields.status: 'settled',
+        DebtFields.settlementMethod: 'cash',
+      });
+
+      final debts = await amaraSource
+          .watchExpenseDebts(householdId: hid, expenseId: expense.id)
+          .first;
+
+      final chloe = debts.firstWhere((d) => d.debtorUid == 'chloe');
+
+      expect(chloe.status, DebtStatus.settled);
+      expect(chloe.settlementMethod, SettlementMethod.cash);
     });
   });
 }

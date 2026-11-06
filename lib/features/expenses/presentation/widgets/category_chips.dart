@@ -34,7 +34,7 @@ class CategoryChips extends StatelessWidget {
     final foreground = isSelected ? AppColors.ginFizz : AppColors.sherwoodGreen;
     return ChoiceChip(
       avatar: Icon(_icon(category), size: 18, color: foreground),
-      label: Text(_label(category)),
+      label: Text(label(category)),
       labelStyle: AppTextStyles.label.copyWith(color: foreground),
       selected: isSelected,
       showCheckmark: false,
@@ -48,7 +48,7 @@ class CategoryChips extends StatelessWidget {
     );
   }
 
-  static String _label(ExpenseCategory category) => switch (category) {
+  static String label(ExpenseCategory category) => switch (category) {
     ExpenseCategory.rent => 'Rent',
     ExpenseCategory.utilities => 'Utilities',
     ExpenseCategory.internet => 'Internet',

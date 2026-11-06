@@ -15,6 +15,7 @@ import 'domain/usecases/add_expense.dart';
 import 'domain/usecases/delete_expense.dart';
 import 'domain/usecases/update_expense_note.dart';
 import 'domain/usecases/watch_expenses.dart';
+import 'domain/usecases/watch_expense_debts.dart';
 
 final sl = GetIt.instance;
 
@@ -52,5 +53,8 @@ Future<void> initExpenses() async {
   }
   if (!sl.isRegistered<DeleteExpense>()) {
     sl.registerLazySingleton(() => DeleteExpense(sl()));
+  }
+  if (!sl.isRegistered<WatchExpenseDebts>()) {
+    sl.registerLazySingleton(() => WatchExpenseDebts(sl()));
   }
 }

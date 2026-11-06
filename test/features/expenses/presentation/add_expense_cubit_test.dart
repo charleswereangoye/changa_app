@@ -12,6 +12,7 @@ import 'package:changa_app/features/expenses/domain/repositories/expense_reposit
 import 'package:changa_app/features/expenses/domain/usecases/add_expense.dart';
 import 'package:changa_app/features/expenses/presentation/cubit/add_expense_cubit.dart';
 import 'package:changa_app/features/expenses/presentation/cubit/add_expense_state.dart';
+import 'package:changa_app/features/debts/domain/entities/debt.dart';
 
 class FakeExpenseRepository implements ExpenseRepository {
   NewExpenseInput? lastInput;
@@ -44,6 +45,12 @@ class FakeExpenseRepository implements ExpenseRepository {
   @override
   Stream<List<Expense>> watchExpenses(String householdId) =>
       const Stream.empty();
+
+  @override
+  Stream<List<Debt>> watchExpenseDebts({
+    required String householdId,
+    required String expenseId,
+  }) => const Stream.empty();
 
   @override
   Future<Result<void>> updateExpenseNote({

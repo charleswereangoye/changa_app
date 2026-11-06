@@ -2,6 +2,7 @@
 // Description: ExpenseRepository domain interface
 
 import 'package:changa_app/core/error/result.dart';
+import 'package:changa_app/features/debts/domain/entities/debt.dart';
 
 import '../entities/expense.dart';
 import '../entities/new_expense_input.dart';
@@ -12,6 +13,13 @@ abstract class ExpenseRepository {
   Future<Result<Expense>> addExpense(NewExpenseInput input);
 
   Stream<List<Expense>> watchExpenses(String householdId);
+
+  /// The debts one expense created: one per housemate who owes. Live, so a
+  /// payment shows up while the details sheet is open.
+  Stream<List<Debt>> watchExpenseDebts({
+    required String householdId,
+    required String expenseId,
+  });
 
   /// Only the title and the note can be edited.
   Future<Result<void>> updateExpenseNote({

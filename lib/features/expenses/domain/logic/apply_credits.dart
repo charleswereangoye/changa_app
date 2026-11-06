@@ -5,7 +5,7 @@ import 'dart:math' as math;
 
 /// 1 credit = 10 RWF (100 credits = 1,000 RWF).
 // TODO(C): move to AppConstants once A has pushed app_constants.dart.
-const int _rwfPerCredit = 10;
+const int rwfPerCredit = 10;
 
 abstract final class ApplyCredits {
   /// Uses as many credits as possible without paying more than the share.
@@ -14,9 +14,9 @@ abstract final class ApplyCredits {
     required int share,
     required int creditBalance,
   }) {
-    final maxUsable = share ~/ _rwfPerCredit;
+    final maxUsable = share ~/ rwfPerCredit;
     final creditsUsed = math.max(0, math.min(creditBalance, maxUsable));
-    final amountDue = share - creditsUsed * _rwfPerCredit;
+    final amountDue = share - creditsUsed * rwfPerCredit;
     return (amountDue: amountDue, creditsUsed: creditsUsed);
   }
 }
