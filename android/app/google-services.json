@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "740240029076-9dm9nfv8ddv0fj48njf061i7ec558o64.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.changa_app",
+            "certificate_hash": "9168154697ca87f930d26bb5bf1ac50a724aae85"
+          }
+        },
+        {
           "client_id": "740240029076-jj2ng4ahetgu1a02dns51ocn0lpj57h1.apps.googleusercontent.com",
           "client_type": 3
         }
