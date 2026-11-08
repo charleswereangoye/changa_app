@@ -12,7 +12,6 @@ import '../../features/chores/presentation/pages/chore_roster_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
 import '../../features/debts/presentation/pages/debt_detail_page.dart';
 import '../../features/debts/presentation/pages/settle_up_page.dart';
-import '../../features/expenses/presentation/pages/add_expense_page.dart';
 import '../../features/household/presentation/pages/create_household_page.dart';
 import '../../features/household/presentation/pages/household_created_page.dart';
 import '../../features/household/presentation/pages/join_household_page.dart';
@@ -129,13 +128,6 @@ class AppRouter {
             ],
           ),
         ],
-      ),
-
-      // Expenses
-      GoRoute(
-        path: '/expenses/add',
-        name: RouteNames.addExpense,
-        builder: (context, state) => const AddExpensePage(),
       ),
 
       // Debts & Settling
