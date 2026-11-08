@@ -206,7 +206,10 @@ class SettleCubit extends Cubit<SettleState> {
     final subscription = _subscription;
     _subscription = null;
 
-    await subscription?.cancel();
-    await super.close();
+    // Close the Cubit immediately while awaiting both cleanup operations.
+    await Future.wait<void>([
+      if (subscription != null) subscription.cancel(),
+      super.close(),
+    ]);
   }
 }
