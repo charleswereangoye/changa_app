@@ -1,5 +1,4 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: Remote data source for Activity feed collection
+//Remote data source for Activity feed collection
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:changa_app/core/constants/firestore_paths.dart';
