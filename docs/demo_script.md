@@ -1,61 +1,97 @@
+<!-- Owner: C - Person C (Expenses, Dashboard, Documentation) -->
+<!-- Description: Final video demo script, run-sheet, and camera/screen flow -->
+
 # Demo Script
 
-Target length: 5 minutes. Record the phone screen, then record the voice-over in one clean take. Speak slowly. Show the screen for 2 seconds before talking about it.
+This follows section 9 of the team guide. The video is 10 to 15 minutes, one continuous recording, planned at 14:30. There is no slide deck, no team introductions, no cuts and no speed-ups. Every person speaks, and one person drives the phone at a time.
 
-## Before recording
+## Recording setup
 
-| Check | Done |
+- The **release APK** is installed on a **physical Android phone**. Build it with `flutter build apk --release`.
+- Mirror the phone to the laptop with `scrcpy`. Put the Firebase Console next to it. Both must be legible at **1080p**.
+- Record the laptop screen with OBS or a Meet/Zoom recording.
+- Turn on Android **Show touches**. Turn on Do Not Disturb except for Changa. Keep the screen awake and the phone charged. Grant the notification permission beforehand.
+- Use the headset microphone in a quiet room.
+- Firebase Console tabs open: Authentication, and Firestore on `households`, `members`, `expenses`, `debts`, `chores`, `notifications`.
+
+## Data to prepare before recording
+
+| Item | Who |
 |---|---|
-| Latest `main` pulled, `flutter analyze` and `flutter test` green | |
-| Release APK or `flutter run` on one real Android phone, battery above 50%, Do Not Disturb on | |
-| Three accounts ready: Amara (admin), Bob, Chloe. Bob already joined with the PIN. Chloe NOT joined yet | |
-| Firestore console open in a browser tab on the household's `expenses` and `debts` collections | |
-| Phone language English, clock showing, no other notifications visible | |
-| Bob has some credits (so the credit discount shows in the demo) | |
+| Three accounts, email-verified: Amara (admin), Bob, Chloe | A |
+| One clean household with all 3 members, PIN known | B |
+| Bob has some chore credits, so the credits preview is visible | E |
+| One existing expense ("Rent", RWF 30,000, paid by Amara, equal split) with unpaid debts, **kept for D's nudge and settle segment**. C's expense is created live and deleted live, so D never depends on it | C |
+| One recurring chore template ready to type, assigned across the household | E |
+| Preferences set to the defaults (light theme, cash) so the change is visible | E |
+| Sign-up test data: an empty field and a weak password, and a brand-new email for the real registration | A |
 
-Keep Amara signed in on the phone. A second phone or emulator signed in as Bob is useful for the nudge and settle scenes.
+## The 7 required actions
 
-## Run-sheet
+| # | Required action | Shown by | Time |
+|---|---|---|---|
+| 1 | Cold-start launch | A | 0:00 |
+| 2 | Register, log out, log in (and Google sign-in) | A | 0:30 to 2:45 |
+| 3 | Visit every screen and rotate once | All | 12:45 to 14:30 |
+| 4 | Create, read, update, delete in Firestore with the Console visible | C (expense) and E (chore) | C 5:15 to 7:45, E 10:15 to 12:45 |
+| 5 | A state update that touches two widgets | C (dashboard balance and activity) and E (checkbox, credit badge, Harmony ring) | C 6:45, E 11:15 |
+| 6 | Change a SharedPreferences setting, restart the app, show it persisted | E | 12:15 |
+| 7 | Force a validation error and show the polite message | A (sign-up) and C (add expense) | A 0:45, C 5:15 |
 
-| # | Time | Screen | What to do | What to say |
-|---|---|---|---|---|
-| 1 | 0:00 | Title card | Show the app name and team | "This is Changa, a mobile app that helps student housemates share bills and rotate chores. We are Group 32." |
-| 2 | 0:15 | Login, Home | Sign in as Amara. Dashboard opens | "Amara signs in. The dashboard shows the household's Harmony Score, what she is owed, what she owes, and the latest activity." |
-| 3 | 0:40 | Household | Open household details. Show the 6-digit PIN | "Amara created the household and shares this PIN. A housemate joins with it. Only one household per person." |
-| 4 | 1:00 | Join | On the second phone, Chloe joins with the PIN. Return to Amara's phone | "Chloe joins with the PIN. She appears in the household straight away." |
-| 5 | 1:20 | Add expense | Tap the centre [+]. Enter Groceries, RWF 12,000, category Groceries. Keep Equal split with all three | "Amara paid RWF 12,000 for groceries. The form shows each person's share live: RWF 4,000 each." |
-| 6 | 1:50 | Add expense | Switch to Percent, then Exact amounts. Show the error when the total is wrong, then go back to Equal and save | "We support equal, percent and exact splits. The form blocks a wrong total, and saving only works when it adds up." |
-| 7 | 2:20 | Dashboard | Back on the dashboard. Show balances and the new activity line | "The dashboard updated by itself. Bob's credits were applied to his share, and the activity feed logged the expense." |
-| 8 | 2:45 | Expense details | Open the expense. Show Who pays what: Amara paid, Bob pending (after credits), Chloe pending | "The details sheet shows each person's share and status, and what was reduced by credits." |
-| 9 | 3:10 | Debts (if merged) | Open Bob's debt. Send a nudge. On Bob's phone, show the notification | "Amara sends Bob a friendly nudge. He gets a notification." |
-| 10 | 3:30 | Settle up (if merged) | On Bob's phone, settle with Mobile Money. Switch to Amara's phone | "Bob settles by Mobile Money. Amara's balance and the activity feed update." |
-| 11 | 3:50 | Expense details | Open the expense again. Show Bob as paid and the Delete button disabled with its explanation | "Once someone has paid, the expense can't be deleted. The app explains why, and the database enforces the same rule." |
-| 12 | 4:10 | Chores and Harmony (if merged) | Show the chore roster, mark one done. Return to the dashboard, tap the info icon on Harmony | "Chores rotate between housemates. Finishing them on time raises the household Harmony Score. The info sheet explains how it is calculated." |
-| 13 | 4:30 | Firestore console | Show the expense and its debt documents in the browser | "Everything is stored in Cloud Firestore with security rules, so housemates only see their own household." |
-| 14 | 4:45 | CI | Show the green GitHub Actions run and the test count | "Every pull request runs formatting, analysis and all tests before it can be merged." |
-| 15 | 4:55 | Closing card | Team names and roles | "Thank you. That was Changa." |
+## Timeline
 
-## If a scene fails on camera
+| Time | Who | What |
+|---|---|---|
+| 0:00 to 2:45 | A | Force-stop the app and cold start it (#1). Onboarding. Sign up with an empty field and a weak password: polite errors (#7). Register properly, verify email screen, verify, log out, log in (#2). Log out, sign in with Google. Console: Authentication users. Show the `redirect` code in `app_router.dart`. |
+| 2:45 to 5:15 | B | Create a household and show the PIN. Console: `households`, `householdPins`, `members`. Log in as the second account and join with the PIN. Manage Household: regenerate the PIN and show the change in the console. Show `docs/erd.png` next to the console, then one rule in `firestore.rules`. |
+| 5:15 to 7:45 | C | See the click path below. |
+| 7:45 to 10:15 | D | Debt & Nudge: the itemised breakdown. Send a nudge: the notification document appears in the console and the banner shows on the other device. Try again to show the cooldown message. Settle up with Mobile Money: the debts become `settled` in the console and the balance goes to 0. In a terminal: `flutter analyze` (0 issues) and the coverage summary. |
+| 10:15 to 12:45 | E | Create a recurring chore: 4 documents appear in the console (Create). Complete one: the checkbox, the credit badge and the Harmony ring change together, and the member's credits change in the console (#5). Request a swap, accept it: the assignee changes (Update). Delete a chore (Delete). Preferences: change the theme and default payment method, **fully close the app**, reopen, still saved (#6). |
+| 12:45 to 14:30 | All | A quick tour of every screen with one rotation to landscape (#3), about 20 seconds each: A auth and profile, B household and activity, C dashboard and sheets, D debts and alerts, E chores and preferences. Then GitHub (B): branches, merged PRs with reviews, the commit graph, the contributors page. A: the folder tree (presentation, domain, data) and why Cubit. D: `flutter test` passing. |
 
-- Record the scene again. Never explain a bug on camera.
-- If a screen is not merged yet (scenes 9, 10, 12), skip it and add its time to scene 7 or 8. Do not show a placeholder screen.
-- If the phone is slow, pause 2 seconds after each tap so the cut is clean.
+## C segment click path (5:15 to 7:45)
 
-## Evidence to capture (for the grading appendix)
+| Time | Do | Say |
+|---|---|---|
+| 5:15 | Tap the centre [+]. Tap Save with the title and amount empty | "Add Expense is a bottom sheet driven by a Cubit. Saving with nothing filled in gives a polite message, not a crash (#7)." |
+| 5:40 | Enter "Groceries", RWF 12,000, category Groceries. Keep Equal split with all three | "An equal split of 12,000 over three people is 4,000 each, and the preview updates as I type." |
+| 6:00 | Show the credits preview on Bob's row | "Bob has credits. One credit is RWF 10, and they are applied to his share automatically. The preview shows what he will actually owe." |
+| 6:15 | Switch to Percent. Enter 50 and 40 for two people. Show the error. Fix it to add up to 100 | "A percent split must total 100. The form shows the problem and keeps Save disabled until it is fixed." |
+| 6:40 | Switch back to Equal and save. Switch to the Console | "The expense, the debts and the reduced credits are written together in one transaction. Here is the expense document, its two debt documents, and Bob's credits now lower." |
+| 6:55 | Go to the Dashboard | "The dashboard balance card and the activity list both updated without a refresh (#5). One Firestore stream feeds both through the DashboardCubit." |
+| 7:10 | Open the expense. Show Who pays what | "Expense Details shows each person's share and payment status: paid the bill, pending, or covered by credits." |
+| 7:20 | Edit the note and save. Show the `note` field change in the Console | "That is Update. Only the title and note can change, the amounts are fixed once debts exist." |
+| 7:30 | Delete the expense and confirm. Show the expense and its debts gone in the Console, Bob's credits restored, and the dashboard updated | "That is Delete. The debts are removed and the credits are refunded in one transaction. If anyone had already paid, Delete would be disabled with an explanation, and the database enforces the same rule." |
 
-- Screenshot of each main screen: dashboard, add expense, expense details, debts, chores, activity.
-- Firestore console: one expense, its debts, and the member's credits before and after.
-- GitHub: green CI run, merged pull requests with review comments.
-- Terminal: `flutter test` summary and `flutter analyze` with no issues.
+Hand over to D at 7:45. If the delete is blocked, say why out loud and carry on.
 
-Save them in `docs/evidence/` with clear names (for example `dashboard.png`, `expense-details.png`).
+## When something goes wrong
 
-## Roles on the day
+- Do not cut. Say what happened in one sentence, recover on camera, and keep going. Graders accept a visible, handled problem. They do not accept an edited video.
+- If a tap does not register, pause for 2 seconds and tap again.
+- If someone runs long, the next person starts when the previous one finishes. The 14:30 plan leaves a minute of safety under the 15-minute limit.
 
-| Person | Does |
-|---|---|
-| C (Nelson) | Records scenes 1 to 8 and 11, writes the final cut order |
-| D | Records scenes 9 and 10 |
-| E | Records scene 12 |
-| B | Records scene 13 |
-| A | Records scene 14 and puts the video together |
+## What the graders look for
+
+Say each of these out loud and show the code or the console:
+
+- Widgets: why you chose them, and the variety (lists, cards, sheets, dialogs, tabs, chips, animations)
+- Design match: the app next to Figma, small and large phones, landscape
+- Navigation: how screens connect, the redirect rules, no back-stack surprises
+- State management: the Cubit, the states, why no `setState`
+- Clean Architecture: the three layers, where the logic lives
+- ERD and database: the ERD next to the console, the rules, the indexes
+- CRUD: every action visible in the console, and the UI updating instantly
+- Authentication: both methods, errors, password reset, email verification, session persistence
+- Testing: widget and unit tests running, the coverage number
+- Preferences: saved and restored after a restart
+- GitHub: branches, PRs with real reviews, balanced commits
+- Validation: the rules and the polite messages
+
+Everyone must be able to explain any file in the repo, including AI-written parts. Practise this before recording.
+
+## Dry run and recording
+
+- Full dry run with the release APK and `scrcpy`: **Thu 12 Nov**. Time each segment against the table above.
+- Recording day: after the dry run is clean.
+- Evidence screenshots go in `docs/evidence/`: dashboard, add expense, expense details, debts, chores, activity, plus a green CI run and the `flutter test` summary.
