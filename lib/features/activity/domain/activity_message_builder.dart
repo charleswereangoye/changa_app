@@ -1,5 +1,4 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: Pure function formatting activity events into human-readable text
+// Pure function formatting activity events into human-readable text
 
 import 'package:intl/intl.dart';
 import 'package:changa_app/core/utils/currency_formatter.dart';
