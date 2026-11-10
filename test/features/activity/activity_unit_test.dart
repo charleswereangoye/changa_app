@@ -64,7 +64,6 @@ void main() {
     createdAt: septTime,
   );
 
-   
   // 1. DATA LAYER: ActivityRemoteDataSourceImpl & ActivityRepositoryImpl
   group('ActivityRemoteDataSourceImpl & ActivityRepositoryImpl', () {
     late FakeFirebaseFirestore firestore;
@@ -199,7 +198,6 @@ void main() {
       );
     });
   });
-
 
   // 2. DOMAIN LAYER: ActivityMessageBuilder
   group('ActivityMessageBuilder', () {
@@ -375,7 +373,6 @@ void main() {
     });
   });
 
-  
   // 3. PRESENTATION LAYER: ActivityCubit
   group('ActivityCubit', () {
     late MockWatchMonthActivity watchMonth;

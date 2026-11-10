@@ -1,4 +1,4 @@
-﻿// Activity History Screen: month tabs, search, sticky date headers, activity list
+// Activity History Screen: month tabs, search, sticky date headers, activity list
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -704,4 +704,3 @@ class _EmptyActivityView extends StatelessWidget {
     );
   }
 }
-

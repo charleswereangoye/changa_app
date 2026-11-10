@@ -13,13 +13,10 @@ class ActivityRemoteDataSourceImpl implements ActivityRemoteDataSource {
   final FirebaseFirestore _firestore;
 
   ActivityRemoteDataSourceImpl({FirebaseFirestore? firestore})
-      : _firestore = firestore ?? FirebaseFirestore.instance;
+    : _firestore = firestore ?? FirebaseFirestore.instance;
 
   @override
-  Stream<List<ActivityModel>> watchRecent(
-    String householdId, {
-    int limit = 5,
-  }) {
+  Stream<List<ActivityModel>> watchRecent(String householdId, {int limit = 5}) {
     final cleanHouseholdId = householdId.trim();
     if (cleanHouseholdId.isEmpty || limit <= 0) {
       return Stream.value(const <ActivityModel>[]);
@@ -38,10 +35,7 @@ class ActivityRemoteDataSourceImpl implements ActivityRemoteDataSource {
   }
 
   @override
-  Stream<List<ActivityModel>> watchMonth(
-    String householdId,
-    DateTime month,
-  ) {
+  Stream<List<ActivityModel>> watchMonth(String householdId, DateTime month) {
     final cleanHouseholdId = householdId.trim();
     if (cleanHouseholdId.isEmpty) {
       return Stream.value(const <ActivityModel>[]);
