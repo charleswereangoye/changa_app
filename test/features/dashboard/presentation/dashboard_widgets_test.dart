@@ -162,6 +162,51 @@ void main() {
       expect(find.byKey(const Key('balance-settled')), findsOneWidget);
     });
 
+    testWidgets('hides people whose debts cancelled out', (tester) async {
+      await _show(
+        tester,
+        BalanceSummaryCard(
+          status: DashboardSection.ready,
+          summary: BalanceSummary(
+            youAreOwed: 0,
+            youOwe: 1500,
+            net: -1500,
+            byMember: const {'chloe': 0, 'dan': -1500},
+          ),
+          names: _names,
+          onRetry: () {},
+        ),
+      );
+
+      expect(find.byKey(const Key('balance-row-chloe')), findsNothing);
+      expect(find.text('Chloe'), findsNothing);
+      expect(find.byKey(const Key('balance-row-dan')), findsOneWidget);
+      expect(find.text('you owe'), findsOneWidget);
+    });
+
+    testWidgets('only cancelled-out people reads as settled up', (
+      tester,
+    ) async {
+      await _show(
+        tester,
+        BalanceSummaryCard(
+          status: DashboardSection.ready,
+          summary: BalanceSummary(
+            youAreOwed: 0,
+            youOwe: 0,
+            net: 0,
+            byMember: const {'chloe': 0, 'dan': 0},
+          ),
+          names: _names,
+          onRetry: () {},
+        ),
+      );
+
+      expect(find.byKey(const Key('balance-settled')), findsOneWidget);
+      expect(find.byKey(const Key('balance-row-chloe')), findsNothing);
+      expect(find.text('you owe'), findsNothing);
+    });
+
     testWidgets('failed shows a retry button', (tester) async {
       var retries = 0;
       await _show(

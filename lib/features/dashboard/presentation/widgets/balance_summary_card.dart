@@ -75,8 +75,10 @@ class _Loaded extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final data = summary;
-    final entries = (data?.byMember.entries.toList() ?? [])
-      ..sort((a, b) => b.value.abs().compareTo(a.value.abs()));
+    final entries =
+        (data?.byMember.entries.where((entry) => entry.value != 0).toList() ??
+              <MapEntry<String, int>>[])
+          ..sort((a, b) => b.value.abs().compareTo(a.value.abs()));
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
