@@ -1,4 +1,4 @@
-// Cubit managing Activity history screen, month filtering, search, and recent dashboard feed
+//  Cubit managing Activity history screen, month filtering, search, and recent dashboard feed
 
 import 'dart:async';
 
@@ -13,8 +13,8 @@ import 'package:changa_app/features/activity/domain/usecases/watch_recent_activi
 part 'activity_state.dart';
 
 class ActivityCubit extends Cubit<ActivityState> {
-  final WatchMonthActivity? _watchMonthActivity;
-  final WatchRecentActivity? _watchRecentActivity;
+  final WatchMonthActivity? watchMonthActivity;
+  final WatchRecentActivity? watchRecentActivity;
   final DateTime Function() _clock;
 
   StreamSubscription<List<Activity>>? _monthSubscription;
@@ -28,8 +28,8 @@ class ActivityCubit extends Cubit<ActivityState> {
   int _session = 0;
 
   ActivityCubit({
-    this._watchMonthActivity,
-    this._watchRecentActivity,
+    this.watchMonthActivity,
+    this.watchRecentActivity,
     DateTime Function()? clock,
   }) : _clock = clock ?? DateTime.now,
        super(const ActivityStateInitial());
@@ -94,15 +94,13 @@ class ActivityCubit extends Cubit<ActivityState> {
       ),
     );
 
-    await previousMonthSub?.cancel();
-    await previousRecentSub?.cancel();
-
-    if (!_isCurrent(version)) return;
-
     if (!isSameHousehold || _recentSubscription == null) {
       _subscribeRecent(cleanHouseholdId, version);
     }
     _subscribeMonth(cleanHouseholdId, targetMonth, version);
+
+    await previousMonthSub?.cancel();
+    await previousRecentSub?.cancel();
   }
 
   /// Convenience alias for loading a household's activity history.
@@ -125,7 +123,7 @@ class ActivityCubit extends Cubit<ActivityState> {
     String householdId, {
     int limit = 5,
   }) {
-    final watcher = _watchRecentActivity;
+    final watcher = watchRecentActivity;
     if (watcher == null || householdId.trim().isEmpty) {
       return Stream.value(const <Activity>[]);
     }
@@ -159,10 +157,9 @@ class ActivityCubit extends Cubit<ActivityState> {
       ),
     );
 
-    await previousMonthSub?.cancel();
-    if (!_isCurrent(version)) return;
-
     _subscribeMonth(currentHousehold, normalized, version);
+
+    await previousMonthSub?.cancel();
   }
 
   /// Updates the search query and filters the currently loaded month's lines.
@@ -226,7 +223,7 @@ class ActivityCubit extends Cubit<ActivityState> {
   }
 
   void _subscribeRecent(String householdId, int version) {
-    final recentWatcher = _watchRecentActivity;
+    final recentWatcher = watchRecentActivity;
     if (recentWatcher == null) return;
 
     try {
@@ -259,7 +256,7 @@ class ActivityCubit extends Cubit<ActivityState> {
   }
 
   void _subscribeMonth(String householdId, DateTime targetMonth, int version) {
-    final monthWatcher = _watchMonthActivity;
+    final monthWatcher = watchMonthActivity;
     if (monthWatcher == null) {
       emit(
         ActivityStateFailure(
