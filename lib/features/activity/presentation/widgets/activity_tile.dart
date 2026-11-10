@@ -158,8 +158,8 @@ class ActivityTile extends StatelessWidget {
                 ),
                 if (trailing != null) ...[
                   const SizedBox(width: AppSpacing.sm),
-                  Flexible(
-                    flex: 0,
+                  ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 110),
                     child: Text(
                       trailing,
                       maxLines: 1,
