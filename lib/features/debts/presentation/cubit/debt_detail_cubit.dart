@@ -38,14 +38,14 @@ class DebtDetailCubit extends Cubit<DebtDetailState> {
   bool _nudgeInFlight = false;
 
   Future<void> load({bool force = false}) async {
-    if (isClosed || _nudgeInFlight) return;
-    if (!force && _subscription != null) return;
+    if (isClosed) return;
+    if (!force && (_subscription != null || _nudgeInFlight)) return;
 
     final version = ++_version;
     final previous = _subscription;
     _subscription = null;
 
-    emit(DebtDetailState(status: DebtDetailStatus.loading));
+    emit(state.copyWith(status: DebtDetailStatus.loading, clearFailure: true));
 
     await previous?.cancel();
     if (!_isCurrent(version)) return;
@@ -144,7 +144,6 @@ class DebtDetailCubit extends Cubit<DebtDetailState> {
     if (isClosed || _nudgeInFlight || !state.canNudge) return;
 
     _nudgeInFlight = true;
-    final version = _version;
 
     emit(
       state.copyWith(nudgeStatus: NudgeStatus.sending, clearNudgeFailure: true),
@@ -157,7 +156,9 @@ class DebtDetailCubit extends Cubit<DebtDetailState> {
         toUid: otherUid,
       );
 
-      if (!_isCurrent(version)) return;
+      // This Cubit belongs to one fixed household and member pair.
+      // Restarting its data stream does not invalidate the nudge result.
+      if (isClosed) return;
 
       final failure = result.failureOrNull;
       emit(
@@ -168,7 +169,7 @@ class DebtDetailCubit extends Cubit<DebtDetailState> {
         ),
       );
     } catch (error) {
-      if (_isCurrent(version)) {
+      if (!isClosed) {
         emit(
           state.copyWith(
             nudgeStatus: NudgeStatus.failure,

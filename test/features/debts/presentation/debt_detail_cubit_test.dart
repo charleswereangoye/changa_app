@@ -267,6 +267,50 @@ void main() {
     expect(cubit.state.failure, isNull);
   });
 
+  test('retry recovers during a nudge without sending it twice', () async {
+    final gate = Completer<Result<void>>();
+
+    when(() => sendNudge(householdId: 'home', fromUid: 'me', toUid: 'kevin'))
+        .thenAnswer((_) => gate.future);
+
+    await ready([_debt('incoming')]);
+
+    final sending = cubit.sendNudge();
+
+    debts.addError(const NetworkFailure());
+    await pumpEventQueue();
+
+    expect(cubit.state.status, DebtDetailStatus.failure);
+    expect(cubit.state.nudgeStatus, NudgeStatus.sending);
+
+    await cubit.retry();
+
+    expect(cubit.state.status, DebtDetailStatus.loading);
+    expect(cubit.state.failure, isNull);
+    expect(cubit.state.nudgeStatus, NudgeStatus.sending);
+
+    debts.add([_debt('incoming', amount: 8000)]);
+    expenses.add([expense]);
+    await pumpEventQueue();
+
+    expect(cubit.state.status, DebtDetailStatus.loaded);
+    expect(cubit.state.netBalance, 8000);
+    expect(cubit.state.canNudge, isFalse);
+    expect(cubit.state.canSettle, isFalse);
+
+    await cubit.sendNudge();
+
+    gate.complete(Result<void>.success(null));
+    await sending;
+
+    expect(cubit.state.nudgeStatus, NudgeStatus.sent);
+    expect(cubit.state.canSettle, isTrue);
+
+    verify(() => watchDebts('home', 'me', 'kevin')).called(2);
+    verify(() => sendNudge(householdId: 'home', fromUid: 'me', toUid: 'kevin'))
+        .called(1);
+  });
+
   test('closing during a nudge ignores its late result', () async {
     final gate = Completer<Result<void>>();
 
