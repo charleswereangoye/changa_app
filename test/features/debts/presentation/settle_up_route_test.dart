@@ -242,6 +242,38 @@ void main() {
     verifyZeroInteractions(getBalances);
   });
 
+  testWidgets(
+    'uses Housemate while profiles load, including settlement success',
+    (tester) async {
+      final gate = Completer<Result<List<AppUser>>>();
+
+      when(() => getUsers(any())).thenAnswer((_) => gate.future);
+
+      await ready(tester);
+
+      final cubit = pageCubit(tester);
+
+      expect(find.text('Housemate'), findsOneWidget);
+      expect(find.text('Former member'), findsNothing);
+
+      await cubit.confirm();
+      await flush(tester);
+
+      expect(find.text('All settled with Housemate'), findsOneWidget);
+      expect(find.text('All settled with Former member'), findsNothing);
+
+      gate.complete(
+        Result<List<AppUser>>.success([_user('kevin', name: 'Kevin')]),
+      );
+      await flush(tester);
+
+      expect(find.text('All settled with Kevin'), findsOneWidget);
+      expect(pageCubit(tester), same(cubit));
+
+      verify(() => getBalances(householdId: 'home', meUid: 'me')).called(1);
+    },
+  );
+
   testWidgets('loads saved Bank Transfer and uses it for confirmation', (
     tester,
   ) async {

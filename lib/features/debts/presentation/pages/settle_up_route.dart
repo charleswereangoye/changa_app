@@ -198,7 +198,11 @@ class _HouseholdSettlementState extends State<_HouseholdSettlement> {
           child: StreamBuilder<Map<String, String>>(
             stream: _memberNames,
             builder: (context, namesSnapshot) {
-              return SettleUpPage(memberNames: namesSnapshot.data ?? const {});
+              return SettleUpPage(
+                memberNames: namesSnapshot.data ?? const {},
+                memberNamesReady:
+                    namesSnapshot.hasData && !namesSnapshot.hasError,
+              );
             },
           ),
         );

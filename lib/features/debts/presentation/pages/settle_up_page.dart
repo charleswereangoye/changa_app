@@ -10,14 +10,25 @@ import '../cubit/settle_cubit.dart';
 import '../widgets/payment_method_selector.dart';
 
 class SettleUpPage extends StatelessWidget {
-  const SettleUpPage({super.key, this.memberNames = const {}, this.onDone});
+  const SettleUpPage({
+    super.key,
+    this.memberNames = const {},
+    this.memberNamesReady = true,
+    this.onDone,
+  });
 
   final Map<String, String> memberNames;
+  final bool memberNamesReady;
   final VoidCallback? onDone;
 
   String _nameOf(String? uid) {
     final name = memberNames[uid]?.trim();
-    return name == null || name.isEmpty ? 'Former member' : name;
+
+    if (name != null && name.isNotEmpty) {
+      return name;
+    }
+
+    return memberNamesReady ? 'Former member' : 'Housemate';
   }
 
   void _done(BuildContext context) {
