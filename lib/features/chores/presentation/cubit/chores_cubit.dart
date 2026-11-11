@@ -11,18 +11,15 @@ import 'package:changa_app/features/chores/domain/usecases/watch_chores_for_day.
 
 part 'chores_state.dart';
 
-/// Drives the Chore Roster: which day is open, its chores, and ticking
-/// a chore off.
+/// Drives the Chore Roster: which day is open, its chores, and ticking.
 class ChoresCubit extends Cubit<ChoresState> {
   ChoresCubit({
-    required WatchChoresForDay watchChoresForDay,
-    required CompleteChore completeChore,
+    required this._watchChoresForDay,
+    required this._completeChore,
     required this.householdId,
     required this.meUid,
     DateTime Function()? clock,
-  }) : _watchChoresForDay = watchChoresForDay,
-       _completeChore = completeChore,
-       super(_firstState((clock ?? DateTime.now)()));
+  }) : super(_firstState((clock ?? DateTime.now)()));
 
   final WatchChoresForDay _watchChoresForDay;
   final CompleteChore _completeChore;
