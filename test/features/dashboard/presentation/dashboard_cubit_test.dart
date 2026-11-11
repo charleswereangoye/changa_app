@@ -48,6 +48,17 @@ Chore _doneOnTime() => Chore(
   createdAt: DateTime(2026, 10, 1),
 );
 
+Chore _pendingChore() => Chore(
+  id: 'c2',
+  title: 'Take out the bins',
+  difficulty: ChoreDifficulty.easy,
+  assignedToUid: 'amara',
+  dueDate: DateTime(2026, 11, 10),
+  status: ChoreStatus.pending,
+  createdByUid: 'amara',
+  createdAt: DateTime(2026, 11, 1),
+);
+
 Activity _activity(String id) => Activity(
   id: id,
   type: ActivityType.expenseAdded,
@@ -442,10 +453,47 @@ void main() {
 
   test('a brand-new household reads as empty', () async {
     await cubit.start(householdId: 'h1', uid: 'amara');
-    pending.add(const []);
+    await loadAll();
     activity.add(const []);
     await pumpEventQueue();
 
     expect(cubit.state.isEmptyHousehold, isTrue);
+  });
+
+  test(
+    'a household with only a chore coming up is not empty and keeps Harmony',
+    () async {
+      await cubit.start(householdId: 'h1', uid: 'amara');
+      await loadAll(choreList: [_pendingChore()]);
+      activity.add(const []);
+      await pumpEventQueue();
+
+      expect(cubit.state.harmonyStatus, DashboardSection.ready);
+      expect(cubit.state.harmony, isNull);
+      expect(cubit.state.choreCount, 1);
+      expect(cubit.state.isEmptyHousehold, isFalse);
+    },
+  );
+
+  test('a household with only finished chores keeps its score', () async {
+    await cubit.start(householdId: 'h1', uid: 'amara');
+    await loadAll(choreList: [_doneOnTime()]);
+    activity.add(const []);
+    await pumpEventQueue();
+
+    expect(cubit.state.harmony!.value, 100);
+    expect(cubit.state.isEmptyHousehold, isFalse);
+  });
+
+  test('a failed chores source never reads as an empty household', () async {
+    await cubit.start(householdId: 'h1', uid: 'amara');
+    pending.add(const []);
+    debtsSince.add(const []);
+    chores.addError(Exception('chores down'));
+    activity.add(const []);
+    await pumpEventQueue();
+
+    expect(cubit.state.harmonyStatus, DashboardSection.failed);
+    expect(cubit.state.isEmptyHousehold, isFalse);
   });
 }
