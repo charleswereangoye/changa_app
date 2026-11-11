@@ -1,8 +1,14 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../domain/services/preferences_service.dart';
+import 'package:changa_app/features/profile/domain/services/preferences_service.dart';
 
 /// Implements the preferences contract used by PreferencesCubit.
+///
+/// The futures returned by [setString] and [setBool] complete with a
+/// [StateError] if SharedPreferences reports that a save failed.
+/// Callers must await these methods and catch save failures to provide
+/// appropriate feedback to the user.
+
 class SharedPreferencesService implements PreferencesService {
   const SharedPreferencesService(this._preferences);
 
