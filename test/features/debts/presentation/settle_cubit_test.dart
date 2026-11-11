@@ -157,6 +157,54 @@ void main() {
     },
   );
 
+  for (final includeZeroEntry in [true, false]) {
+    test('clears an initial selection whose balance is '
+        '${includeZeroEntry ? 'zero' : 'missing'}', () async {
+      await cubit.load();
+
+      balances.add(
+        BalanceSummary(
+          youAreOwed: 0,
+          youOwe: 4000,
+          net: -4000,
+          byMember: {if (includeZeroEntry) 'kevin': 0, 'grace': -4000},
+        ),
+      );
+
+      expect(cubit.state.selectedOtherUid, isNull);
+      expect(cubit.state.canConfirm, isFalse);
+
+      cubit.selectMember('grace');
+
+      expect(cubit.state.selectedOtherUid, 'grace');
+      expect(cubit.state.selectedBalance, -4000);
+      expect(cubit.state.canConfirm, isTrue);
+    });
+  }
+
+  test('clears an idle selection when its live balance reaches zero', () async {
+    await ready();
+    cubit.selectMethod(SettlementMethod.bank);
+
+    balances.add(
+      BalanceSummary(
+        youAreOwed: 0,
+        youOwe: 4000,
+        net: -4000,
+        byMember: {'kevin': 0, 'grace': -4000},
+      ),
+    );
+
+    expect(cubit.state.selectedOtherUid, isNull);
+    expect(cubit.state.canConfirm, isFalse);
+    expect(cubit.state.method, SettlementMethod.bank);
+
+    cubit.selectMember('grace');
+
+    expect(cubit.state.canConfirm, isTrue);
+    expect(cubit.state.method, SettlementMethod.bank);
+  });
+
   test('confirms the selected member with the selected method', () async {
     await ready();
 

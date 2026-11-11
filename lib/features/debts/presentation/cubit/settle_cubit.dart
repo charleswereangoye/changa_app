@@ -75,10 +75,20 @@ class SettleCubit extends Cubit<SettleState> {
             (summary) {
               if (!_isCurrent(version)) return;
 
+              final selectedUid = state.selectedOtherUid;
+              final clearSelection =
+                  !_submitting &&
+                  state.action != SettlementAction.success &&
+                  selectedUid != null &&
+                  (summary.byMember[selectedUid] ?? 0) == 0;
+
               emit(
                 state.copyWith(
                   status: SettleStatus.loaded,
                   summary: summary,
+                  clearSelection: clearSelection,
+                  action: clearSelection ? SettlementAction.idle : state.action,
+                  clearActionFailure: clearSelection,
                   clearFailure: true,
                 ),
               );
