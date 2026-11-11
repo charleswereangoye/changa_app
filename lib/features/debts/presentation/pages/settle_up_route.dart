@@ -7,7 +7,7 @@ import '../../../../core/enums/settlement_method.dart';
 import '../../../auth/domain/entities/app_user.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../household/domain/usecases/watch_members.dart';
-import '../../../profile/domain/services/preferences_service.dart';
+import '../../../profile/domain/services/preferences_store.dart';
 import '../../../profile/domain/usecases/get_users_by_ids.dart';
 import '../../../profile/domain/usecases/watch_user.dart';
 import '../../domain/usecases/get_balance_summary.dart';
@@ -161,7 +161,7 @@ class _HouseholdSettlementState extends State<_HouseholdSettlement> {
   }
 
   Future<SettlementMethod> _loadDefaultMethod() async {
-    final raw = await GetIt.instance<PreferencesService>().getString(
+    final raw = await GetIt.instance<PreferencesStore>().getString(
       PrefKeys.defaultSettlementMethod,
       fallback: SettlementMethod.momo.name,
     );

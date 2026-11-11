@@ -15,7 +15,7 @@ import 'package:changa_app/features/debts/presentation/pages/settle_up_page.dart
 import 'package:changa_app/features/debts/presentation/pages/settle_up_route.dart';
 import 'package:changa_app/features/household/domain/entities/member.dart';
 import 'package:changa_app/features/household/domain/usecases/watch_members.dart';
-import 'package:changa_app/features/profile/domain/services/preferences_service.dart';
+import 'package:changa_app/features/profile/domain/services/preferences_store.dart';
 import 'package:changa_app/features/profile/domain/usecases/get_users_by_ids.dart';
 import 'package:changa_app/features/profile/domain/usecases/watch_user.dart';
 import 'package:flutter/material.dart';
@@ -36,7 +36,7 @@ class _MockGetBalances extends Mock implements GetBalanceSummary {}
 
 class _MockSettleBetween extends Mock implements SettleBetween {}
 
-class _MockPreferences extends Mock implements PreferencesService {}
+class _MockPreferences extends Mock implements PreferencesStore {}
 
 AppUser _user(
   String uid, {
@@ -143,7 +143,7 @@ void main() {
     sl.registerSingleton<GetUsersByIds>(getUsers);
     sl.registerSingleton<GetBalanceSummary>(getBalances);
     sl.registerSingleton<SettleBetween>(settleBetween);
-    sl.registerSingleton<PreferencesService>(preferences);
+    sl.registerSingleton<PreferencesStore>(preferences);
   });
 
   tearDown(() async {

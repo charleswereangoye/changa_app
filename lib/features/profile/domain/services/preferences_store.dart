@@ -1,4 +1,4 @@
-abstract class PreferencesService {
+abstract class PreferencesStore {
   Future<String> getString(String key, {required String fallback});
   Future<bool> getBool(String key, {required bool fallback});
   Future<void> setString(String key, String value);

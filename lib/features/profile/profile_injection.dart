@@ -13,15 +13,15 @@ import 'presentation/cubit/profile_cubit.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'data/services/shared_preferences_service.dart';
-import 'domain/services/preferences_service.dart';
+import 'domain/services/preferences_store.dart';
 
 final sl = GetIt.instance;
 
 Future<void> initProfile() async {
-  if (!sl.isRegistered<PreferencesService>()) {
+  if (!sl.isRegistered<PreferencesStore>()) {
     final preferences = await SharedPreferences.getInstance();
 
-    sl.registerSingleton<PreferencesService>(
+    sl.registerSingleton<PreferencesStore>(
       SharedPreferencesService(preferences),
     );
   }
