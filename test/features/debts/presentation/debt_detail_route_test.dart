@@ -18,6 +18,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:changa_app/core/error/failures.dart';
 
 class _MockAuthCubit extends MockCubit<AuthState> implements AuthCubit {}
 
@@ -335,6 +336,40 @@ void main() {
 
     verify(() => watchDebts('grace-home', 'grace', 'kevin')).called(1);
     expect(find.text('Kevin owes you'), findsOneWidget);
+  });
+
+  testWidgets('housemate profile permission error preserves the debt page', (
+    tester,
+  ) async {
+    await ready(tester);
+
+    expect(find.text('Kevin owes you'), findsOneWidget);
+
+    final activeDebts = debtStreams['home']!.last;
+    final activeExpenses = expenseStreams['home']!.last;
+
+    profiles['kevin']!.last.addError(const PermissionFailure());
+    await flush(tester);
+
+    expect(find.text('Former member owes you'), findsOneWidget);
+    expect(find.text('Kevin owes you'), findsNothing);
+
+    expect(
+      find.text('Your profile could not be loaded. Please try again later.'),
+      findsNothing,
+    );
+
+    expect(activeDebts.hasListener, isTrue);
+    expect(activeExpenses.hasListener, isTrue);
+
+    // The debt stream remains usable after the profile error.
+    await emitBalance(tester);
+
+    expect(find.text('Former member owes you'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+
+    verify(() => watchDebts('home', 'me', 'kevin')).called(1);
+    verify(() => watchExpenses('home')).called(1);
   });
 
   testWidgets('profile errors show a friendly message', (tester) async {
