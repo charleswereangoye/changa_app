@@ -170,7 +170,11 @@ void main() {
     }
   }
 
-  Future<void> mount(WidgetTester tester, {AuthState? initialState}) async {
+  Future<void> mount(
+    WidgetTester tester, {
+    AuthState? initialState,
+    String otherUid = 'kevin',
+  }) async {
     whenListen(
       auth,
       authStates.stream,
@@ -182,7 +186,7 @@ void main() {
         theme: AppTheme.lightTheme,
         home: BlocProvider<AuthCubit>.value(
           value: auth,
-          child: const SettleUpRoute(otherUid: 'kevin'),
+          child: SettleUpRoute(otherUid: otherUid),
         ),
       ),
     );
@@ -225,6 +229,54 @@ void main() {
       find.text('Please sign in to settle shared balances.'),
       findsOneWidget,
     );
+    verifyZeroInteractions(watchUser);
+    verifyZeroInteractions(getBalances);
+  });
+
+  for (final otherUid in ['', 'all']) {
+    testWidgets('opens without a preselected member for "$otherUid"', (
+      tester,
+    ) async {
+      await mount(tester, otherUid: otherUid);
+
+      profiles['me']!.last.add(_user('me'));
+      await flush(tester);
+      await emitBalance(tester);
+
+      final cubit = pageCubit(tester);
+
+      expect(cubit.state.selectedOtherUid, isNull);
+      expect(cubit.state.canConfirm, isFalse);
+      expect(find.text('Kevin'), findsOneWidget);
+      expect(find.text('Choose a housemate to settle with.'), findsNothing);
+
+      await tester.tap(find.byKey(const ValueKey('select-settlement-kevin')));
+      await flush(tester);
+
+      expect(cubit.state.selectedOtherUid, 'kevin');
+      expect(cubit.state.canConfirm, isTrue);
+
+      await cubit.confirm();
+      await flush(tester);
+
+      expect(find.text('All settled with Kevin'), findsOneWidget);
+
+      verify(
+        () => settleBetween(
+          householdId: 'home',
+          meUid: 'me',
+          otherUid: 'kevin',
+          method: 'bank',
+        ),
+      ).called(1);
+    });
+  }
+
+  testWidgets('still rejects settling with myself', (tester) async {
+    await mount(tester, otherUid: 'me');
+
+    expect(find.text('Choose a housemate to settle with.'), findsOneWidget);
+
     verifyZeroInteractions(watchUser);
     verifyZeroInteractions(getBalances);
   });

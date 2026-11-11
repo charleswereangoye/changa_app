@@ -16,7 +16,7 @@ import '../cubit/settle_cubit.dart';
 import 'settle_up_page.dart';
 
 class SettleUpRoute extends StatelessWidget {
-  const SettleUpRoute({super.key, required this.otherUid});
+  const SettleUpRoute({super.key, this.otherUid = ''});
 
   final String otherUid;
 
@@ -34,14 +34,19 @@ class SettleUpRoute extends StatelessWidget {
           );
         }
 
-        if (otherUid.isEmpty || otherUid == state.user.uid) {
+        final requestedUid = otherUid.trim();
+        final selectedUid = requestedUid.isEmpty || requestedUid == 'all'
+            ? ''
+            : requestedUid;
+
+        if (selectedUid == state.user.uid) {
           return _routeScaffold(message: 'Choose a housemate to settle with.');
         }
 
         return _UserSettlement(
-          key: ValueKey((state.user.uid, otherUid)),
+          key: ValueKey((state.user.uid, selectedUid)),
           uid: state.user.uid,
-          otherUid: otherUid,
+          otherUid: selectedUid,
         );
       },
     );
@@ -192,7 +197,7 @@ class _HouseholdSettlementState extends State<_HouseholdSettlement> {
             settleBetween: sl<SettleBetween>(),
             householdId: widget.householdId,
             meUid: widget.uid,
-            initialOtherUid: widget.otherUid,
+            initialOtherUid: widget.otherUid.isEmpty ? null : widget.otherUid,
             defaultMethod: snapshot.data!,
           )..load(),
           child: StreamBuilder<Map<String, String>>(
