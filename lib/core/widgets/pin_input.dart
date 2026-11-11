@@ -3,9 +3,17 @@ import 'package:flutter/services.dart';
 
 class PinInput extends StatefulWidget {
   final void Function(String) onCompleted;
+  final ValueChanged<String>? onChanged;
   final bool hasError;
+  final bool enabled;
 
-  const PinInput({super.key, required this.onCompleted, this.hasError = false});
+  const PinInput({
+    super.key,
+    required this.onCompleted,
+    this.onChanged,
+    this.hasError = false,
+    this.enabled = true,
+  });
 
   @override
   State<PinInput> createState() => _PinInputState();
@@ -24,133 +32,151 @@ class _PinInputState extends State<PinInput> {
 
   @override
   void dispose() {
-    for (var controller in _controllers) {
+    for (final controller in _controllers) {
       controller.dispose();
     }
-    for (var node in _focusNodes) {
+    for (final node in _focusNodes) {
       node.dispose();
     }
     super.dispose();
   }
 
-  void _checkCompletion() {
-    final pin = _controllers.map((c) => c.text).join();
-    if (pin.length == 6) {
+  String _currentPin() => _controllers.map((c) => c.text).join();
+
+  void _notifyPinChanged({bool checkCompletion = true}) {
+    final pin = _currentPin();
+    widget.onChanged?.call(pin);
+    if (checkCompletion && pin.length == 6) {
       widget.onCompleted(pin);
     }
   }
 
   void _onChanged(String value, int index) {
-    if (value.isEmpty) return;
+    if (!widget.enabled) return;
 
-    // Handle single character replacement (e.g., box had '5', user types '7' -> value is '57')
+    if (value.isEmpty) {
+      _notifyPinChanged(checkCompletion: false);
+      return;
+    }
+
     if (value.length == 2) {
-      // Keep only the newly typed digit
       _controllers[index].text = value.substring(1);
-
       if (index < 5) {
         _focusNodes[index + 1].requestFocus();
       } else {
         _focusNodes[index].unfocus();
-        _checkCompletion();
       }
+      _notifyPinChanged();
       return;
     }
 
-    // Handle Paste: Intercept strings > 2 chars, sanitize, and distribute
     if (value.length > 2) {
       final pastedText = value.replaceAll(RegExp(r'[^0-9]'), '');
-
-      // Clear the box that received the paste so it doesn't hold the raw long string
       _controllers[index].text = '';
 
       for (int i = 0; i < 6; i++) {
-        if (i < pastedText.length) {
-          _controllers[i].text = pastedText[i];
-        }
+        _controllers[i].text = i < pastedText.length ? pastedText[i] : '';
       }
 
       if (pastedText.length >= 6) {
         _focusNodes[5].unfocus();
-        _checkCompletion();
       } else {
         _focusNodes[pastedText.length].requestFocus();
       }
+      _notifyPinChanged();
       return;
     }
 
-    // Handle normal typing auto-advance (length == 1)
     if (index < 5) {
       _focusNodes[index + 1].requestFocus();
     } else {
       _focusNodes[index].unfocus();
-      _checkCompletion();
     }
+    _notifyPinChanged();
   }
 
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
 
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: List.generate(6, (index) {
-        return SizedBox(
-          width: 48,
-          height: 56,
-          child: Focus(
-            // Catch backspace when the field is already empty to advance backward
-            onKeyEvent: (node, event) {
-              if (event is KeyDownEvent &&
-                  event.logicalKey == LogicalKeyboardKey.backspace) {
-                if (_controllers[index].text.isEmpty && index > 0) {
-                  _focusNodes[index - 1].requestFocus();
-                  _controllers[index - 1].clear();
-                  return KeyEventResult.handled;
-                }
-              }
-              return KeyEventResult.ignored;
-            },
-            child: TextField(
-              controller: _controllers[index],
-              focusNode: _focusNodes[index],
-              keyboardType: TextInputType.number,
-              textAlign: TextAlign.center,
-              maxLength: 6, // Unlocks paste capacity
-              inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: widget.hasError
-                    ? colorScheme.error
-                    : colorScheme.onSurface,
-              ),
-              decoration: InputDecoration(
-                counterText: '',
-                enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final maxWidth = constraints.maxWidth.isFinite
+            ? constraints.maxWidth
+            : 288.0;
+        final boxWidth = ((maxWidth - 30) / 6).clamp(28.0, 48.0);
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: List.generate(6, (index) {
+            return SizedBox(
+              width: boxWidth,
+              height: 52,
+              child: Focus(
+                onKeyEvent: (node, event) {
+                  if (!widget.enabled) return KeyEventResult.ignored;
+                  if (event is KeyDownEvent &&
+                      event.logicalKey == LogicalKeyboardKey.backspace) {
+                    if (_controllers[index].text.isEmpty && index > 0) {
+                      _focusNodes[index - 1].requestFocus();
+                      _controllers[index - 1].clear();
+                      _notifyPinChanged(checkCompletion: false);
+                      return KeyEventResult.handled;
+                    }
+                  }
+                  return KeyEventResult.ignored;
+                },
+                child: TextField(
+                  controller: _controllers[index],
+                  focusNode: _focusNodes[index],
+                  enabled: widget.enabled,
+                  keyboardType: TextInputType.number,
+                  textAlign: TextAlign.center,
+                  maxLength: 6,
+                  inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                  style: TextStyle(
+                    fontSize: boxWidth < 38 ? 16 : 20,
+                    fontWeight: FontWeight.bold,
                     color: widget.hasError
                         ? colorScheme.error
-                        : colorScheme.outline,
-                    width: 2,
+                        : colorScheme.onSurface,
                   ),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(
-                    color: widget.hasError
-                        ? colorScheme.error
-                        : colorScheme.primary,
-                    width: 2,
+                  decoration: InputDecoration(
+                    counterText: '',
+                    contentPadding: EdgeInsets.zero,
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: widget.hasError
+                            ? colorScheme.error
+                            : colorScheme.outline,
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    disabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: colorScheme.outline.withValues(alpha: 0.4),
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: widget.hasError
+                            ? colorScheme.error
+                            : colorScheme.primary,
+                        width: 1.5,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
                   ),
-                  borderRadius: BorderRadius.circular(8),
+                  onChanged: (value) => _onChanged(value, index),
                 ),
               ),
-              onChanged: (value) => _onChanged(value, index),
-            ),
-          ),
+            );
+          }),
         );
-      }),
+      },
     );
   }
 }

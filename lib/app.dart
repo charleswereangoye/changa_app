@@ -22,9 +22,14 @@ class ChangaApp extends StatelessWidget {
               : AuthCubit(authRepository: sl()),
         ),
         BlocProvider<HouseholdCubit>(
-          create: (_) => sl.isRegistered<HouseholdCubit>()
-              ? sl<HouseholdCubit>()
-              : HouseholdCubit(),
+          lazy: false,
+          create: (context) {
+            final cubit = sl.isRegistered<HouseholdCubit>()
+                ? sl<HouseholdCubit>()
+                : HouseholdCubit();
+            cubit.bindAuthCubit(context.read<AuthCubit>());
+            return cubit;
+          },
         ),
         BlocProvider<NotificationsCubit>(
           create: (_) => sl.isRegistered<NotificationsCubit>()
@@ -32,11 +37,21 @@ class ChangaApp extends StatelessWidget {
               : NotificationsCubit(sl(), sl(), sl()),
         ),
       ],
-      child: MaterialApp.router(
-        title: 'Changa',
-        debugShowCheckedModeBanner: false,
-        theme: AppTheme.lightTheme,
-        routerConfig: AppRouter.router,
+      child: BlocListener<AuthCubit, AuthState>(
+        listener: (context, state) {
+          final householdCubit = context.read<HouseholdCubit>();
+          if (state is Authenticated) {
+            householdCubit.onAuthUserChanged(state.user.uid);
+          } else if (state is Unauthenticated) {
+            householdCubit.clearHousehold();
+          }
+        },
+        child: MaterialApp.router(
+          title: 'Changa',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          routerConfig: AppRouter.router,
+        ),
       ),
     );
   }
