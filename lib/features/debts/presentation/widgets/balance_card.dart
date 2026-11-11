@@ -64,7 +64,7 @@ class BalanceCard extends StatelessWidget {
                         child: _BalanceAmount(
                           label: 'You are owed',
                           amount: summary.youAreOwed,
-                          color: colors.onSurface,
+                          color: AppColors.leafGreen,
                         ),
                       ),
                       const SizedBox(width: AppSpacing.lg),
@@ -72,7 +72,7 @@ class BalanceCard extends StatelessWidget {
                         child: _BalanceAmount(
                           label: 'You owe',
                           amount: summary.youOwe,
-                          color: AppColors.leafGreen,
+                          color: colors.onSurface,
                         ),
                       ),
                     ],
