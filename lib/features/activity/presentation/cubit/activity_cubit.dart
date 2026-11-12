@@ -1,4 +1,4 @@
-//  Cubit managing Activity history screen, month filtering, search, and recent dashboard feed
+// Cubit managing Activity history screen, month filtering, search, and recent dashboard feed
 
 import 'dart:async';
 
@@ -13,18 +13,23 @@ import 'package:changa_app/features/activity/domain/usecases/watch_recent_activi
 part 'activity_state.dart';
 
 class ActivityCubit extends Cubit<ActivityState> {
+  static const int _recentDiscoveryLimit = 100;
+  static const int _maxFallbackDiscoveryMonths = 24;
+
   final WatchMonthActivity? watchMonthActivity;
   final WatchRecentActivity? watchRecentActivity;
   final DateTime Function() _clock;
 
   StreamSubscription<List<Activity>>? _monthSubscription;
   StreamSubscription<List<Activity>>? _recentSubscription;
+  final List<StreamSubscription<List<Activity>>> _discoverySubscriptions = [];
 
   String? _householdId;
   DateTime? _selectedMonth;
   String _searchQuery = '';
   List<Activity> _latestRecent = const [];
   final Set<DateTime> _monthsWithData = <DateTime>{};
+  final Set<DateTime> _probedMonths = <DateTime>{};
   int _session = 0;
 
   ActivityCubit({
@@ -73,9 +78,11 @@ class ActivityCubit extends Cubit<ActivityState> {
 
     if (!isSameHousehold) {
       _recentSubscription = null;
+      await _cancelDiscoverySubscriptions();
       _householdId = cleanHouseholdId;
       _searchQuery = '';
       _latestRecent = const [];
+      _probedMonths.clear();
       _monthsWithData
         ..clear()
         ..addAll(seedMonthsWithData.map(normalizeMonth));
@@ -162,6 +169,14 @@ class ActivityCubit extends Cubit<ActivityState> {
     await previousMonthSub?.cancel();
   }
 
+  /// Navigates one month earlier than the currently selected month so users
+  /// can always browse older history.
+  Future<void> selectPreviousMonth() {
+    final base = _selectedMonth ?? _currentMonth;
+    final previousMonth = DateTime(base.year, base.month - 1, 1);
+    return selectMonth(previousMonth);
+  }
+
   /// Updates the search query and filters the currently loaded month's lines.
   void search(String query) {
     if (isClosed) return;
@@ -208,6 +223,7 @@ class ActivityCubit extends Cubit<ActivityState> {
     _searchQuery = '';
     _latestRecent = const [];
     _monthsWithData.clear();
+    _probedMonths.clear();
 
     final monthSub = _monthSubscription;
     final recentSub = _recentSubscription;
@@ -220,6 +236,7 @@ class ActivityCubit extends Cubit<ActivityState> {
 
     await monthSub?.cancel();
     await recentSub?.cancel();
+    await _cancelDiscoverySubscriptions();
   }
 
   void _subscribeRecent(String householdId, int version) {
@@ -227,35 +244,112 @@ class ActivityCubit extends Cubit<ActivityState> {
     if (recentWatcher == null) return;
 
     try {
-      _recentSubscription = recentWatcher(householdId: householdId, limit: 100)
-          .listen(
-            (items) {
-              if (_householdId != householdId || isClosed) return;
-              for (final item in items) {
-                _monthsWithData.add(normalizeMonth(item.createdAt));
-              }
-              _latestRecent = items.take(5).toList();
+      _recentSubscription = recentWatcher(
+        householdId: householdId,
+        limit: _recentDiscoveryLimit,
+      ).listen(
+        (items) {
+          if (_householdId != householdId || isClosed) return;
+          for (final item in items) {
+            _monthsWithData.add(normalizeMonth(item.createdAt));
+          }
+          _latestRecent = items.take(5).toList();
 
-              final currentState = state;
-              if (currentState is ActivityStateLoaded) {
-                emit(
-                  currentState.copyWith(
-                    recentActivities: _latestRecent,
-                    availableMonths: _buildAvailableMonths(),
-                  ),
-                );
-              }
-            },
-            onError: (_) {
-              // Non-fatal: month subscription handles screen-level errors.
-            },
-          );
+          _emitUpdatedAvailableMonths();
+
+          // When the recent 100-item window is saturated, probe older months
+          // so months prior to the 100 newest activities remain discoverable.
+          if (items.length >= _recentDiscoveryLimit) {
+            final oldestInBatch = items
+                .map((e) => e.createdAt)
+                .reduce((a, b) => a.isBefore(b) ? a : b);
+            _discoverOlderMonths(
+              householdId: householdId,
+              fromMonth: normalizeMonth(oldestInBatch),
+              version: version,
+            );
+          }
+        },
+        onError: (_) {
+          // Non-fatal: month subscription handles screen-level errors.
+        },
+      );
     } catch (_) {
       // Ignored if watchRecentActivity is unstubbed in isolated month tests.
     }
   }
 
-  void _subscribeMonth(String householdId, DateTime targetMonth, int version) {
+  void _discoverOlderMonths({
+    required String householdId,
+    required DateTime fromMonth,
+    required int version,
+  }) {
+    final monthWatcher = watchMonthActivity;
+    if (monthWatcher == null) return;
+
+    for (var offset = 1; offset <= _maxFallbackDiscoveryMonths; offset++) {
+      final candidate = DateTime(fromMonth.year, fromMonth.month - offset, 1);
+      if (_monthsWithData.contains(candidate) ||
+          !_probedMonths.add(candidate)) {
+        continue;
+      }
+
+      try {
+        late final StreamSubscription<List<Activity>> sub;
+        sub = monthWatcher(
+          householdId: householdId,
+          month: candidate,
+        ).listen(
+          (monthItems) {
+            _discoverySubscriptions.remove(sub);
+            unawaited(sub.cancel());
+            if (_householdId != householdId || isClosed || version > _session) {
+              return;
+            }
+            if (monthItems.isNotEmpty) {
+              _monthsWithData.add(candidate);
+              _emitUpdatedAvailableMonths();
+            }
+          },
+          onError: (_) {
+            _discoverySubscriptions.remove(sub);
+            unawaited(sub.cancel());
+          },
+        );
+        _discoverySubscriptions.add(sub);
+      } catch (_) {
+        // Ignored if a specific older month is unstubbed in isolated tests.
+      }
+    }
+  }
+
+  void _emitUpdatedAvailableMonths() {
+    final currentState = state;
+    final updatedMonths = _buildAvailableMonths();
+    if (currentState is ActivityStateLoaded) {
+      emit(
+        currentState.copyWith(
+          recentActivities: _latestRecent,
+          availableMonths: updatedMonths,
+        ),
+      );
+    } else if (currentState is ActivityStateLoading) {
+      emit(
+        ActivityStateLoading(
+          recentActivities: _latestRecent,
+          availableMonths: updatedMonths,
+          selectedMonth: currentState.selectedMonth,
+          searchQuery: currentState.searchQuery,
+        ),
+      );
+    }
+  }
+
+  void _subscribeMonth(
+    String householdId,
+    DateTime targetMonth,
+    int version,
+  ) {
     final monthWatcher = watchMonthActivity;
     if (monthWatcher == null) {
       emit(
@@ -271,52 +365,54 @@ class ActivityCubit extends Cubit<ActivityState> {
     }
 
     try {
-      _monthSubscription =
-          monthWatcher(householdId: householdId, month: targetMonth).listen(
-            (activities) {
-              if (!_isCurrent(version)) return;
+      _monthSubscription = monthWatcher(
+        householdId: householdId,
+        month: targetMonth,
+      ).listen(
+        (activities) {
+          if (!_isCurrent(version)) return;
 
-              if (activities.isNotEmpty) {
-                _monthsWithData.add(targetMonth);
-                for (final activity in activities) {
-                  _monthsWithData.add(normalizeMonth(activity.createdAt));
-                }
-              }
+          if (activities.isNotEmpty) {
+            _monthsWithData.add(targetMonth);
+            for (final activity in activities) {
+              _monthsWithData.add(normalizeMonth(activity.createdAt));
+            }
+          }
 
-              final sorted = List<Activity>.of(activities)
-                ..sort((a, b) {
-                  final cmp = b.createdAt.compareTo(a.createdAt);
-                  return cmp != 0 ? cmp : a.id.compareTo(b.id);
-                });
+          final sorted = List<Activity>.of(activities)
+            ..sort((a, b) {
+              final cmp = b.createdAt.compareTo(a.createdAt);
+              return cmp != 0 ? cmp : a.id.compareTo(b.id);
+            });
 
-              emit(
-                ActivityStateLoaded(
-                  activities: sorted,
-                  recentActivities: _latestRecent,
-                  availableMonths: _buildAvailableMonths(),
-                  selectedMonth: targetMonth,
-                  searchQuery: _searchQuery,
-                ),
-              );
-            },
-            onError: (Object error) {
-              if (!_isCurrent(version)) return;
-              emit(
-                ActivityStateFailure(
-                  _toFailure(error),
-                  recentActivities: _latestRecent,
-                  availableMonths: _buildAvailableMonths(),
-                  selectedMonth: targetMonth,
-                  searchQuery: _searchQuery,
-                ),
-              );
-            },
-            onDone: () {
-              if (_isCurrent(version)) {
-                _monthSubscription = null;
-              }
-            },
+          emit(
+            ActivityStateLoaded(
+              activities: sorted,
+              recentActivities: _latestRecent,
+              availableMonths: _buildAvailableMonths(),
+              selectedMonth: targetMonth,
+              searchQuery: _searchQuery,
+            ),
           );
+        },
+        onError: (Object error) {
+          if (!_isCurrent(version)) return;
+          emit(
+            ActivityStateFailure(
+              _toFailure(error),
+              recentActivities: _latestRecent,
+              availableMonths: _buildAvailableMonths(),
+              selectedMonth: targetMonth,
+              searchQuery: _searchQuery,
+            ),
+          );
+        },
+        onDone: () {
+          if (_isCurrent(version)) {
+            _monthSubscription = null;
+          }
+        },
+      );
     } catch (error) {
       if (_isCurrent(version)) {
         emit(
@@ -339,7 +435,8 @@ class ActivityCubit extends Cubit<ActivityState> {
       _currentMonth,
       ?_selectedMonth,
       ..._monthsWithData,
-    }.toList()..sort((a, b) => b.compareTo(a));
+    }.toList()
+      ..sort((a, b) => b.compareTo(a));
     return months;
   }
 
@@ -352,6 +449,16 @@ class ActivityCubit extends Cubit<ActivityState> {
     );
   }
 
+  Future<void> _cancelDiscoverySubscriptions() async {
+    final subs = List<StreamSubscription<List<Activity>>>.of(
+      _discoverySubscriptions,
+    );
+    _discoverySubscriptions.clear();
+    for (final sub in subs) {
+      await sub.cancel();
+    }
+  }
+
   @override
   Future<void> close() async {
     ++_session;
@@ -361,6 +468,7 @@ class ActivityCubit extends Cubit<ActivityState> {
     _recentSubscription = null;
     await monthSub?.cancel();
     await recentSub?.cancel();
+    await _cancelDiscoverySubscriptions();
     await super.close();
   }
 }

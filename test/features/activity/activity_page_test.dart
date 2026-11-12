@@ -21,10 +21,18 @@ void main() {
   final yesterdayTime = DateTime(2026, 10, 28, 15, 0);
   final oct12Time = DateTime(2026, 10, 12, 10, 0);
   final septTime = DateTime(2026, 9, 18, 9, 0);
+  final augTime = DateTime(2026, 8, 10, 9, 0);
 
-  const memberNames = {'amara': 'Amara', 'kevin': 'Kevin', 'grace': 'Grace'};
+  const memberNames = {
+    'amara': 'Amara',
+    'kevin': 'Kevin',
+    'grace': 'Grace',
+  };
 
-  const refTitles = {'exp-1': 'Groceries — Simba', 'chore-1': 'Trash duty'};
+  const refTitles = {
+    'exp-1': 'Groceries — Simba',
+    'chore-1': 'Trash duty',
+  };
 
   final expenseActivity = Activity(
     id: 'act-1',
@@ -62,10 +70,20 @@ void main() {
     createdAt: septTime,
   );
 
+  final augActivity = Activity(
+    id: 'act-aug',
+    type: ActivityType.debtSettled,
+    actorUid: 'grace',
+    targetUid: 'amara',
+    amount: 6500,
+    createdAt: augTime,
+  );
+
   late MockWatchMonthActivity watchMonth;
   late MockWatchRecentActivity watchRecent;
   late StreamController<List<Activity>> octController;
   late StreamController<List<Activity>> septController;
+  late StreamController<List<Activity>> augController;
   late StreamController<List<Activity>> recentController;
   late ActivityCubit cubit;
 
@@ -74,7 +92,15 @@ void main() {
     watchRecent = MockWatchRecentActivity();
     octController = StreamController<List<Activity>>.broadcast(sync: true);
     septController = StreamController<List<Activity>>.broadcast(sync: true);
+    augController = StreamController<List<Activity>>.broadcast(sync: true);
     recentController = StreamController<List<Activity>>.broadcast(sync: true);
+
+    when(
+      () => watchMonth(
+        householdId: any(named: 'householdId'),
+        month: any(named: 'month'),
+      ),
+    ).thenAnswer((_) => const Stream<List<Activity>>.empty());
 
     when(
       () => watchMonth(
@@ -89,6 +115,13 @@ void main() {
         month: DateTime(2026, 9, 1),
       ),
     ).thenAnswer((_) => septController.stream);
+
+    when(
+      () => watchMonth(
+        householdId: any(named: 'householdId'),
+        month: DateTime(2026, 8, 1),
+      ),
+    ).thenAnswer((_) => augController.stream);
 
     when(
       () => watchRecent(
@@ -110,6 +143,7 @@ void main() {
     }
     await octController.close();
     await septController.close();
+    await augController.close();
     await recentController.close();
   });
 
@@ -124,8 +158,9 @@ void main() {
         theme: AppTheme.lightTheme,
         builder: (context, child) {
           return MediaQuery(
-            data: MediaQuery.of(context)
-                .copyWith(textScaler: TextScaler.linear(textScale)),
+            data: MediaQuery.of(context).copyWith(
+              textScaler: TextScaler.linear(textScale),
+            ),
             child: child!,
           );
         },
@@ -238,6 +273,48 @@ void main() {
 
       expect(find.text('No activity this month'), findsOneWidget);
       expect(tester.takeException(), isNull);
+    },
+  );
+
+  testWidgets(
+    'discovers and navigates to older month even when household has more than 100 recent activities',
+    (tester) async {
+      final over100OctActivities = List<Activity>.generate(
+        105,
+        (i) => Activity(
+          id: 'oct-$i',
+          type: ActivityType.expenseAdded,
+          actorUid: 'amara',
+          targetUid: 'kevin',
+          refId: 'exp-1',
+          amount: 1000 + i,
+          createdAt: DateTime(2026, 10, 29, 12, 0).subtract(
+            Duration(minutes: i),
+          ),
+        ),
+      );
+
+      await cubit.start(householdId: 'house-1');
+      // watchRecent(limit: 100) only emits the latest 100 (all in Oct)
+      recentController.add(over100OctActivities.take(100).toList());
+      octController.add(over100OctActivities);
+      // Fallback older-month discovery finds August activity
+      augController.add([augActivity]);
+
+      await pumpActivityPage(tester);
+      await tester.pump();
+
+      // Aug tab is discovered despite 100+ Oct activities saturating watchRecent
+      expect(find.text('Oct'), findsOneWidget);
+      expect(find.text('Aug'), findsOneWidget);
+
+      await tester.tap(find.text('Aug'));
+      await tester.pump();
+      augController.add([augActivity]);
+      await tester.pump();
+
+      expect(find.text('Grace settled with you'), findsOneWidget);
+      expect(find.text('RWF 6,500'), findsOneWidget);
     },
   );
 }
