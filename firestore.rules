@@ -357,4 +357,3 @@ service cloud.firestore {
     }
   }
 }
-
