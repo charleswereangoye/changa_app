@@ -10,7 +10,7 @@ import '../../features/auth/presentation/pages/verify_email_page.dart';
 import '../../features/chores/presentation/pages/add_edit_chore_page.dart';
 import '../../features/chores/presentation/pages/chore_roster_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
-import '../../features/debts/presentation/pages/debt_detail_page.dart';
+import '../../features/debts/presentation/pages/debt_detail_route.dart';
 import '../../features/debts/presentation/pages/settle_up_page.dart';
 import '../../features/household/presentation/pages/create_household_page.dart';
 import '../../features/household/presentation/pages/household_created_page.dart';
@@ -134,7 +134,8 @@ class AppRouter {
       GoRoute(
         path: '/debts/:uid',
         name: RouteNames.debtDetail,
-        builder: (context, state) => const DebtDetailPage(),
+        builder: (context, state) =>
+            DebtDetailRoute(otherUid: state.pathParameters['uid'] ?? ''),
       ),
       GoRoute(
         path: '/debts/:uid/settle',
