@@ -23,16 +23,9 @@ void main() {
   final septTime = DateTime(2026, 9, 18, 9, 0);
   final augTime = DateTime(2026, 8, 10, 9, 0);
 
-  const memberNames = {
-    'amara': 'Amara',
-    'kevin': 'Kevin',
-    'grace': 'Grace',
-  };
+  const memberNames = {'amara': 'Amara', 'kevin': 'Kevin', 'grace': 'Grace'};
 
-  const refTitles = {
-    'exp-1': 'Groceries — Simba',
-    'chore-1': 'Trash duty',
-  };
+  const refTitles = {'exp-1': 'Groceries — Simba', 'chore-1': 'Trash duty'};
 
   final expenseActivity = Activity(
     id: 'act-1',
@@ -158,9 +151,8 @@ void main() {
         theme: AppTheme.lightTheme,
         builder: (context, child) {
           return MediaQuery(
-            data: MediaQuery.of(context).copyWith(
-              textScaler: TextScaler.linear(textScale),
-            ),
+            data: MediaQuery.of(context)
+                .copyWith(textScaler: TextScaler.linear(textScale)),
             child: child!,
           );
         },
@@ -288,9 +280,13 @@ void main() {
           targetUid: 'kevin',
           refId: 'exp-1',
           amount: 1000 + i,
-          createdAt: DateTime(2026, 10, 29, 12, 0).subtract(
-            Duration(minutes: i),
-          ),
+          createdAt: DateTime(
+            2026,
+            10,
+            29,
+            12,
+            0,
+          ).subtract(Duration(minutes: i)),
         ),
       );
 
