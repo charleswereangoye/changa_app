@@ -2,7 +2,7 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // helper functions 
+    // helper functions
 
     function isSignedIn() {
       return request.auth != null;
@@ -158,12 +158,13 @@ service cloud.firestore {
         );
 
         // Create: the creator adds themselves as admin at household creation,
-        // or a user adds themselves as member with a valid PIN
+        // or a user adds themselves as member with a valid PIN.
+        // Starting credits must be strictly 0 so a joiner cannot mint arbitrary credits.
         allow create: if isOwner(uid) &&
           request.resource.data.keys().hasAll(['role', 'credits', 'joinedAt']) &&
           request.resource.data.role in ['admin', 'member'] &&
           request.resource.data.credits is number &&
-          request.resource.data.credits >= 0 && (
+          request.resource.data.credits == 0 && (
             (request.resource.data.role == 'admin' &&
              getAfter(householdDocPath(hid)).data.adminUid == request.auth.uid) ||
             (request.resource.data.role == 'member' &&
