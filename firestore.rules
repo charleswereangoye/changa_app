@@ -1,13 +1,360 @@
-// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
-// Description: Cloud Firestore security rules
-// TEMPORARY until Sat 24 Oct, B replaces it with real rules
-
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
-    match /{document=**} {
-      // Temporary rule allowing authenticated users
-      allow read, write: if request.auth != null;
+
+    // helper functions
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(uid) {
+      return isSignedIn() && request.auth.uid == uid;
+    }
+
+    function userDocPath(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+
+    function householdDocPath(hid) {
+      return /databases/$(database)/documents/households/$(hid);
+    }
+
+    function memberDocPath(hid, uid) {
+      return /databases/$(database)/documents/households/$(hid)/members/$(uid);
+    }
+
+    // True if a member document exists for the caller in households/{hid}
+    // Includes existsAfter so atomic batch/transaction writes (createHousehold & joinHousehold) pass
+    function isMember(hid) {
+      return isSignedIn() && (
+        exists(memberDocPath(hid, request.auth.uid)) ||
+        existsAfter(memberDocPath(hid, request.auth.uid))
+      );
+    }
+
+    // True if the caller is the admin of households/{hid}
+    function isAdmin(hid) {
+      return isSignedIn() && (
+        (exists(memberDocPath(hid, request.auth.uid)) &&
+         get(memberDocPath(hid, request.auth.uid)).data.role == 'admin') ||
+        (exists(householdDocPath(hid)) &&
+         get(householdDocPath(hid)).data.adminUid == request.auth.uid) ||
+        (existsAfter(householdDocPath(hid)) &&
+         getAfter(householdDocPath(hid)).data.adminUid == request.auth.uid)
+      );
+    }
+
+    // True if the caller is a housemate in the same household as targetUserData
+    function isHousemate(targetUserData) {
+      return isSignedIn() &&
+        targetUserData.get('householdId', null) is string &&
+        targetUserData.householdId != '' && (
+          isMember(targetUserData.householdId) ||
+          (exists(userDocPath(request.auth.uid)) &&
+           get(userDocPath(request.auth.uid)).data.get('householdId', null) == targetUserData.householdId)
+        );
+    }
+
+    function isValidString(val, minLen, maxLen) {
+      return val is string &&
+        val.trim().size() >= minLen &&
+        val.trim().size() <= maxLen;
+    }
+
+    // 1. users/{uid} (UserFields)
+    match /users/{uid} {
+      // Read: the owner, or a housemate in the same household
+      allow read: if isOwner(uid) || isHousemate(resource.data);
+
+      // Create: the owner, at sign-up (or initial merge set)
+      allow create: if isOwner(uid) &&
+        (!('fullName' in request.resource.data) || isValidString(request.resource.data.fullName, 1, 100)) &&
+        (!('email' in request.resource.data) || isValidString(request.resource.data.email, 3, 254)) &&
+        (request.resource.data.get('householdId', null) == null || request.resource.data.householdId is string);
+
+      // Update: the owner (limited to profile & householdId fields)
+      allow update: if isOwner(uid) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+          ['fullName', 'phone', 'householdId', 'avatarUrl', 'photoUrl', 'fcmToken', 'updatedAt']
+        ) &&
+        (!('fullName' in request.resource.data) || isValidString(request.resource.data.fullName, 1, 100)) &&
+        (request.resource.data.get('householdId', null) == null || request.resource.data.householdId is string);
+
+      // Delete: nobody
+      allow delete: if false;
+    }
+
+    // 2. householdPins/{pin} (PinFields: householdId, createdAt)
+    match /householdPins/{pin} {
+      // Read: any signed-in user can get one document. List is denied.
+      allow get: if isSignedIn();
+      allow list: if false;
+
+      // Create: signed in, and only if that PIN does not exist
+      allow create: if isSignedIn() &&
+        pin.matches('^[0-9]{6}$') &&
+        !exists(/databases/$(database)/documents/householdPins/$(pin)) &&
+        request.resource.data.keys().hasAll(['householdId', 'createdAt']) &&
+        request.resource.data.keys().hasOnly(['householdId', 'createdAt']) &&
+        request.resource.data.householdId is string &&
+        isAdmin(request.resource.data.householdId);
+
+      // Update: the household admin
+      allow update: if isAdmin(resource.data.householdId) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+          ['householdId', 'createdAt']
+        );
+
+      // Delete: the household admin
+      allow delete: if isAdmin(resource.data.householdId);
+    }
+
+    // 3. households/{hid} (HouseholdFields)
+    match /households/{hid} {
+      // Read: members (plus signed-in single-doc get when looking up via a valid PIN in previewHouseholdByPin/joinHousehold)
+      allow get: if isMember(hid) || (
+        isSignedIn() &&
+        exists(/databases/$(database)/documents/householdPins/$(resource.data.pin))
+      );
+      allow list: if isMember(hid);
+
+      // Create: signed in, and adminUid must be the caller
+      allow create: if isSignedIn() &&
+        request.resource.data.keys().hasAll(
+          ['name', 'type', 'expectedMembers', 'pin', 'adminUid', 'createdAt']
+        ) &&
+        request.resource.data.adminUid == request.auth.uid &&
+        isValidString(request.resource.data.name, 3, 40) &&
+        request.resource.data.type in ['apartment', 'dorm', 'house', 'other'] &&
+        request.resource.data.expectedMembers is int &&
+        request.resource.data.expectedMembers >= 2 &&
+        request.resource.data.expectedMembers <= 20 &&
+        request.resource.data.pin is string &&
+        request.resource.data.pin.matches('^[0-9]{6}$');
+
+      // Update: the admin only (name, type, expectedMembers, pin for regeneratePin, adminUid for transferAdmin)
+      allow update: if isAdmin(hid) &&
+        request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+          ['name', 'type', 'expectedMembers', 'pin', 'adminUid']
+        ) &&
+        isValidString(request.resource.data.name, 3, 40) &&
+        request.resource.data.type in ['apartment', 'dorm', 'house', 'other'] &&
+        request.resource.data.expectedMembers is int &&
+        request.resource.data.expectedMembers >= 2 &&
+        request.resource.data.expectedMembers <= 20 &&
+        request.resource.data.pin is string &&
+        request.resource.data.pin.matches('^[0-9]{6}$') &&
+        request.resource.data.adminUid is string;
+
+      // Delete: nobody
+      allow delete: if false;
+
+      // 4. households/{hid}/members/{uid} (MemberFields: role, credits, joinedAt)
+      match /members/{uid} {
+        // Read: members (plus signed-in read when previewing/joining an active household or checking stale membership)
+        allow read: if isMember(hid) || isOwner(uid) || (
+          isSignedIn() && exists(householdDocPath(hid))
+        );
+
+        // Create: the creator adds themselves as admin at household creation,
+        // or a user adds themselves as member with a valid PIN.
+        // Starting credits must be strictly 0 so a joiner cannot mint arbitrary credits.
+        allow create: if isOwner(uid) &&
+          request.resource.data.keys().hasAll(['role', 'credits', 'joinedAt']) &&
+          request.resource.data.role in ['admin', 'member'] &&
+          request.resource.data.credits is number &&
+          request.resource.data.credits == 0 && (
+            (request.resource.data.role == 'admin' &&
+             getAfter(householdDocPath(hid)).data.adminUid == request.auth.uid) ||
+            (request.resource.data.role == 'member' &&
+             exists(householdDocPath(hid)) &&
+             exists(/databases/$(database)/documents/householdPins/$(get(householdDocPath(hid)).data.pin)))
+          );
+
+        // Update: the admin (roles), or any member but only the credits field.
+        // Credits can NEVER become negative (request.resource.data.credits >= 0).
+        allow update: if (
+          (isAdmin(hid) &&
+           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role']) &&
+           request.resource.data.role in ['admin', 'member']) ||
+          (isMember(hid) &&
+           request.resource.data.diff(resource.data).affectedKeys().hasOnly(['credits']) &&
+           request.resource.data.credits is number &&
+           request.resource.data.credits >= 0)
+        );
+
+        // Delete: the admin (remove) or the user themselves (leave)
+        allow delete: if isAdmin(hid) || isOwner(uid);
+      }
+
+      // 5. households/{hid}/expenses/{id} (ExpenseFields)
+      match /expenses/{id} {
+        // Read: members
+        allow read: if isMember(hid);
+
+        // Create: members, paidByUid must be the caller, totalAmount/amount >= 0
+        allow create: if isMember(hid) &&
+          request.resource.data.paidByUid == request.auth.uid &&
+          isValidString(request.resource.data.title, 1, 100) &&
+          (!('splitType' in request.resource.data) ||
+           request.resource.data.splitType in ['equal', 'percent', 'exact']) &&
+          ((request.resource.data.get('totalAmount', null) is number &&
+            request.resource.data.totalAmount >= 0) ||
+           (request.resource.data.get('amount', null) is number &&
+            request.resource.data.amount >= 0)) &&
+          request.resource.data.get('totalAmount', 0) >= 0 &&
+          request.resource.data.get('amount', 0) >= 0;
+
+        // Update: the creator, only title and note
+        allow update: if isMember(hid) &&
+          resource.data.paidByUid == request.auth.uid &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['title', 'note']) &&
+          isValidString(request.resource.data.title, 1, 100);
+
+        // Delete: the creator
+        allow delete: if isMember(hid) &&
+          resource.data.paidByUid == request.auth.uid;
+      }
+
+      // 6. households/{hid}/debts/{id} (DebtFields)
+      match /debts/{id} {
+        // Read: members
+        allow read: if isMember(hid);
+
+        // Create: members, creditorUid must be the caller, amount >= 0
+        allow create: if isMember(hid) &&
+          request.resource.data.creditorUid == request.auth.uid &&
+          request.resource.data.debtorUid is string &&
+          request.resource.data.amount is number &&
+          request.resource.data.amount >= 0 &&
+          request.resource.data.get('creditsApplied', 0) is number &&
+          request.resource.data.get('creditsApplied', 0) >= 0 &&
+          (!('status' in request.resource.data) ||
+           request.resource.data.status in ['pending', 'settled']);
+
+        // Update: the debtor or creditor, only status, settlementMethod, settledAt
+        allow update: if isMember(hid) &&
+          (resource.data.debtorUid == request.auth.uid ||
+           resource.data.creditorUid == request.auth.uid) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+            ['status', 'settlementMethod', 'settledAt']
+          ) &&
+          request.resource.data.status in ['pending', 'settled'];
+
+        // Delete: the creditor
+        allow delete: if isMember(hid) &&
+          resource.data.creditorUid == request.auth.uid;
+      }
+
+      // 7. households/{hid}/chores/{id} (ChoreFields)
+      match /chores/{id} {
+        // Read: members
+        allow read: if isMember(hid);
+
+        // Create: members
+        allow create: if isMember(hid) &&
+          request.resource.data.createdByUid == request.auth.uid &&
+          isValidString(request.resource.data.title, 1, 100) &&
+          request.resource.data.difficulty in ['easy', 'medium', 'hard'] &&
+          request.resource.data.status in ['pending', 'done'] &&
+          (request.resource.data.get('creditsAwarded', null) == null ||
+           (request.resource.data.creditsAwarded is number &&
+            request.resource.data.creditsAwarded >= 0));
+
+        // Update: the assignee (completion fields) or the creator or the admin
+        allow update: if isMember(hid) && (
+          isAdmin(hid) ||
+          resource.data.createdByUid == request.auth.uid ||
+          (resource.data.assignedToUid == request.auth.uid &&
+           request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+             ['status', 'completedAt', 'creditsAwarded']
+           ) &&
+           request.resource.data.status in ['pending', 'done'] &&
+           (request.resource.data.get('creditsAwarded', null) == null ||
+            (request.resource.data.creditsAwarded is number &&
+             request.resource.data.creditsAwarded >= 0))) ||
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['assignedToUid'])
+        );
+
+        // Delete: the creator or the admin
+        allow delete: if isMember(hid) && (
+          resource.data.createdByUid == request.auth.uid ||
+          isAdmin(hid)
+        );
+      }
+
+      // 8. households/{hid}/swapRequests/{id} (SwapRequestFields)
+      match /swapRequests/{id} {
+        // Read: only fromUid or toUid
+        allow read: if isMember(hid) && (
+          resource.data.fromUid == request.auth.uid ||
+          resource.data.toUid == request.auth.uid
+        );
+
+        // Create: fromUid must be the caller
+        allow create: if isMember(hid) &&
+          request.resource.data.fromUid == request.auth.uid &&
+          request.resource.data.toUid is string &&
+          request.resource.data.choreId is string &&
+          request.resource.data.status == 'pending';
+
+        // Update: toUid (accept or decline) or fromUid (cancel)
+        allow update: if isMember(hid) &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status']) && (
+            (resource.data.toUid == request.auth.uid &&
+             request.resource.data.status in ['accepted', 'declined']) ||
+            (resource.data.fromUid == request.auth.uid &&
+             request.resource.data.status == 'cancelled')
+          );
+
+        // Delete: nobody
+        allow delete: if false;
+      }
+
+      // 9. households/{hid}/activities/{id} (ActivityFields)
+      match /activities/{id} {
+        // Read: members
+        allow read: if isMember(hid);
+
+        // Create: members, and actorUid must be the caller
+        allow create: if isMember(hid) &&
+          request.resource.data.actorUid == request.auth.uid &&
+          request.resource.data.type is string &&
+          (request.resource.data.get('amount', null) == null ||
+           (request.resource.data.amount is number &&
+            request.resource.data.amount >= 0));
+
+        // Update & Delete: nobody (immutable)
+        allow update, delete: if false;
+      }
+
+      // 10. households/{hid}/notifications/{id} (NotificationFields)
+      match /notifications/{id} {
+        // Read: only the recipient
+        allow read: if isMember(hid) &&
+          resource.data.recipientUid == request.auth.uid;
+
+        // Create: members, actorUid must be the caller
+        allow create: if isMember(hid) &&
+          request.resource.data.actorUid == request.auth.uid &&
+          request.resource.data.recipientUid is string &&
+          request.resource.data.type is string &&
+          isValidString(request.resource.data.title, 1, 200) &&
+          isValidString(request.resource.data.body, 1, 500) &&
+          request.resource.data.read is bool;
+
+        // Update: the recipient, only read
+        allow update: if isMember(hid) &&
+          resource.data.recipientUid == request.auth.uid &&
+          request.resource.data.diff(resource.data).affectedKeys().hasOnly(['read']) &&
+          request.resource.data.read is bool;
+
+        // Delete: the recipient
+        allow delete: if isMember(hid) &&
+          resource.data.recipientUid == request.auth.uid;
+      }
     }
   }
 }
+
