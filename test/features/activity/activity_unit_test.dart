@@ -504,6 +504,44 @@ void main() {
       },
     );
 
+    test(
+      'discovers older months when recent 100-item window is saturated',
+      () async {
+        await cubit.start(householdId: 'house-1');
+        octController.add([expenseActivity]);
+
+        // All 100 recent items fall inside October 2026, saturating the initial discovery window
+        final hundredOctItems = List<Activity>.generate(
+          100,
+          (i) => Activity(
+            id: 'oct-$i',
+            type: ActivityType.expenseAdded,
+            actorUid: 'amara',
+            amount: 1000,
+            createdAt: DateTime(
+              2026,
+              10,
+              29,
+              12,
+              0,
+            ).subtract(Duration(hours: i)),
+          ),
+        );
+
+        recentController.add(hundredOctItems);
+
+        // Fallback discovery probes prior months (including September 2026)
+        septController.add([septActivity]);
+
+        final loaded = cubit.state as ActivityStateLoaded;
+        expect(loaded.recentActivities, hasLength(5));
+        expect(loaded.availableMonths, [
+          DateTime(2026, 10, 1),
+          DateTime(2026, 9, 1),
+        ]);
+      },
+    );
+
     test('emits failure on stream error and recovers on retry()', () async {
       await cubit.start(householdId: 'house-1');
       octController.addError(const NetworkFailure('Offline'));

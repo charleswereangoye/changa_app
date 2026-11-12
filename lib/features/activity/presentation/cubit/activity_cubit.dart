@@ -74,11 +74,14 @@ class ActivityCubit extends Cubit<ActivityState> {
     final version = ++_session;
     final previousMonthSub = _monthSubscription;
     final previousRecentSub = isSameHousehold ? null : _recentSubscription;
+    final previousDiscoverySubs = isSameHousehold
+        ? const <StreamSubscription<List<Activity>>>[]
+        : List<StreamSubscription<List<Activity>>>.of(_discoverySubscriptions);
     _monthSubscription = null;
 
     if (!isSameHousehold) {
       _recentSubscription = null;
-      await _cancelDiscoverySubscriptions();
+      _discoverySubscriptions.clear();
       _householdId = cleanHouseholdId;
       _searchQuery = '';
       _latestRecent = const [];
@@ -108,6 +111,9 @@ class ActivityCubit extends Cubit<ActivityState> {
 
     await previousMonthSub?.cancel();
     await previousRecentSub?.cancel();
+    for (final sub in previousDiscoverySubs) {
+      await sub.cancel();
+    }
   }
 
   /// Convenience alias for loading a household's activity history.
