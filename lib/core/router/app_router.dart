@@ -7,6 +7,7 @@ import '../../features/auth/presentation/pages/onboarding_page.dart';
 import '../../features/auth/presentation/pages/sign_up_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/auth/presentation/pages/verify_email_page.dart';
+import '../../features/chores/domain/entities/chore.dart';
 import '../../features/chores/presentation/pages/add_edit_chore_page.dart';
 import '../../features/chores/presentation/pages/chore_roster_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
@@ -152,7 +153,10 @@ class AppRouter {
       GoRoute(
         path: '/chores/:id/edit',
         name: RouteNames.editChore,
-        builder: (context, state) => const AddEditChorePage(),
+        builder: (context, state) => AddEditChorePage(
+          choreId: state.pathParameters['id'],
+          initial: state.extra is Chore ? state.extra as Chore : null,
+        ),
       ),
 
       // Profile & Preferences
