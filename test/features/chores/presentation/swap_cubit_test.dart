@@ -41,7 +41,7 @@ void main() {
   setUp(() {
     requestSwap = MockRequestSwap();
     watchAll = MockWatchAllChores();
-    chores = StreamController<List<Chore>>();
+    chores = StreamController<List<Chore>>.broadcast();
     when(() => watchAll(any())).thenAnswer((_) => chores.stream);
 
     cubit = SwapCubit(

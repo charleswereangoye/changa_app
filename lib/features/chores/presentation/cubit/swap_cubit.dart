@@ -10,8 +10,7 @@ import 'package:changa_app/features/chores/domain/usecases/watch_all_chores.dart
 
 part 'swap_state.dart';
 
-/// Runs the "Swap this chore" sheet: shows how busy each housemate is this
-/// week and sends the request to the one you pick.
+/// Runs the "Swap this chore" sheet: shows how busy each housemate is this week and sends the request to the one you pick.
 class SwapCubit extends Cubit<SwapState> {
   SwapCubit({
     required this._requestSwap,
