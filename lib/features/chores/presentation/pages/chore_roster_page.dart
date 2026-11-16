@@ -9,11 +9,21 @@ import 'package:changa_app/core/theme/app_spacing.dart';
 import 'package:changa_app/core/utils/date_helpers.dart';
 import 'package:changa_app/core/widgets/app_snackbar.dart';
 import 'package:changa_app/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:changa_app/features/chores/domain/entities/chore.dart';
 import 'package:changa_app/features/chores/domain/usecases/complete_chore.dart';
+import 'package:changa_app/features/chores/domain/usecases/respond_to_swap.dart';
+import 'package:changa_app/features/chores/domain/usecases/watch_all_chores.dart';
+import 'package:changa_app/features/chores/domain/usecases/watch_swap_requests.dart';
 import 'package:changa_app/features/chores/domain/usecases/watch_chores_for_day.dart';
 import 'package:changa_app/features/chores/presentation/cubit/chores_cubit.dart';
+import 'package:changa_app/features/chores/presentation/cubit/missed_chore_cubit.dart';
+import 'package:changa_app/features/chores/presentation/cubit/swap_cubit.dart';
+import 'package:changa_app/features/chores/presentation/cubit/swap_inbox_cubit.dart';
 import 'package:changa_app/features/chores/presentation/widgets/chore_card.dart';
 import 'package:changa_app/features/chores/presentation/widgets/chore_day_strip.dart';
+import 'package:changa_app/features/chores/presentation/widgets/missed_chore_modal.dart';
+import 'package:changa_app/features/chores/presentation/widgets/swap_request_banner.dart';
+import 'package:changa_app/features/chores/presentation/widgets/swap_sheet.dart';
 import 'package:changa_app/features/household/presentation/cubit/household_cubit.dart';
 
 /// The Chores tab: this week's days, the chores for the open day, and a
@@ -52,18 +62,48 @@ class ChoreRosterPage extends StatelessWidget {
             }
 
             final uid = auth.user.uid;
-            return BlocProvider<ChoresCubit>(
+            return MultiBlocProvider(
               key: ValueKey((current.id, uid)),
-              create: (_) => ChoresCubit(
-                watchChoresForDay: GetIt.I<WatchChoresForDay>(),
-                completeChore: GetIt.I<CompleteChore>(),
-                householdId: current.id,
-                meUid: uid,
-              )..load(),
+              providers: [
+                BlocProvider<ChoresCubit>(
+                  create: (_) => ChoresCubit(
+                    watchChoresForDay: GetIt.I<WatchChoresForDay>(),
+                    completeChore: GetIt.I<CompleteChore>(),
+                    householdId: current.id,
+                    meUid: uid,
+                  )..load(),
+                ),
+                BlocProvider<SwapInboxCubit>(
+                  create: (_) => SwapInboxCubit(
+                    watchSwapRequests: GetIt.I<WatchSwapRequests>(),
+                    watchAllChores: GetIt.I<WatchAllChores>(),
+                    respondToSwap: GetIt.I<RespondToSwap>(),
+                    householdId: current.id,
+                    meUid: uid,
+                  )..start(),
+                ),
+                BlocProvider<MissedChoreCubit>(
+                  create: (_) => MissedChoreCubit(
+                    watchAllChores: GetIt.I<WatchAllChores>(),
+                    completeChore: GetIt.I<CompleteChore>(),
+                    householdId: current.id,
+                    meUid: uid,
+                  )..start(),
+                ),
+              ],
               child: _RosterView(
                 meUid: uid,
+                householdId: current.id,
                 credits: household.myCredits,
                 nameOf: household.displayNameFor,
+                candidates: [
+                  for (final member in household.members)
+                    if (member.uid != uid)
+                      SwapCandidate(
+                        uid: member.uid,
+                        name: household.displayNameFor(member.uid),
+                      ),
+                ],
               ),
             );
           },
@@ -76,11 +116,15 @@ class ChoreRosterPage extends StatelessWidget {
 class _RosterView extends StatelessWidget {
   const _RosterView({
     required this.meUid,
+    required this.householdId,
     required this.credits,
     required this.nameOf,
+    required this.candidates,
   });
 
   final String meUid;
+  final String householdId;
+  final List<SwapCandidate> candidates;
   final int credits;
   final String Function(String uid) nameOf;
 
@@ -90,18 +134,56 @@ class _RosterView extends StatelessWidget {
 
     return Scaffold(
       body: SafeArea(
-        child: BlocListener<ChoresCubit, ChoresState>(
-          listenWhen: (previous, current) =>
-              current.notice != null && current.notice != previous.notice,
-          listener: (context, state) {
-            final notice = state.notice!;
-            if (notice.isError) {
-              AppSnackbar.error(context, notice.text);
-            } else {
-              AppSnackbar.success(context, notice.text);
-            }
-            context.read<ChoresCubit>().clearNotice();
-          },
+        child: MultiBlocListener(
+          listeners: [
+            BlocListener<ChoresCubit, ChoresState>(
+              listenWhen: (previous, current) =>
+                  current.notice != null && current.notice != previous.notice,
+              listener: (context, state) {
+                final notice = state.notice!;
+                if (notice.isError) {
+                  AppSnackbar.error(context, notice.text);
+                } else {
+                  AppSnackbar.success(context, notice.text);
+                }
+                context.read<ChoresCubit>().clearNotice();
+              },
+            ),
+            BlocListener<SwapInboxCubit, SwapInboxState>(
+              listenWhen: (previous, current) =>
+                  current.notice != null && current.notice != previous.notice,
+              listener: (context, state) {
+                final notice = state.notice!;
+                if (notice.isError) {
+                  AppSnackbar.error(context, notice.text);
+                } else {
+                  AppSnackbar.success(context, notice.text);
+                }
+                context.read<SwapInboxCubit>().clearNotice();
+              },
+            ),
+            BlocListener<MissedChoreCubit, MissedChoreState>(
+              listenWhen: (previous, current) =>
+                  previous.prompt == null && current.prompt != null,
+              listener: (context, state) => MissedChoreModal.show(
+                context,
+                context.read<MissedChoreCubit>(),
+              ),
+            ),
+            BlocListener<MissedChoreCubit, MissedChoreState>(
+              listenWhen: (previous, current) =>
+                  current.notice != null && current.notice != previous.notice,
+              listener: (context, state) {
+                final notice = state.notice!;
+                if (notice.isError) {
+                  AppSnackbar.error(context, notice.text);
+                } else {
+                  AppSnackbar.success(context, notice.text);
+                }
+                context.read<MissedChoreCubit>().clearNotice();
+              },
+            ),
+          ],
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -143,6 +225,17 @@ class _RosterView extends StatelessWidget {
                   ],
                 ),
               ),
+              BlocBuilder<SwapInboxCubit, SwapInboxState>(
+                builder: (context, inbox) => SwapRequestBanner(
+                  requests: inbox.requests,
+                  titleOf: inbox.titleFor,
+                  nameOf: nameOf,
+                  respondingIds: inbox.respondingIds,
+                  onRespond: (id, {required accept}) => context
+                      .read<SwapInboxCubit>()
+                      .respond(id, accept: accept),
+                ),
+              ),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: AppSpacing.sm),
                 child: BlocBuilder<ChoresCubit, ChoresState>(
@@ -158,7 +251,18 @@ class _RosterView extends StatelessWidget {
               ),
               const SizedBox(height: AppSpacing.md),
               Expanded(
-                child: _ChoreList(meUid: meUid, nameOf: nameOf),
+                child: _ChoreList(
+                  meUid: meUid,
+                  nameOf: nameOf,
+                  onSwap: candidates.isEmpty
+                      ? null
+                      : (chore) => SwapSheet.show(
+                          context,
+                          chore: chore,
+                          householdId: householdId,
+                          candidates: candidates,
+                        ),
+                ),
               ),
             ],
           ),
@@ -197,10 +301,15 @@ class _CreditsPill extends StatelessWidget {
 }
 
 class _ChoreList extends StatelessWidget {
-  const _ChoreList({required this.meUid, required this.nameOf});
+  const _ChoreList({
+    required this.meUid,
+    required this.nameOf,
+    required this.onSwap,
+  });
 
   final String meUid;
   final String Function(String uid) nameOf;
+  final void Function(Chore chore)? onSwap;
 
   @override
   Widget build(BuildContext context) {
@@ -263,6 +372,7 @@ class _ChoreList extends StatelessWidget {
                 isMissed: DateHelpers.isMissed(chore, now),
                 isCompleting: state.completingIds.contains(chore.id),
                 onComplete: () => cubit.completeChore(chore.id),
+                onSwap: onSwap == null ? null : () => onSwap!(chore),
                 onEdit: () => context.pushNamed(
                   RouteNames.editChore,
                   pathParameters: {'id': chore.id},

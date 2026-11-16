@@ -1,7 +1,7 @@
 import 'package:changa_app/core/enums/split_type.dart';
 import 'package:changa_app/core/enums/settlement_method.dart';
 import 'package:changa_app/core/constants/pref_keys.dart';
-import 'package:changa_app/features/profile/domain/services/preferences_service.dart';
+import 'package:changa_app/features/profile/domain/services/preferences_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,7 +10,7 @@ import 'package:changa_app/features/profile/presentation/cubit/preferences_state
 class PreferencesCubit extends Cubit<PreferencesState> {
   PreferencesCubit(this._prefs) : super(const PreferencesState());
 
-  final PreferencesService _prefs;
+  final PreferencesStore _prefs;
 
   /// Call once at app start, before the first frame that needs the theme.
   Future<void> load() async {
