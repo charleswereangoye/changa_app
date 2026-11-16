@@ -22,6 +22,8 @@ void main() {
   final oct12Time = DateTime(2026, 10, 12, 10, 0);
   final septTime = DateTime(2026, 9, 18, 9, 0);
   final augTime = DateTime(2026, 8, 10, 9, 0);
+  // 25 months earlier than October 2026 (strictly beyond the 24-month discovery window)
+  final sep2024Time = DateTime(2024, 9, 15, 11, 0);
 
   const memberNames = {'amara': 'Amara', 'kevin': 'Kevin', 'grace': 'Grace'};
 
@@ -72,11 +74,21 @@ void main() {
     createdAt: augTime,
   );
 
+  final sep2024Activity = Activity(
+    id: 'act-sep-2024',
+    type: ActivityType.debtSettled,
+    actorUid: 'kevin',
+    targetUid: 'amara',
+    amount: 9500,
+    createdAt: sep2024Time,
+  );
+
   late MockWatchMonthActivity watchMonth;
   late MockWatchRecentActivity watchRecent;
   late StreamController<List<Activity>> octController;
   late StreamController<List<Activity>> septController;
   late StreamController<List<Activity>> augController;
+  late StreamController<List<Activity>> sep2024Controller;
   late StreamController<List<Activity>> recentController;
   late ActivityCubit cubit;
 
@@ -86,6 +98,7 @@ void main() {
     octController = StreamController<List<Activity>>.broadcast(sync: true);
     septController = StreamController<List<Activity>>.broadcast(sync: true);
     augController = StreamController<List<Activity>>.broadcast(sync: true);
+    sep2024Controller = StreamController<List<Activity>>.broadcast(sync: true);
     recentController = StreamController<List<Activity>>.broadcast(sync: true);
 
     when(
@@ -117,6 +130,13 @@ void main() {
     ).thenAnswer((_) => augController.stream);
 
     when(
+      () => watchMonth(
+        householdId: any(named: 'householdId'),
+        month: DateTime(2024, 9, 1),
+      ),
+    ).thenAnswer((_) => sep2024Controller.stream);
+
+    when(
       () => watchRecent(
         householdId: any(named: 'householdId'),
         limit: any(named: 'limit'),
@@ -137,6 +157,7 @@ void main() {
     await octController.close();
     await septController.close();
     await augController.close();
+    await sep2024Controller.close();
     await recentController.close();
   });
 
@@ -311,6 +332,35 @@ void main() {
 
       expect(find.text('Grace settled with you'), findsOneWidget);
       expect(find.text('RWF 6,500'), findsOneWidget);
+    },
+  );
+
+  testWidgets(
+    'Older month button connects selectPreviousMonth() and navigates beyond the 24-month discovery window',
+    (tester) async {
+      await cubit.start(householdId: 'house-1');
+      recentController.add([expenseActivity]);
+      octController.add([expenseActivity]);
+
+      await pumpActivityPage(tester);
+      await tester.pump();
+
+      final olderButton = find.byKey(const Key('load-older-months-btn'));
+      expect(olderButton, findsOneWidget);
+
+      // Step back 25 months from Oct 2026 -> Sep 2024 (beyond the 24-month fallback window)
+      for (var i = 0; i < 25; i++) {
+        await tester.tap(olderButton);
+        await tester.pump();
+      }
+
+      sep2024Controller.add([sep2024Activity]);
+      await tester.pump();
+
+      expect(find.text('Sep 2024'), findsOneWidget);
+      expect(find.text('15 Sep 2024'), findsWidgets);
+      expect(find.text('Kevin settled with you'), findsOneWidget);
+      expect(find.text('RWF 9,500'), findsOneWidget);
     },
   );
 }

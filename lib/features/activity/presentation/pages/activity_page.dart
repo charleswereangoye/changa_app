@@ -371,7 +371,7 @@ class _ActivityPageState extends State<ActivityPage> {
 
                   const SizedBox(height: AppSpacing.xs),
 
-                  // Month Tabs + Content Body
+                  // Month Tabs + Older Month Control + Content Body
                   Expanded(
                     child: BlocBuilder<ActivityCubit, ActivityState>(
                       builder: (context, state) {
@@ -419,21 +419,93 @@ class _ActivityPageState extends State<ActivityPage> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             if (availableMonths.isNotEmpty) ...[
-                              _MonthPillTabBar(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: horizontalPadding,
-                                ),
-                                tabs: [
-                                  for (final month in availableMonths)
-                                    _formatMonthTab(month, now: widget.now),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: _MonthPillTabBar(
+                                      padding: EdgeInsets.only(
+                                        left: horizontalPadding,
+                                        right: AppSpacing.xs,
+                                      ),
+                                      tabs: [
+                                        for (final month in availableMonths)
+                                          _formatMonthTab(
+                                            month,
+                                            now: widget.now,
+                                          ),
+                                      ],
+                                      selectedIndex: selectedIndex,
+                                      onTabSelected: (index) {
+                                        if (index >= 0 &&
+                                            index < availableMonths.length) {
+                                          _cubit.selectMonth(
+                                            availableMonths[index],
+                                          );
+                                        }
+                                      },
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: EdgeInsets.only(
+                                      right: horizontalPadding,
+                                    ),
+                                    child: Semantics(
+                                      button: true,
+                                      label: 'Previous month',
+                                      child: Material(
+                                        color: AppColors.white,
+                                        borderRadius: BorderRadius.circular(
+                                          999,
+                                        ),
+                                        child: InkWell(
+                                          key: const Key(
+                                            'load-older-months-btn',
+                                          ),
+                                          borderRadius: BorderRadius.circular(
+                                            999,
+                                          ),
+                                          onTap: _cubit.selectPreviousMonth,
+                                          child: Container(
+                                            height: 40,
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: AppSpacing.md,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              borderRadius:
+                                                  BorderRadius.circular(999),
+                                              border: Border.all(
+                                                color: AppColors.sherwoodGreen
+                                                    .withValues(alpha: 0.16),
+                                              ),
+                                            ),
+                                            child: const Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Icon(
+                                                  Icons.chevron_left_rounded,
+                                                  size: 16,
+                                                  color:
+                                                      AppColors.sherwoodGreen,
+                                                ),
+                                                SizedBox(width: 2),
+                                                Text(
+                                                  'Older',
+                                                  style: TextStyle(
+                                                    fontFamily: 'Poppins',
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w600,
+                                                    color:
+                                                        AppColors.sherwoodGreen,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
                                 ],
-                                selectedIndex: selectedIndex,
-                                onTabSelected: (index) {
-                                  if (index >= 0 &&
-                                      index < availableMonths.length) {
-                                    _cubit.selectMonth(availableMonths[index]);
-                                  }
-                                },
                               ),
                               const SizedBox(height: AppSpacing.sm),
                             ],

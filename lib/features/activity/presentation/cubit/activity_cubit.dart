@@ -176,11 +176,19 @@ class ActivityCubit extends Cubit<ActivityState> {
   }
 
   /// Navigates one month earlier than the currently selected month so users
-  /// can always browse older history.
-  Future<void> selectPreviousMonth() {
+  /// can always browse older history beyond the initial discovery window.
+  Future<void> selectPreviousMonth() async {
     final base = _selectedMonth ?? _currentMonth;
     final previousMonth = DateTime(base.year, base.month - 1, 1);
-    return selectMonth(previousMonth);
+    await selectMonth(previousMonth);
+
+    if (_householdId != null && !isClosed) {
+      _discoverOlderMonths(
+        householdId: _householdId!,
+        fromMonth: previousMonth,
+        version: _session,
+      );
+    }
   }
 
   /// Updates the search query and filters the currently loaded month's lines.
