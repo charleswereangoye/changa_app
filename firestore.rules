@@ -12,10 +12,6 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == uid;
     }
 
-    function userDocPath(uid) {
-      return /databases/$(database)/documents/users/$(uid);
-    }
-
     function householdDocPath(hid) {
       return /databases/$(database)/documents/households/$(hid);
     }
@@ -33,27 +29,30 @@ service cloud.firestore {
       );
     }
 
-    // True if the caller is the admin of households/{hid}
+    // True if the caller is the existing admin of households/{hid} (pre-write state only)
     function isAdmin(hid) {
       return isSignedIn() && (
         (exists(memberDocPath(hid, request.auth.uid)) &&
          get(memberDocPath(hid, request.auth.uid)).data.role == 'admin') ||
         (exists(householdDocPath(hid)) &&
-         get(householdDocPath(hid)).data.adminUid == request.auth.uid) ||
-        (existsAfter(householdDocPath(hid)) &&
-         getAfter(householdDocPath(hid)).data.adminUid == request.auth.uid)
+         get(householdDocPath(hid)).data.adminUid == request.auth.uid)
       );
     }
 
-    // True if the caller is a housemate in the same household as targetUserData
+    // True only when a brand-new household is being created in the same atomic batch
+    function isCreatingHouseholdAsAdmin(hid) {
+      return isSignedIn() &&
+        !exists(householdDocPath(hid)) &&
+        existsAfter(householdDocPath(hid)) &&
+        getAfter(householdDocPath(hid)).data.adminUid == request.auth.uid;
+    }
+
+    // True if the caller has a verified membership document in targetUserData's household
     function isHousemate(targetUserData) {
       return isSignedIn() &&
         targetUserData.get('householdId', null) is string &&
-        targetUserData.householdId != '' && (
-          isMember(targetUserData.householdId) ||
-          (exists(userDocPath(request.auth.uid)) &&
-           get(userDocPath(request.auth.uid)).data.get('householdId', null) == targetUserData.householdId)
-        );
+        targetUserData.householdId != '' &&
+        exists(memberDocPath(targetUserData.householdId, request.auth.uid));
     }
 
     function isValidString(val, minLen, maxLen) {
@@ -64,7 +63,7 @@ service cloud.firestore {
 
     // 1. users/{uid} (UserFields)
     match /users/{uid} {
-      // Read: the owner, or a housemate in the same household
+      // Read: the owner, or a verified housemate in the same household
       allow read: if isOwner(uid) || isHousemate(resource.data);
 
       // Create: the owner, at sign-up (or initial merge set)
@@ -91,22 +90,24 @@ service cloud.firestore {
       allow get: if isSignedIn();
       allow list: if false;
 
-      // Create: signed in, and only if that PIN does not exist
+      // Create: signed in, only if that PIN does not exist, and caller is existing or creating admin
       allow create: if isSignedIn() &&
         pin.matches('^[0-9]{6}$') &&
         !exists(/databases/$(database)/documents/householdPins/$(pin)) &&
         request.resource.data.keys().hasAll(['householdId', 'createdAt']) &&
         request.resource.data.keys().hasOnly(['householdId', 'createdAt']) &&
-        request.resource.data.householdId is string &&
-        isAdmin(request.resource.data.householdId);
+        request.resource.data.householdId is string && (
+          isAdmin(request.resource.data.householdId) ||
+          isCreatingHouseholdAsAdmin(request.resource.data.householdId)
+        );
 
-      // Update: the household admin
+      // Update: the existing household admin
       allow update: if isAdmin(resource.data.householdId) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(
           ['householdId', 'createdAt']
         );
 
-      // Delete: the household admin
+      // Delete: the existing household admin
       allow delete: if isAdmin(resource.data.householdId);
     }
 
@@ -133,7 +134,7 @@ service cloud.firestore {
         request.resource.data.pin is string &&
         request.resource.data.pin.matches('^[0-9]{6}$');
 
-      // Update: the admin only (name, type, expectedMembers, pin for regeneratePin, adminUid for transferAdmin)
+      // Update: the existing admin only (name, type, expectedMembers, pin for regeneratePin, adminUid for transferAdmin)
       allow update: if isAdmin(hid) &&
         request.resource.data.diff(resource.data).affectedKeys().hasOnly(
           ['name', 'type', 'expectedMembers', 'pin', 'adminUid']
@@ -166,7 +167,7 @@ service cloud.firestore {
           request.resource.data.credits is number &&
           request.resource.data.credits == 0 && (
             (request.resource.data.role == 'admin' &&
-             getAfter(householdDocPath(hid)).data.adminUid == request.auth.uid) ||
+             isCreatingHouseholdAsAdmin(hid)) ||
             (request.resource.data.role == 'member' &&
              exists(householdDocPath(hid)) &&
              exists(/databases/$(database)/documents/householdPins/$(get(householdDocPath(hid)).data.pin)))
