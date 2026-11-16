@@ -8,12 +8,10 @@ class QuickActions extends StatelessWidget {
   const QuickActions({
     super.key,
     required this.onAddExpense,
-    required this.onSettleUp,
     required this.onAddChore,
   });
 
   final VoidCallback onAddExpense;
-  final VoidCallback onSettleUp;
   final VoidCallback onAddChore;
 
   @override
@@ -23,26 +21,19 @@ class QuickActions extends StatelessWidget {
         Expanded(
           child: _Action(
             key: const Key('quick-add-expense'),
-            icon: Icons.receipt_long_outlined,
-            label: 'Add expense',
+            icon: Icons.add,
+            label: 'Add Expense',
+            filled: true,
             onTap: onAddExpense,
           ),
         ),
         const SizedBox(width: AppSpacing.md),
         Expanded(
           child: _Action(
-            key: const Key('quick-settle-up'),
-            icon: Icons.handshake_outlined,
-            label: 'Settle up',
-            onTap: onSettleUp,
-          ),
-        ),
-        const SizedBox(width: AppSpacing.md),
-        Expanded(
-          child: _Action(
             key: const Key('quick-add-chore'),
-            icon: Icons.cleaning_services_outlined,
-            label: 'Add chore',
+            icon: Icons.check,
+            label: 'Log Chore',
+            filled: false,
             onTap: onAddChore,
           ),
         ),
@@ -56,38 +47,43 @@ class _Action extends StatelessWidget {
     super.key,
     required this.icon,
     required this.label,
+    required this.filled,
     required this.onTap,
   });
 
   final IconData icon;
   final String label;
+  final bool filled;
   final VoidCallback onTap;
 
   @override
   Widget build(BuildContext context) {
+    final foreground = filled ? AppColors.white : AppColors.sherwoodGreen;
+
     return Material(
-      color: AppColors.white,
+      color: filled ? AppColors.sherwoodGreen : AppColors.white,
       borderRadius: BorderRadius.circular(16),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
         child: Container(
-          padding: const EdgeInsets.symmetric(
-            vertical: AppSpacing.lg,
-            horizontal: AppSpacing.sm,
-          ),
+          height: 52,
+          alignment: Alignment.center,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.opal),
+            border: filled ? null : Border.all(color: AppColors.opal),
           ),
-          child: Column(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(icon, color: AppColors.sherwoodGreen),
-              const SizedBox(height: AppSpacing.sm),
+              Icon(icon, size: 20, color: foreground),
+              const SizedBox(width: AppSpacing.sm),
               Text(
                 label,
-                textAlign: TextAlign.center,
-                style: AppTextStyles.label.copyWith(fontSize: 12),
+                style: AppTextStyles.label.copyWith(
+                  color: foreground,
+                  fontSize: 14,
+                ),
               ),
             ],
           ),

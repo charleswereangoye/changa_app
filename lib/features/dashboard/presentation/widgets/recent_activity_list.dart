@@ -87,6 +87,31 @@ class RecentActivityList extends StatelessWidget {
     ActivityType.nudgeSent => Icons.notifications_none,
   };
 
+  static Color _tint(ActivityType type) => switch (type) {
+    ActivityType.expenseAdded => AppColors.lightGreen,
+    ActivityType.debtSettled => AppColors.opal,
+    ActivityType.choreCompleted => AppColors.goldSand,
+    ActivityType.expenseDeleted => AppColors.sunglo,
+    ActivityType.memberRemoved => AppColors.sunglo,
+    ActivityType.memberJoined => AppColors.opal,
+    ActivityType.swapRequested => AppColors.goldSand,
+    ActivityType.swapAccepted => AppColors.goldSand,
+    ActivityType.nudgeSent => AppColors.opal,
+  };
+
+  static String subtitle(
+    Activity activity, {
+    required String? currentUid,
+    required Map<String, String> names,
+    required DateTime now,
+  }) {
+    final ago = timeAgo(activity.createdAt, now);
+    if (activity.type != ActivityType.expenseAdded) return ago;
+    final uid = activity.actorUid;
+    final who = uid == currentUid ? 'You' : (names[uid] ?? 'A housemate');
+    return 'Paid by $who · $ago';
+  }
+
   @override
   Widget build(BuildContext context) {
     final reference = now ?? DateTime.now();
@@ -97,11 +122,12 @@ class RecentActivityList extends StatelessWidget {
         Row(
           children: [
             const Expanded(
-              child: Text('Recent activity', style: AppTextStyles.bodyLarge),
+              child: Text('Recent Activity', style: AppTextStyles.bodyLarge),
             ),
             TextButton(
               key: const Key('activity-see-all'),
               onPressed: onSeeAll,
+              style: TextButton.styleFrom(foregroundColor: AppColors.leafGreen),
               child: const Text('See all'),
             ),
           ],
@@ -117,47 +143,92 @@ class RecentActivityList extends StatelessWidget {
           ),
           DashboardSection.ready =>
             items.isEmpty
-                ? const Text(
-                    'Nothing yet. Add the first expense or chore.',
-                    key: Key('activity-empty'),
-                    style: AppTextStyles.bodyMedium,
+                ? Container(
+                    key: const Key('activity-empty'),
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(AppSpacing.xl),
+                    decoration: BoxDecoration(
+                      color: AppColors.white,
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: const Column(
+                      children: [
+                        Icon(
+                          Icons.receipt_long_outlined,
+                          size: 40,
+                          color: AppColors.opal,
+                        ),
+                        SizedBox(height: AppSpacing.sm),
+                        Text(
+                          'No activity yet. Add an expense or log a chore to '
+                          'get started.',
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.bodyMedium,
+                        ),
+                      ],
+                    ),
                   )
                 : Column(
                     children: [
                       for (final item in items)
-                        Padding(
-                          padding: const EdgeInsets.symmetric(
-                            vertical: AppSpacing.sm,
+                        Container(
+                          margin: const EdgeInsets.only(bottom: AppSpacing.sm),
+                          padding: const EdgeInsets.all(AppSpacing.md),
+                          decoration: BoxDecoration(
+                            color: AppColors.white,
+                            borderRadius: BorderRadius.circular(16),
                           ),
                           child: Row(
                             children: [
-                              CircleAvatar(
-                                radius: 18,
-                                backgroundColor: AppColors.athsSpecial,
+                              Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  color: _tint(item.type)
+                                      .withValues(alpha: 0.25),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
                                 child: Icon(
                                   _icon(item.type),
-                                  size: 18,
+                                  size: 20,
                                   color: AppColors.sherwoodGreen,
                                 ),
                               ),
                               const SizedBox(width: AppSpacing.md),
                               Expanded(
-                                child: Text(
-                                  describe(
-                                    item,
-                                    currentUid: currentUid,
-                                    names: names,
-                                  ),
-                                  maxLines: 2,
-                                  overflow: TextOverflow.ellipsis,
-                                  style: AppTextStyles.bodyMedium,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      describe(
+                                        item,
+                                        currentUid: currentUid,
+                                        names: names,
+                                      ),
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: AppTextStyles.label,
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      subtitle(
+                                        item,
+                                        currentUid: currentUid,
+                                        names: names,
+                                        now: reference,
+                                      ),
+                                      style: AppTextStyles.bodySmall,
+                                    ),
+                                  ],
                                 ),
                               ),
-                              const SizedBox(width: AppSpacing.sm),
-                              Text(
-                                timeAgo(item.createdAt, reference),
-                                style: AppTextStyles.bodySmall,
-                              ),
+                              if (item.amount != null) ...[
+                                const SizedBox(width: AppSpacing.sm),
+                                Text(
+                                  CurrencyFormatter.format(item.amount!),
+                                  style: AppTextStyles.label,
+                                ),
+                              ],
                             ],
                           ),
                         ),

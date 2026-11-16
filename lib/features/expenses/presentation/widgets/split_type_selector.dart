@@ -1,6 +1,3 @@
-// Owner: C - Person C (Expenses, Dashboard, Documentation)
-// Description: SegmentedButton for Equal / Percent / Exact splits
-
 import 'package:flutter/material.dart';
 
 import 'package:changa_app/core/theme/app_colors.dart';
@@ -31,9 +28,9 @@ class SplitTypeSelector extends StatelessWidget {
       style: SegmentedButton.styleFrom(
         backgroundColor: AppColors.white,
         foregroundColor: AppColors.sherwoodGreen,
-        selectedBackgroundColor: AppColors.sherwoodGreen,
-        selectedForegroundColor: AppColors.ginFizz,
-        side: const BorderSide(color: AppColors.edward),
+        selectedBackgroundColor: AppColors.lightGreen.withValues(alpha: 0.5),
+        selectedForegroundColor: AppColors.sherwoodGreen,
+        side: const BorderSide(color: AppColors.athsSpecial),
         textStyle: AppTextStyles.label,
       ),
     );

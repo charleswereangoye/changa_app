@@ -4,11 +4,11 @@ import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 
 import 'package:changa_app/core/theme/app_spacing.dart';
-import 'package:changa_app/core/theme/app_text_styles.dart';
 import 'package:changa_app/features/auth/presentation/cubit/auth_cubit.dart';
 import 'package:changa_app/features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import 'package:changa_app/features/dashboard/presentation/widgets/balance_summary_card.dart';
 import 'package:changa_app/features/dashboard/presentation/widgets/dashboard_empty_state.dart';
+import 'package:changa_app/features/dashboard/presentation/widgets/dashboard_header.dart';
 import 'package:changa_app/features/dashboard/presentation/widgets/harmony_card.dart';
 import 'package:changa_app/features/dashboard/presentation/widgets/harmony_explainer_sheet.dart';
 import 'package:changa_app/features/dashboard/presentation/widgets/quick_actions.dart';
@@ -134,25 +134,12 @@ class _DashboardBody extends StatelessWidget {
       builder: (context, state) {
         final cubit = context.read<DashboardCubit>();
 
-        final header = Text(householdName, style: AppTextStyles.heading2);
-
-        if (state.isEmptyHousehold) {
-          return ListView(
-            padding: const EdgeInsets.all(AppSpacing.lg),
-            children: [
-              header,
-              DashboardEmptyState(
-                title: 'All quiet so far',
-                message:
-                    'Add your first expense to start tracking who owes what.',
-                primaryLabel: 'Add expense',
-                onPrimary: () => openAddExpense(context),
-                secondaryLabel: 'Add a chore',
-                onSecondary: () => context.push('/chores/add'),
-              ),
-            ],
-          );
-        }
+        final header = DashboardHeader(
+          householdName: householdName,
+          uid: uid,
+          displayName: names[uid] ?? '',
+          onAvatar: () => context.go('/home/profile'),
+        );
 
         return ListView(
           padding: const EdgeInsets.all(AppSpacing.lg),
@@ -171,11 +158,11 @@ class _DashboardBody extends StatelessWidget {
               names: names,
               onRetry: cubit.retry,
               onMemberTap: (memberUid) => context.push('/debts/$memberUid'),
+              onSettleUp: () => _settleUp(context, state.balance),
             ),
             const SizedBox(height: AppSpacing.lg),
             QuickActions(
               onAddExpense: () => openAddExpense(context),
-              onSettleUp: () => _settleUp(context, state.balance),
               onAddChore: () => context.push('/chores/add'),
             ),
             const SizedBox(height: AppSpacing.lg),

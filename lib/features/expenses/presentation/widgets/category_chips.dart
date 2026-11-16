@@ -1,6 +1,3 @@
-// Owner: C - Person C (Expenses, Dashboard, Documentation)
-// Description: Expense category selection chips
-
 import 'package:flutter/material.dart';
 
 import 'package:changa_app/core/theme/app_colors.dart';
@@ -31,17 +28,17 @@ class CategoryChips extends StatelessWidget {
 
   Widget _chip(ExpenseCategory category) {
     final isSelected = category == selected;
-    final foreground = isSelected ? AppColors.ginFizz : AppColors.sherwoodGreen;
+    const foreground = AppColors.sherwoodGreen;
     return ChoiceChip(
       avatar: Icon(_icon(category), size: 18, color: foreground),
       label: Text(label(category)),
       labelStyle: AppTextStyles.label.copyWith(color: foreground),
       selected: isSelected,
       showCheckmark: false,
-      selectedColor: AppColors.sherwoodGreen,
+      selectedColor: AppColors.lightGreen.withValues(alpha: 0.5),
       backgroundColor: AppColors.white,
       side: BorderSide(
-        color: isSelected ? AppColors.sherwoodGreen : AppColors.edward,
+        color: isSelected ? AppColors.leafGreen : AppColors.athsSpecial,
       ),
       shape: const StadiumBorder(),
       onSelected: (_) => onSelected(category),
