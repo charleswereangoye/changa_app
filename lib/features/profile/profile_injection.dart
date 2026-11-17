@@ -8,6 +8,7 @@ import 'domain/repositories/user_repository.dart';
 import 'domain/usecases/get_users_by_ids.dart';
 import 'domain/usecases/update_profile.dart';
 import 'domain/usecases/watch_user.dart';
+import 'presentation/cubit/preferences_cubit.dart';
 import 'presentation/cubit/profile_cubit.dart';
 
 import 'package:shared_preferences/shared_preferences.dart';
@@ -68,5 +69,10 @@ Future<void> initProfile() async {
         updateProfile: sl<UpdateProfile>(),
       ),
     );
+  }
+
+  // One shared instance, so the theme and the Preferences screen agree.
+  if (!sl.isRegistered<PreferencesCubit>()) {
+    sl.registerLazySingleton(() => PreferencesCubit(sl<PreferencesStore>()));
   }
 }

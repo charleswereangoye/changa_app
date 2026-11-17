@@ -6,6 +6,8 @@ import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/household/presentation/cubit/household_cubit.dart';
 import 'features/notifications/presentation/cubit/notifications_cubit.dart';
+import 'features/profile/presentation/cubit/preferences_cubit.dart';
+import 'features/profile/presentation/cubit/preferences_state.dart';
 import 'injection_container.dart';
 
 /// The root widget of the Changa application.
@@ -31,6 +33,10 @@ class ChangaApp extends StatelessWidget {
             return cubit;
           },
         ),
+        BlocProvider<PreferencesCubit>(
+          lazy: false,
+          create: (_) => sl<PreferencesCubit>()..load(),
+        ),
         BlocProvider<NotificationsCubit>(
           create: (_) => sl.isRegistered<NotificationsCubit>()
               ? sl<NotificationsCubit>()
@@ -46,11 +52,16 @@ class ChangaApp extends StatelessWidget {
             householdCubit.clearHousehold();
           }
         },
-        child: MaterialApp.router(
-          title: 'Changa',
-          debugShowCheckedModeBanner: false,
-          theme: AppTheme.lightTheme,
-          routerConfig: AppRouter.router,
+        child: BlocBuilder<PreferencesCubit, PreferencesState>(
+          buildWhen: (previous, current) =>
+              previous.themeMode != current.themeMode,
+          builder: (context, preferences) => MaterialApp.router(
+            title: 'Changa',
+            debugShowCheckedModeBanner: false,
+            theme: AppTheme.lightTheme,
+            themeMode: preferences.themeMode,
+            routerConfig: AppRouter.router,
+          ),
         ),
       ),
     );
