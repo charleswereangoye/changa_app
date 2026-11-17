@@ -1,7 +1,7 @@
 import 'package:changa_app/core/enums/split_type.dart';
 import 'package:changa_app/core/enums/settlement_method.dart';
 import 'package:changa_app/core/constants/pref_keys.dart';
-import 'package:changa_app/features/profile/domain/services/preferences_service.dart';
+import 'package:changa_app/features/profile/domain/services/preferences_store.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -10,7 +10,7 @@ import 'package:changa_app/features/profile/presentation/cubit/preferences_state
 class PreferencesCubit extends Cubit<PreferencesState> {
   PreferencesCubit(this._prefs) : super(const PreferencesState());
 
-  final PreferencesService _prefs;
+  final PreferencesStore _prefs;
 
   /// Call once at app start, before the first frame that needs the theme.
   Future<void> load() async {
@@ -64,31 +64,55 @@ class PreferencesCubit extends Cubit<PreferencesState> {
   }
 
   // Each setter updates the screen first, then saves, so the UI never waits.
+  // If saving fails the screen goes back to what it was and says so.
 
-  Future<void> setThemeMode(ThemeMode mode) async {
-    emit(state.copyWith(themeMode: mode));
-    await _prefs.setString(PrefKeys.themeMode, mode.name);
+  Future<void> setThemeMode(ThemeMode mode) => _change(
+    apply: (s) => s.copyWith(themeMode: mode),
+    save: () => _prefs.setString(PrefKeys.themeMode, mode.name),
+  );
+
+  Future<void> setNotifyNudges(bool value) => _change(
+    apply: (s) => s.copyWith(notifyNudges: value),
+    save: () => _prefs.setBool(PrefKeys.notifyNudges, value),
+  );
+
+  Future<void> setNotifyChores(bool value) => _change(
+    apply: (s) => s.copyWith(notifyChores: value),
+    save: () => _prefs.setBool(PrefKeys.notifyChores, value),
+  );
+
+  Future<void> setDefaultSettlementMethod(SettlementMethod method) {
+    if (method == SettlementMethod.credits) return Future.value();
+    return _change(
+      apply: (s) => s.copyWith(defaultSettlementMethod: method),
+      save: () =>
+          _prefs.setString(PrefKeys.defaultSettlementMethod, method.name),
+    );
   }
 
-  Future<void> setNotifyNudges(bool value) async {
-    emit(state.copyWith(notifyNudges: value));
-    await _prefs.setBool(PrefKeys.notifyNudges, value);
-  }
+  Future<void> setDefaultSplitType(SplitType type) => _change(
+    apply: (s) => s.copyWith(defaultSplitType: type),
+    save: () => _prefs.setString(PrefKeys.defaultSplitType, type.name),
+  );
 
-  Future<void> setNotifyChores(bool value) async {
-    emit(state.copyWith(notifyChores: value));
-    await _prefs.setBool(PrefKeys.notifyChores, value);
-  }
+  void clearSaveError() => emit(state.copyWith(clearSaveError: true));
 
-  Future<void> setDefaultSettlementMethod(SettlementMethod method) async {
-    if (method == SettlementMethod.credits) return;
-    emit(state.copyWith(defaultSettlementMethod: method));
-    await _prefs.setString(PrefKeys.defaultSettlementMethod, method.name);
-  }
-
-  Future<void> setDefaultSplitType(SplitType type) async {
-    emit(state.copyWith(defaultSplitType: type));
-    await _prefs.setString(PrefKeys.defaultSplitType, type.name);
+  Future<void> _change({
+    required PreferencesState Function(PreferencesState) apply,
+    required Future<void> Function() save,
+  }) async {
+    final before = state;
+    emit(apply(before).copyWith(clearSaveError: true));
+    try {
+      await save();
+    } catch (_) {
+      if (isClosed) return;
+      emit(
+        before.copyWith(
+          saveError: 'Couldn’t save that setting. Please try again.',
+        ),
+      );
+    }
   }
 
   /// A stored value we no longer recognise falls back instead of crashing.
