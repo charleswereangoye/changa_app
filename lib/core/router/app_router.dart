@@ -7,12 +7,12 @@ import '../../features/auth/presentation/pages/onboarding_page.dart';
 import '../../features/auth/presentation/pages/sign_up_page.dart';
 import '../../features/auth/presentation/pages/splash_page.dart';
 import '../../features/auth/presentation/pages/verify_email_page.dart';
+import '../../features/chores/domain/entities/chore.dart';
 import '../../features/chores/presentation/pages/add_edit_chore_page.dart';
 import '../../features/chores/presentation/pages/chore_roster_page.dart';
 import '../../features/dashboard/presentation/pages/dashboard_page.dart';
-import '../../features/debts/presentation/pages/debt_detail_page.dart';
-import '../../features/debts/presentation/pages/settle_up_page.dart';
-import '../../features/expenses/presentation/pages/add_expense_page.dart';
+import '../../features/debts/presentation/pages/debt_detail_route.dart';
+import '../../features/debts/presentation/pages/settle_up_route.dart';
 import '../../features/household/presentation/pages/create_household_page.dart';
 import '../../features/household/presentation/pages/household_created_page.dart';
 import '../../features/household/presentation/pages/join_household_page.dart';
@@ -131,23 +131,18 @@ class AppRouter {
         ],
       ),
 
-      // Expenses
-      GoRoute(
-        path: '/expenses/add',
-        name: RouteNames.addExpense,
-        builder: (context, state) => const AddExpensePage(),
-      ),
-
       // Debts & Settling
       GoRoute(
         path: '/debts/:uid',
         name: RouteNames.debtDetail,
-        builder: (context, state) => const DebtDetailPage(),
+        builder: (context, state) =>
+            DebtDetailRoute(otherUid: state.pathParameters['uid'] ?? ''),
       ),
       GoRoute(
         path: '/debts/:uid/settle',
         name: RouteNames.settleUp,
-        builder: (context, state) => const SettleUpPage(),
+        builder: (context, state) =>
+            SettleUpRoute(otherUid: state.pathParameters['uid'] ?? ''),
       ),
 
       // Chores management
@@ -159,7 +154,10 @@ class AppRouter {
       GoRoute(
         path: '/chores/:id/edit',
         name: RouteNames.editChore,
-        builder: (context, state) => const AddEditChorePage(),
+        builder: (context, state) => AddEditChorePage(
+          choreId: state.pathParameters['id'],
+          initial: state.extra is Chore ? state.extra as Chore : null,
+        ),
       ),
 
       // Profile & Preferences

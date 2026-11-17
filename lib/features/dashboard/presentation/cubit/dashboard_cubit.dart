@@ -258,6 +258,7 @@ class DashboardCubit extends Cubit<DashboardState> {
         harmonyStatus: DashboardSection.ready,
         harmony: score,
         clearHarmony: score == null,
+        choreCount: chores.length,
       ),
     );
   }

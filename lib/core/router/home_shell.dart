@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 
 import '../theme/app_colors.dart';
+import '../../features/expenses/presentation/open_add_expense.dart';
 
 /// Bottom navigation shell hosting Home, Chores, [+], Activity, and Profile
 /// matching the exact Figma design system and elevated center action button.
@@ -87,7 +88,7 @@ class HomeShell extends StatelessWidget {
           Positioned(
             top: -20,
             child: GestureDetector(
-              onTap: () => context.push('/expenses/add'),
+              onTap: () => openAddExpense(context),
               behavior: HitTestBehavior.opaque,
               child: Container(
                 width: 56,

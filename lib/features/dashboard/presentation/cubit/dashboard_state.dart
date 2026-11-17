@@ -1,10 +1,5 @@
-// Owner: C - Person C (Expenses, Dashboard, Documentation)
-// Description: States for DashboardCubit
-
 part of 'dashboard_cubit.dart';
 
-/// Each dashboard section loads on its own, so one failing source (say,
-/// chores) never blanks the whole screen.
 enum DashboardSection { loading, ready, failed }
 
 class DashboardState extends Equatable {
@@ -14,30 +9,31 @@ class DashboardState extends Equatable {
     this.balance,
     this.harmonyStatus = DashboardSection.loading,
     this.harmony,
+    this.choreCount = 0,
     this.activityStatus = DashboardSection.loading,
     this.recentActivity = const [],
   });
 
-  /// False when the signed-in person has not joined a household yet.
   final bool hasHousehold;
 
   final DashboardSection balanceStatus;
   final BalanceSummary? balance;
 
   final DashboardSection harmonyStatus;
-
-  /// Null while ready means there is nothing to judge yet (show a dash).
   final HarmonyScore? harmony;
+  final int choreCount;
 
   final DashboardSection activityStatus;
   final List<Activity> recentActivity;
 
-  /// A new household with nothing in it yet.
   bool get isEmptyHousehold =>
       hasHousehold &&
       balanceStatus == DashboardSection.ready &&
+      harmonyStatus == DashboardSection.ready &&
       activityStatus == DashboardSection.ready &&
-      (balance?.byMember.isEmpty ?? true) &&
+      harmony == null &&
+      choreCount == 0 &&
+      (balance?.byMember.values.every((amount) => amount == 0) ?? true) &&
       recentActivity.isEmpty;
 
   DashboardState copyWith({
@@ -46,6 +42,7 @@ class DashboardState extends Equatable {
     DashboardSection? harmonyStatus,
     HarmonyScore? harmony,
     bool clearHarmony = false,
+    int? choreCount,
     DashboardSection? activityStatus,
     List<Activity>? recentActivity,
   }) {
@@ -55,6 +52,7 @@ class DashboardState extends Equatable {
       balance: balance ?? this.balance,
       harmonyStatus: harmonyStatus ?? this.harmonyStatus,
       harmony: clearHarmony ? null : (harmony ?? this.harmony),
+      choreCount: choreCount ?? this.choreCount,
       activityStatus: activityStatus ?? this.activityStatus,
       recentActivity: recentActivity ?? this.recentActivity,
     );
@@ -67,6 +65,7 @@ class DashboardState extends Equatable {
     balance,
     harmonyStatus,
     harmony,
+    choreCount,
     activityStatus,
     recentActivity,
   ];
