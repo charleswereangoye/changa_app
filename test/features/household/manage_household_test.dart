@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -18,6 +19,7 @@ import 'package:changa_app/features/household/domain/usecases/remove_member.dart
 import 'package:changa_app/features/household/domain/usecases/transfer_admin.dart';
 import 'package:changa_app/features/household/domain/usecases/watch_household.dart';
 import 'package:changa_app/features/household/domain/usecases/watch_members.dart';
+import 'package:changa_app/features/household/presentation/cubit/household_cubit.dart';
 import 'package:changa_app/features/household/presentation/cubit/manage_household_cubit.dart';
 import 'package:changa_app/features/household/presentation/pages/manage_household_page.dart';
 import 'package:changa_app/features/profile/domain/usecases/get_users_by_ids.dart';
@@ -40,6 +42,9 @@ class MockGetOutstandingBalance extends Mock implements GetOutstandingBalance {}
 
 class MockReassignChores extends Mock implements ReassignChores {}
 
+class MockHouseholdCubit extends MockCubit<HouseholdState>
+    implements HouseholdCubit {}
+
 void main() {
   final fixedDate = DateTime(2026, 10, 31, 10, 0);
 
@@ -50,6 +55,16 @@ void main() {
     expectedMembers: 4,
     pin: '482916',
     adminUid: 'amara',
+    createdAt: fixedDate,
+  );
+
+  final secondHousehold = Household(
+    id: 'house-2',
+    name: 'Nyarutarama Villa',
+    type: HouseholdType.house,
+    expectedMembers: 3,
+    pin: '654321',
+    adminUid: 'jean',
     createdAt: fixedDate,
   );
 
@@ -83,6 +98,21 @@ void main() {
 
   final testMembers = [amaraMember, jeanMember, kevinMember, graceMember];
 
+  final secondHouseholdMembers = [
+    Member(
+      uid: 'jean',
+      role: MemberRole.admin,
+      credits: 50,
+      joinedAt: fixedDate,
+    ),
+    Member(
+      uid: 'amara',
+      role: MemberRole.member,
+      credits: 15,
+      joinedAt: fixedDate.add(const Duration(minutes: 5)),
+    ),
+  ];
+
   const testNames = {
     'amara': 'Amara Okoye',
     'jean': 'Jean Baptiste',
@@ -114,7 +144,10 @@ void main() {
     reassignChores = MockReassignChores();
   });
 
-  ManageHouseholdCubit buildCubit({String currentUid = 'amara'}) {
+  ManageHouseholdCubit buildCubit({
+    String? currentUid = 'amara',
+    HouseholdCubit? householdCubit,
+  }) {
     return ManageHouseholdCubit(
       watchHousehold: watchHousehold,
       watchMembers: watchMembers,
@@ -125,6 +158,7 @@ void main() {
       leaveHousehold: leaveHousehold,
       getOutstandingBalance: getOutstandingBalance,
       reassignChores: reassignChores,
+      householdCubit: householdCubit,
       currentUid: currentUid,
       initialHarmonyScores: testHarmonyScores,
     );
@@ -255,11 +289,40 @@ void main() {
         memberNames: testNames,
       );
 
-      final balance = await cubit.fetchOutstandingBalance('kevin');
-      expect(balance, 18500);
+      final result = await cubit.fetchOutstandingBalance('kevin');
+      expect(result.isSuccess, isTrue);
+      expect(result.dataOrNull, 18500);
       verify(() => getOutstandingBalance(householdId: 'house-1', uid: 'kevin'))
           .called(1);
     });
+
+    test(
+      'fetchOutstandingBalance preserves failure instead of coercing to zero',
+      () async {
+        when(() => getOutstandingBalance(householdId: 'house-1', uid: 'kevin'))
+            .thenAnswer(
+              (_) async => Result.failure(
+                const NetworkFailure('Could not load outstanding balance.'),
+              ),
+            );
+
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        cubit.seedState(
+          household: testHousehold,
+          members: testMembers,
+          memberNames: testNames,
+        );
+
+        final result = await cubit.fetchOutstandingBalance('kevin');
+        expect(result.isFailure, isTrue);
+        expect(result.dataOrNull, isNull);
+        expect(
+          result.failureOrNull?.message,
+          'Could not load outstanding balance.',
+        );
+      },
+    );
 
     test('removeMember calls ReassignChores(fromUid: removed, toUid: admin) then RemoveMember', () async {
       when(
@@ -326,6 +389,95 @@ void main() {
         ),
       );
     });
+
+    test('clears state, updates currentUid, and invalidates in-flight actions on global HouseholdCubit session changes', () async {
+      final globalController = StreamController<HouseholdState>.broadcast(
+        sync: true,
+      );
+      addTearDown(globalController.close);
+
+      final mockGlobalCubit = MockHouseholdCubit();
+      when(() => mockGlobalCubit.state).thenReturn(
+        HouseholdStateLoaded(
+          household: testHousehold,
+          members: testMembers,
+          memberNames: testNames,
+          currentMember: amaraMember,
+        ),
+      );
+      whenListen(mockGlobalCubit, globalController.stream);
+
+      final house2Controller = StreamController<Household?>.broadcast(
+        sync: true,
+      );
+      final members2Controller = StreamController<List<Member>>.broadcast(
+        sync: true,
+      );
+      addTearDown(() async {
+        await house2Controller.close();
+        await members2Controller.close();
+      });
+
+      when(() => watchHousehold('house-2'))
+          .thenAnswer((_) => house2Controller.stream);
+      when(() => watchMembers('house-2'))
+          .thenAnswer((_) => members2Controller.stream);
+
+      final slowPinCompleter = Completer<Result<String>>();
+      when(() => regeneratePin('house-1'))
+          .thenAnswer((_) => slowPinCompleter.future);
+
+      final cubit = buildCubit(
+        currentUid: null,
+        householdCubit: mockGlobalCubit,
+      );
+      addTearDown(cubit.close);
+
+      // Initial seeded state is house-1 where amara is admin
+      expect(cubit.state.household?.id, 'house-1');
+      expect(cubit.state.currentUid, 'amara');
+      expect(cubit.state.isAdmin, isTrue);
+
+      // Start an in-flight PIN regeneration on house-1
+      final pendingRegen = cubit.regeneratePin();
+      expect(cubit.state.isSubmitting, isTrue);
+
+      // Switch session to house-2 where jean is admin and kevin is a regular member
+      globalController.add(
+        HouseholdStateLoaded(
+          household: secondHousehold,
+          members: [secondHouseholdMembers.first, kevinMember],
+          memberNames: const {
+            'jean': 'Jean Baptiste',
+            'kevin': 'Kevin Mugisha',
+          },
+          currentMember: kevinMember,
+        ),
+      );
+
+      // State immediately reflects house-2 and kevin (non-admin), not retained amara
+      expect(cubit.state, isA<ManageHouseholdStateLoaded>());
+      expect(cubit.state.household?.id, 'house-2');
+      expect(cubit.state.household?.pin, '654321');
+      expect(cubit.state.currentUid, 'kevin');
+      expect(cubit.state.isAdmin, isFalse);
+      expect(cubit.state.isSubmitting, isFalse);
+
+      // Completing the stale house-1 regeneratePin call must be ignored
+      slowPinCompleter.complete(Result.success('999999'));
+      final staleResult = await pendingRegen;
+      expect(staleResult.isFailure, isTrue);
+      expect(cubit.state.household?.id, 'house-2');
+      expect(cubit.state.household?.pin, '654321');
+
+      // Sign-out / leaving household clears household, members, and currentUid immediately
+      globalController.add(const HouseholdStateEmpty());
+      expect(cubit.state, isA<ManageHouseholdStateError>());
+      expect(cubit.state.household, isNull);
+      expect(cubit.state.members, isEmpty);
+      expect(cubit.state.currentUid, isNull);
+      expect(cubit.state.isAdmin, isFalse);
+    });
   });
 
   // 2. WIDGET TESTS: ManageHouseholdPage
@@ -374,7 +526,7 @@ void main() {
 
         expect(find.text('Manage Household'), findsOneWidget);
         expect(find.text('Kigali Nest'), findsNWidgets(2));
-        expect(find.text('Apartment · 4 members'), findsOneWidget);
+        expect(find.text('Apartment \u00B7 4 members'), findsOneWidget);
         expect(find.text('MEMBERS (4)'), findsOneWidget);
 
         expect(find.text('Amara Okoye'), findsOneWidget);
@@ -487,6 +639,140 @@ void main() {
           () => removeMember(householdId: 'house-1', uid: 'kevin'),
         ]);
         expect(find.text('Kevin Mugisha'), findsNothing);
+      },
+    );
+
+    testWidgets(
+      'failed balance lookup blocks unverified removal and offers Retry before showing removal dialog',
+      (tester) async {
+        var callCount = 0;
+        when(() => getOutstandingBalance(householdId: 'house-1', uid: 'kevin'))
+            .thenAnswer((_) async {
+              callCount++;
+              if (callCount == 1) {
+                return Result.failure(
+                  const NetworkFailure('Could not verify Kevin balance.'),
+                );
+              }
+              return Result.success(12500);
+            });
+
+        final cubit = buildCubit();
+        addTearDown(cubit.close);
+        cubit.seedState(
+          household: testHousehold,
+          members: testMembers,
+          memberNames: testNames,
+          harmonyScores: testHarmonyScores,
+        );
+
+        await tester.pumpWidget(buildTestApp(cubit));
+        await tester.pumpAndSettle();
+
+        final kevinMenu = find.byKey(const ValueKey('member-menu-kevin'));
+        await tester.ensureVisible(kevinMenu);
+        await tester.tap(kevinMenu);
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(const Key('action-remove-member')));
+        await tester.pumpAndSettle();
+
+        // Removal dialog must NOT open as a false zero balance
+        expect(find.text('Remove anyway'), findsNothing);
+        expect(
+          find.textContaining(
+            'Their pending chores will be reassigned to the admin.',
+          ),
+          findsNothing,
+        );
+
+        // Error dialog preserves failure message and offers Retry
+        expect(find.text('Could not check balance'), findsOneWidget);
+        expect(find.text('Could not verify Kevin balance.'), findsOneWidget);
+        expect(find.text('Retry'), findsOneWidget);
+
+        // Tap Retry -> second lookup succeeds with 12,500 RWF and opens removal warning dialog
+        await tester.tap(find.text('Retry'));
+        await tester.pumpAndSettle();
+
+        expect(callCount, 2);
+        expect(
+          find.textContaining('Outstanding balance: 12,500 RWF'),
+          findsOneWidget,
+        );
+        expect(find.text('Remove anyway'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'clears previous household PIN, members, and admin controls on session switch and sign-out',
+      (tester) async {
+        final globalController = StreamController<HouseholdState>.broadcast(
+          sync: true,
+        );
+        addTearDown(globalController.close);
+
+        final mockGlobalCubit = MockHouseholdCubit();
+        when(() => mockGlobalCubit.state).thenReturn(
+          HouseholdStateLoaded(
+            household: testHousehold,
+            members: testMembers,
+            memberNames: testNames,
+            currentMember: amaraMember,
+          ),
+        );
+        whenListen(mockGlobalCubit, globalController.stream);
+
+        final cubit = buildCubit(
+          currentUid: null,
+          householdCubit: mockGlobalCubit,
+        );
+        addTearDown(cubit.close);
+
+        await tester.pumpWidget(buildTestApp(cubit));
+        await tester.pumpAndSettle();
+
+        // Initially shows house-1 with PIN 482 916 and admin controls
+        expect(find.text('Kigali Nest'), findsNWidgets(2));
+        expect(find.text('482 916'), findsOneWidget);
+        expect(find.byKey(const Key('regenerate-pin-button')), findsOneWidget);
+        expect(find.byKey(const ValueKey('member-menu-kevin')), findsOneWidget);
+
+        // Switch to house-2 where amara is a regular member (jean is admin)
+        globalController.add(
+          HouseholdStateLoaded(
+            household: secondHousehold,
+            members: secondHouseholdMembers,
+            memberNames: const {
+              'jean': 'Jean Baptiste',
+              'amara': 'Amara Okoye',
+            },
+            currentMember: secondHouseholdMembers.last,
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        // Previous household PIN, members, and admin controls are gone
+        expect(find.text('Kigali Nest'), findsNothing);
+        expect(find.text('482 916'), findsNothing);
+        expect(find.text('Kevin Mugisha'), findsNothing);
+        expect(find.byKey(const Key('regenerate-pin-button')), findsNothing);
+        expect(
+          find.byKey(const Key('summary-regenerate-pin-btn')),
+          findsNothing,
+        );
+
+        // New household PIN and members are displayed
+        expect(find.text('Nyarutarama Villa'), findsNWidgets(2));
+        expect(find.text('654 321'), findsOneWidget);
+
+        // Sign out / leave household clears the screen immediately
+        globalController.add(const HouseholdStateEmpty());
+        await tester.pumpAndSettle();
+
+        expect(find.text('Nyarutarama Villa'), findsNothing);
+        expect(find.text('654 321'), findsNothing);
+        expect(find.text('No active household found.'), findsOneWidget);
       },
     );
 

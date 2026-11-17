@@ -39,6 +39,9 @@ class _ManageHouseholdPageState extends State<ManageHouseholdPage> {
 
   late final ManageHouseholdCubit _cubit;
   late final bool _ownsCubit;
+  final Map<int, VoidCallback> _openModalDismissers = <int, VoidCallback>{};
+  int _nextModalId = 0;
+  int? _lastObservedSession;
 
   @override
   void initState() {
@@ -58,14 +61,10 @@ class _ManageHouseholdPageState extends State<ManageHouseholdPage> {
     }
 
     _initializeCubit();
+    _lastObservedSession = _cubit.session;
   }
 
   void _initializeCubit() {
-    if (_cubit.state is ManageHouseholdStateLoaded &&
-        widget.householdId == null) {
-      return;
-    }
-
     HouseholdCubit? contextHouseholdCubit;
     try {
       contextHouseholdCubit = context.read<HouseholdCubit>();
@@ -75,6 +74,15 @@ class _ManageHouseholdPageState extends State<ManageHouseholdPage> {
       }
     }
 
+    if (contextHouseholdCubit != null) {
+      _cubit.bindHouseholdCubit(contextHouseholdCubit);
+    }
+
+    if (_cubit.state is ManageHouseholdStateLoaded &&
+        widget.householdId == null) {
+      return;
+    }
+
     final globalState = contextHouseholdCubit?.state;
     if (globalState is HouseholdStateLoaded &&
         _cubit.state is! ManageHouseholdStateLoaded) {
@@ -82,10 +90,7 @@ class _ManageHouseholdPageState extends State<ManageHouseholdPage> {
         household: globalState.household,
         members: globalState.members,
         memberNames: globalState.memberNames,
-        currentUid:
-            widget.currentUid ??
-            globalState.currentMember?.uid ??
-            globalState.household.adminUid,
+        currentUid: widget.currentUid ?? globalState.currentMember?.uid,
       );
     }
 
@@ -98,8 +103,38 @@ class _ManageHouseholdPageState extends State<ManageHouseholdPage> {
     }
   }
 
+  void _dismissOpenModals() {
+    if (_openModalDismissers.isEmpty) return;
+    final dismissers = List<VoidCallback>.of(_openModalDismissers.values);
+    _openModalDismissers.clear();
+    for (final dismiss in dismissers) {
+      dismiss();
+    }
+  }
+
+  Future<T?> _showTrackedDialog<T>({required WidgetBuilder builder}) async {
+    if (!mounted) return null;
+    final modalId = ++_nextModalId;
+    try {
+      return await showDialog<T>(
+        context: context,
+        builder: (dialogContext) {
+          _openModalDismissers[modalId] = () {
+            if (dialogContext.mounted) {
+              Navigator.of(dialogContext).pop();
+            }
+          };
+          return builder(dialogContext);
+        },
+      );
+    } finally {
+      _openModalDismissers.remove(modalId);
+    }
+  }
+
   @override
   void dispose() {
+    _openModalDismissers.clear();
     if (_ownsCubit) {
       _cubit.close();
     }
@@ -130,9 +165,9 @@ class _ManageHouseholdPageState extends State<ManageHouseholdPage> {
     }
   }
 
-  Future<void> _showRegeneratePinDialog(BuildContext context) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
+  Future<void> _showRegeneratePinDialog() async {
+    final sessionAtStart = _cubit.session;
+    final confirmed = await _showTrackedDialog<bool>(
       builder: (dialogContext) => _HouseholdConfirmDialog(
         title: 'Regenerate PIN?',
         message: 'Anyone with the old PIN will no longer be able to join. Current members keep their access.',
@@ -143,18 +178,17 @@ class _ManageHouseholdPageState extends State<ManageHouseholdPage> {
       ),
     );
 
-    if (confirmed == true && mounted) {
+    if (confirmed == true && mounted && _cubit.session == sessionAtStart) {
       await _cubit.regeneratePin();
     }
   }
 
   Future<void> _showTransferAdminDialog(
-    BuildContext context,
     Member member,
     String memberName,
   ) async {
-    final confirmed = await showDialog<bool>(
-      context: context,
+    final sessionAtStart = _cubit.session;
+    final confirmed = await _showTrackedDialog<bool>(
       builder: (dialogContext) => _HouseholdConfirmDialog(
         title: 'Transfer admin',
         message:
@@ -166,40 +200,65 @@ class _ManageHouseholdPageState extends State<ManageHouseholdPage> {
       ),
     );
 
-    if (confirmed == true && mounted) {
+    if (confirmed == true && mounted && _cubit.session == sessionAtStart) {
       await _cubit.transferAdmin(member.uid);
     }
   }
 
-  Future<void> _showRemoveMemberDialog(
-    BuildContext context,
-    Member member,
-    String memberName,
-  ) async {
-    final balance = await _cubit.fetchOutstandingBalance(member.uid);
-    if (!context.mounted) return;
+  Future<void> _showRemoveMemberDialog(Member member, String memberName) async {
+    final sessionAtStart = _cubit.session;
 
-    final hasBalance = balance > 0;
-    final formattedBalance = _numberFormat.format(balance);
-    final bodyText = hasBalance
-        ? 'Remove $memberName from this household?\n\nOutstanding balance: $formattedBalance RWF'
-        : 'Remove $memberName from this household? Their pending chores will be reassigned to the admin.';
+    while (mounted && _cubit.session == sessionAtStart) {
+      final balanceResult = await _cubit.fetchOutstandingBalance(member.uid);
+      if (!mounted || _cubit.session != sessionAtStart) return;
 
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (dialogContext) => _HouseholdConfirmDialog(
-        title: 'Remove from household',
-        message: bodyText,
-        confirmText: 'Remove anyway',
-        cancelText: 'Cancel',
-        isDestructive: true,
-        onConfirm: () => Navigator.of(dialogContext).pop(true),
-        onCancel: () => Navigator.of(dialogContext).pop(false),
-      ),
-    );
+      if (balanceResult.isFailure) {
+        final errorMessage =
+            balanceResult.failureOrNull?.message ??
+            'Could not verify outstanding balance for $memberName. Please try again.';
 
-    if (confirmed == true && mounted) {
-      await _cubit.removeMember(member.uid);
+        final shouldRetry = await _showTrackedDialog<bool>(
+          builder: (dialogContext) => _HouseholdConfirmDialog(
+            title: 'Could not check balance',
+            message: errorMessage,
+            confirmText: 'Retry',
+            cancelText: 'Cancel',
+            onConfirm: () => Navigator.of(dialogContext).pop(true),
+            onCancel: () => Navigator.of(dialogContext).pop(false),
+          ),
+        );
+
+        if (shouldRetry == true &&
+            mounted &&
+            _cubit.session == sessionAtStart) {
+          continue;
+        }
+        return;
+      }
+
+      final balance = balanceResult.dataOrNull ?? 0;
+      final hasBalance = balance > 0;
+      final formattedBalance = _numberFormat.format(balance);
+      final bodyText = hasBalance
+          ? 'Remove $memberName from this household?\n\nOutstanding balance: $formattedBalance RWF'
+          : 'Remove $memberName from this household? Their pending chores will be reassigned to the admin.';
+
+      final confirmed = await _showTrackedDialog<bool>(
+        builder: (dialogContext) => _HouseholdConfirmDialog(
+          title: 'Remove from household',
+          message: bodyText,
+          confirmText: 'Remove anyway',
+          cancelText: 'Cancel',
+          isDestructive: true,
+          onConfirm: () => Navigator.of(dialogContext).pop(true),
+          onCancel: () => Navigator.of(dialogContext).pop(false),
+        ),
+      );
+
+      if (confirmed == true && mounted && _cubit.session == sessionAtStart) {
+        await _cubit.removeMember(member.uid);
+      }
+      return;
     }
   }
 
@@ -208,17 +267,35 @@ class _ManageHouseholdPageState extends State<ManageHouseholdPage> {
     ManageHouseholdState state,
     Member member,
   ) {
+    final sessionAtStart = _cubit.session;
     final name = state.displayNameFor(member.uid);
+    final modalId = ++_nextModalId;
+
     showModalBottomSheet<void>(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (_) => MemberActionsSheet(
-        memberName: name,
-        isAdmin: state.isAdmin,
-        onTransferAdmin: () => _showTransferAdminDialog(context, member, name),
-        onRemoveMember: () => _showRemoveMemberDialog(context, member, name),
-      ),
-    );
+      builder: (sheetContext) {
+        _openModalDismissers[modalId] = () {
+          if (sheetContext.mounted) {
+            Navigator.of(sheetContext).pop();
+          }
+        };
+        return MemberActionsSheet(
+          memberName: name,
+          isAdmin: state.isAdmin,
+          onTransferAdmin: () {
+            if (_cubit.session != sessionAtStart) return;
+            _showTransferAdminDialog(member, name);
+          },
+          onRemoveMember: () {
+            if (_cubit.session != sessionAtStart) return;
+            _showRemoveMemberDialog(member, name);
+          },
+        );
+      },
+    ).whenComplete(() {
+      _openModalDismissers.remove(modalId);
+    });
   }
 
   @override
@@ -227,6 +304,11 @@ class _ManageHouseholdPageState extends State<ManageHouseholdPage> {
       value: _cubit,
       child: BlocConsumer<ManageHouseholdCubit, ManageHouseholdState>(
         listener: (context, state) {
+          if (_lastObservedSession != _cubit.session) {
+            _lastObservedSession = _cubit.session;
+            _dismissOpenModals();
+          }
+
           if (state.actionMessage != null && state.actionMessage!.isNotEmpty) {
             AppSnackbar.success(context, state.actionMessage!);
             _cubit.clearFeedback();
@@ -404,7 +486,7 @@ class _ManageHouseholdPageState extends State<ManageHouseholdPage> {
                                     ),
                                     const SizedBox(height: 2),
                                     Text(
-                                      '${HouseholdTypeChips.labelFor(household.type)} · '
+                                      '${HouseholdTypeChips.labelFor(household.type)} \u00B7 '
                                       '$memberCount ${memberCount == 1 ? 'member' : 'members'}',
                                       style: const TextStyle(
                                         fontFamily: 'Poppins',
@@ -421,7 +503,7 @@ class _ManageHouseholdPageState extends State<ManageHouseholdPage> {
                                   tooltip: 'Regenerate PIN',
                                   onPressed: state.isSubmitting
                                       ? null
-                                      : () => _showRegeneratePinDialog(context),
+                                      : _showRegeneratePinDialog,
                                   style: IconButton.styleFrom(
                                     backgroundColor: AppColors.athsSpecial,
                                   ),
@@ -561,7 +643,7 @@ class _ManageHouseholdPageState extends State<ManageHouseholdPage> {
                                   key: const Key('regenerate-pin-button'),
                                   onPressed: state.isSubmitting
                                       ? null
-                                      : () => _showRegeneratePinDialog(context),
+                                      : _showRegeneratePinDialog,
                                   style: TextButton.styleFrom(
                                     foregroundColor: AppColors.lightGreen,
                                     padding: EdgeInsets.zero,

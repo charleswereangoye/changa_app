@@ -1,4 +1,4 @@
-//  Cubit managing member administration & PIN changes
+// Cubit managing member administration & PIN changes
 
 import 'dart:async';
 
@@ -36,6 +36,7 @@ class ManageHouseholdCubit extends Cubit<ManageHouseholdState> {
   StreamSubscription<Household?>? _householdSubscription;
   StreamSubscription<List<Member>>? _membersSubscription;
   StreamSubscription<HouseholdState>? _globalCubitSubscription;
+  HouseholdCubit? _boundGlobalCubit;
 
   Household? _household;
   List<Member> _members = const [];
@@ -44,6 +45,10 @@ class ManageHouseholdCubit extends Cubit<ManageHouseholdState> {
   String? _householdId;
   String? _currentUid;
   int _session = 0;
+
+  /// Monotonically increasing session counter used to invalidate in-flight
+  /// operations and open dialogs when the user or household changes.
+  int get session => _session;
 
   ManageHouseholdCubit({
     this.watchHousehold,
@@ -65,54 +70,126 @@ class ManageHouseholdCubit extends Cubit<ManageHouseholdState> {
        _currentUid = currentUid?.trim(),
        _harmonyScores = Map<String, int>.unmodifiable(initialHarmonyScores),
        super(const ManageHouseholdStateInitial()) {
-    _seedFromGlobalCubit();
+    if (householdCubit != null) {
+      bindHouseholdCubit(householdCubit!);
+    }
   }
 
-  void _seedFromGlobalCubit() {
-    final global = householdCubit;
-    if (global == null) return;
+  /// Binds this cubit to the global [HouseholdCubit] so sign-out, leaving,
+  /// account changes, and household switches immediately clear stale state
+  /// and invalidate pending actions.
+  void bindHouseholdCubit(HouseholdCubit global) {
+    if (isClosed || identical(_boundGlobalCubit, global)) return;
+    _boundGlobalCubit = global;
+    _globalCubitSubscription?.cancel();
 
-    final globalState = global.state;
-    if (globalState is HouseholdStateLoaded) {
-      _household = globalState.household;
-      _householdId = globalState.household.id;
-      _members = _sortMembers(
-        globalState.members,
-        globalState.household.adminUid,
-      );
-      _memberNames = Map<String, String>.of(globalState.memberNames);
-      _currentUid ??=
-          globalState.currentMember?.uid ?? globalState.household.adminUid;
+    final initialGlobalState = global.state;
+    if (initialGlobalState is HouseholdStateLoaded) {
+      _applyGlobalLoadedState(initialGlobalState, startStreams: false);
+    } else if (initialGlobalState is HouseholdStateLoading) {
+      _resetSessionState();
+      emit(const ManageHouseholdStateLoading());
+    } else if (initialGlobalState is HouseholdStateError) {
+      _resetSessionState();
+      emit(ManageHouseholdStateError(initialGlobalState.message));
+    }
 
-      emit(
-        ManageHouseholdStateLoaded(
-          household: _household!,
-          members: List<Member>.unmodifiable(_members),
-          memberNames: Map<String, String>.unmodifiable(_memberNames),
-          harmonyScores: Map<String, int>.unmodifiable(_harmonyScores),
-          currentUid: _currentUid,
+    _globalCubitSubscription = global.stream.listen(
+      _handleGlobalHouseholdState,
+    );
+  }
+
+  void _handleGlobalHouseholdState(HouseholdState nextState) {
+    if (isClosed) return;
+
+    if (nextState is HouseholdStateInitial ||
+        nextState is HouseholdStateEmpty) {
+      _resetSessionState();
+      emit(const ManageHouseholdStateError('No active household found.'));
+      return;
+    }
+
+    if (nextState is HouseholdStateLoading) {
+      _resetSessionState();
+      emit(const ManageHouseholdStateLoading());
+      return;
+    }
+
+    if (nextState is HouseholdStateError) {
+      _resetSessionState();
+      emit(ManageHouseholdStateError(nextState.message));
+      return;
+    }
+
+    if (nextState is HouseholdStateLoaded) {
+      _applyGlobalLoadedState(nextState, startStreams: true);
+    }
+  }
+
+  void _applyGlobalLoadedState(
+    HouseholdStateLoaded nextState, {
+    required bool startStreams,
+  }) {
+    final nextHousehold = nextState.household;
+    final nextHouseholdId = nextHousehold.id.trim();
+    final incomingUid = nextState.currentMember?.uid.trim();
+    final resolvedUid = (incomingUid != null && incomingUid.isNotEmpty)
+        ? incomingUid
+        : null;
+
+    final isHouseholdSwitch =
+        _householdId == null || _householdId != nextHouseholdId;
+    final isUserSwitch = _currentUid != resolvedUid;
+    final isSessionChange = isHouseholdSwitch || isUserSwitch;
+
+    if (isSessionChange) {
+      _resetSessionState();
+    }
+
+    _household = nextHousehold;
+    _householdId = nextHouseholdId;
+    _currentUid = resolvedUid;
+    _members = _sortMembers(nextState.members, nextHousehold.adminUid);
+    _memberNames = Map<String, String>.of(nextState.memberNames);
+
+    _emitLoadedState(
+      isSubmitting: isSessionChange ? false : state.isSubmitting,
+      lastAction: ManageHouseholdAction.none,
+      actionMessage: null,
+    );
+
+    if (startStreams &&
+        isSessionChange &&
+        (watchHousehold != null || watchMembers != null)) {
+      unawaited(
+        load(
+          householdId: nextHouseholdId,
+          currentUid: resolvedUid,
+          preserveSeededState: true,
         ),
       );
     }
+  }
 
-    _globalCubitSubscription = global.stream.listen((nextState) {
-      if (isClosed) return;
-      if (nextState is HouseholdStateLoaded &&
-          (_householdId == null || _householdId == nextState.household.id)) {
-        _household = nextState.household;
-        _householdId = nextState.household.id;
-        _members = _sortMembers(
-          nextState.members,
-          nextState.household.adminUid,
-        );
-        if (nextState.memberNames.isNotEmpty) {
-          _memberNames = Map<String, String>.of(nextState.memberNames);
-        }
-        _currentUid ??=
-            nextState.currentMember?.uid ?? nextState.household.adminUid;
-        _emitLoadedState();
-      }
-    });
+  void _resetSessionState() {
+    ++_session;
+    final prevHouseholdSub = _householdSubscription;
+    final prevMembersSub = _membersSubscription;
+    _householdSubscription = null;
+    _membersSubscription = null;
+    if (prevHouseholdSub != null) {
+      unawaited(prevHouseholdSub.cancel());
+    }
+    if (prevMembersSub != null) {
+      unawaited(prevMembersSub.cancel());
+    }
+
+    _household = null;
+    _householdId = null;
+    _members = const [];
+    _memberNames = const {};
+    _harmonyScores = const {};
+    _currentUid = null;
   }
 
   /// Seeds state directly (useful for widget tests and route initialization).
@@ -124,12 +201,37 @@ class ManageHouseholdCubit extends Cubit<ManageHouseholdState> {
     String? currentUid,
   }) {
     if (isClosed) return;
+    final cleanIncomingUid = currentUid?.trim();
+    final isHouseholdSwitch =
+        _householdId != null && _householdId != household.id;
+    final resolvedUid =
+        (cleanIncomingUid != null && cleanIncomingUid.isNotEmpty)
+        ? cleanIncomingUid
+        : (isHouseholdSwitch
+              ? household.adminUid
+              : (_currentUid ?? household.adminUid));
+    final isUserSwitch = _currentUid != null && _currentUid != resolvedUid;
+
+    if (isHouseholdSwitch || isUserSwitch) {
+      ++_session;
+      final prevHouseholdSub = _householdSubscription;
+      final prevMembersSub = _membersSubscription;
+      _householdSubscription = null;
+      _membersSubscription = null;
+      if (prevHouseholdSub != null) {
+        unawaited(prevHouseholdSub.cancel());
+      }
+      if (prevMembersSub != null) {
+        unawaited(prevMembersSub.cancel());
+      }
+    }
+
     _household = household;
     _householdId = household.id;
     _members = _sortMembers(members, household.adminUid);
     _memberNames = Map<String, String>.of(memberNames);
     _harmonyScores = Map<String, int>.of(harmonyScores);
-    _currentUid = currentUid ?? _currentUid ?? household.adminUid;
+    _currentUid = resolvedUid;
 
     emit(
       ManageHouseholdStateLoaded(
@@ -148,18 +250,66 @@ class ManageHouseholdCubit extends Cubit<ManageHouseholdState> {
     String? currentUid,
     Map<String, String>? initialMemberNames,
     Map<String, int>? harmonyScores,
+    bool preserveSeededState = false,
   }) async {
     if (isClosed) return;
 
+    final globalState = (_boundGlobalCubit ?? householdCubit)?.state;
     final resolvedHouseholdId =
-        (householdId ??
-                _householdId ??
-                householdCubit?.state.household?.id ??
-                '')
+        (householdId ?? _householdId ?? globalState?.household?.id ?? '')
             .trim();
-    if (currentUid != null && currentUid.trim().isNotEmpty) {
-      _currentUid = currentUid.trim();
+
+    if (resolvedHouseholdId.isEmpty) {
+      _resetSessionState();
+      emit(const ManageHouseholdStateError('No active household found.'));
+      return;
     }
+
+    final isHouseholdSwitch =
+        _householdId != null && _householdId != resolvedHouseholdId;
+
+    String? resolvedUid = _currentUid;
+    if (currentUid != null) {
+      final trimmedUid = currentUid.trim();
+      resolvedUid = trimmedUid.isEmpty ? null : trimmedUid;
+    } else if (isHouseholdSwitch) {
+      if (globalState is HouseholdStateLoaded &&
+          globalState.household.id == resolvedHouseholdId) {
+        final globalUid = globalState.currentMember?.uid.trim();
+        resolvedUid = (globalUid != null && globalUid.isNotEmpty)
+            ? globalUid
+            : null;
+      } else {
+        resolvedUid = null;
+      }
+    } else if (resolvedUid == null || resolvedUid.isEmpty) {
+      if (globalState is HouseholdStateLoaded &&
+          globalState.household.id == resolvedHouseholdId) {
+        final globalUid = globalState.currentMember?.uid.trim();
+        resolvedUid = (globalUid != null && globalUid.isNotEmpty)
+            ? globalUid
+            : null;
+      }
+    }
+
+    final isUserSwitch = _currentUid != resolvedUid;
+
+    final version = ++_session;
+    final previousHouseholdSub = _householdSubscription;
+    final previousMembersSub = _membersSubscription;
+    _householdSubscription = null;
+    _membersSubscription = null;
+
+    if (!preserveSeededState && (isHouseholdSwitch || isUserSwitch)) {
+      _household = null;
+      _members = const [];
+      _memberNames = const {};
+      _harmonyScores = const {};
+    }
+
+    _householdId = resolvedHouseholdId;
+    _currentUid = resolvedUid;
+
     if (initialMemberNames != null && initialMemberNames.isNotEmpty) {
       _memberNames = {..._memberNames, ...initialMemberNames};
     }
@@ -167,20 +317,11 @@ class ManageHouseholdCubit extends Cubit<ManageHouseholdState> {
       _harmonyScores = {..._harmonyScores, ...harmonyScores};
     }
 
-    if (resolvedHouseholdId.isEmpty) {
-      emit(const ManageHouseholdStateError('No active household found.'));
-      return;
-    }
-
-    final version = ++_session;
-    final previousHouseholdSub = _householdSubscription;
-    final previousMembersSub = _membersSubscription;
-    _householdSubscription = null;
-    _membersSubscription = null;
-    _householdId = resolvedHouseholdId;
-
-    if (state is! ManageHouseholdStateLoaded ||
-        _household?.id != resolvedHouseholdId) {
+    if (!preserveSeededState &&
+        (state is! ManageHouseholdStateLoaded ||
+            _household?.id != resolvedHouseholdId ||
+            isHouseholdSwitch ||
+            isUserSwitch)) {
       emit(const ManageHouseholdStateLoading());
     }
 
@@ -203,44 +344,54 @@ class ManageHouseholdCubit extends Cubit<ManageHouseholdState> {
     }
 
     if (hWatcher != null) {
-      _householdSubscription = hWatcher(resolvedHouseholdId).listen(
-        (household) {
-          if (isClosed || version != _session) return;
-          if (household == null) {
-            emit(
-              const ManageHouseholdStateError('Household no longer exists.'),
-            );
-            return;
-          }
-          _household = household;
-          _currentUid ??= household.adminUid;
-          _members = _sortMembers(_members, household.adminUid);
-          _emitLoadedState();
-        },
-        onError: (Object error) {
-          if (isClosed || version != _session) return;
-          emit(ManageHouseholdStateError(_mapErrorMessage(error)));
-        },
-      );
+      try {
+        _householdSubscription = hWatcher(resolvedHouseholdId).listen(
+          (household) {
+            if (isClosed || version != _session) return;
+            if (household == null) {
+              _household = null;
+              _members = const [];
+              _memberNames = const {};
+              emit(
+                const ManageHouseholdStateError('Household no longer exists.'),
+              );
+              return;
+            }
+            _household = household;
+            _members = _sortMembers(_members, household.adminUid);
+            _emitLoadedState();
+          },
+          onError: (Object error) {
+            if (isClosed || version != _session) return;
+            emit(ManageHouseholdStateError(_mapErrorMessage(error)));
+          },
+        );
+      } catch (_) {
+        // Ignored when global state already seeded data and stream is unstubbed in tests
+      }
     }
 
     if (mWatcher != null) {
-      _membersSubscription = mWatcher(resolvedHouseholdId).listen(
-        (members) async {
-          if (isClosed || version != _session) return;
-          _members = _sortMembers(members, _household?.adminUid);
-          await _resolveMemberNames(
-            members.map((m) => m.uid).toList(),
-            version,
-          );
-          if (isClosed || version != _session) return;
-          _emitLoadedState();
-        },
-        onError: (Object error) {
-          if (isClosed || version != _session) return;
-          emit(ManageHouseholdStateError(_mapErrorMessage(error)));
-        },
-      );
+      try {
+        _membersSubscription = mWatcher(resolvedHouseholdId).listen(
+          (members) async {
+            if (isClosed || version != _session) return;
+            _members = _sortMembers(members, _household?.adminUid);
+            await _resolveMemberNames(
+              members.map((m) => m.uid).toList(),
+              version,
+            );
+            if (isClosed || version != _session) return;
+            _emitLoadedState();
+          },
+          onError: (Object error) {
+            if (isClosed || version != _session) return;
+            emit(ManageHouseholdStateError(_mapErrorMessage(error)));
+          },
+        );
+      } catch (_) {
+        // Ignored when global state already seeded data and stream is unstubbed in tests
+      }
     }
   }
 
@@ -255,37 +406,73 @@ class ManageHouseholdCubit extends Cubit<ManageHouseholdState> {
     final fetcher = getUsersByIds;
     if (fetcher == null) return;
 
-    final result = await fetcher(cleanUids);
-    if (isClosed || version != _session) return;
+    try {
+      final result = await fetcher(cleanUids);
+      if (isClosed || version != _session) return;
 
-    if (result.isSuccess && result.dataOrNull != null) {
-      final updated = Map<String, String>.of(_memberNames);
-      for (final user in result.dataOrNull!) {
-        final trimmed = user.fullName.trim();
-        updated[user.uid] = trimmed.isNotEmpty ? trimmed : 'Former member';
+      if (result.isSuccess && result.dataOrNull != null) {
+        final updated = Map<String, String>.of(_memberNames);
+        for (final user in result.dataOrNull!) {
+          final trimmed = user.fullName.trim();
+          updated[user.uid] = trimmed.isNotEmpty ? trimmed : 'Former member';
+        }
+        _memberNames = updated;
       }
-      _memberNames = updated;
+    } catch (_) {
+      // Non-fatal if user profile lookup is unstubbed
     }
   }
 
   /// Queries a member's outstanding debt balance (D4) before showing the
-  /// Remove confirmation dialog.
-  Future<int> fetchOutstandingBalance(String uid) async {
+  /// Remove confirmation dialog. Preserves failures so the UI can block
+  /// unverified removal and offer retry.
+  Future<Result<int>> fetchOutstandingBalance(String uid) async {
     final cleanUid = uid.trim();
     final targetHouseholdId = (_household?.id ?? _householdId ?? '').trim();
     final balanceUseCase = getOutstandingBalance;
 
-    if (cleanUid.isEmpty ||
-        targetHouseholdId.isEmpty ||
-        balanceUseCase == null) {
-      return 0;
+    if (cleanUid.isEmpty) {
+      return Result.failure(
+        const ValidationFailure('Please select a member to remove.'),
+      );
     }
 
+    if (targetHouseholdId.isEmpty) {
+      return Result.failure(
+        const ValidationFailure('No active household found.'),
+      );
+    }
+
+    if (balanceUseCase == null) {
+      return Result.failure(
+        const UnknownFailure('Outstanding balance service is unavailable.'),
+      );
+    }
+
+    final actionSession = _session;
     final result = await balanceUseCase(
       householdId: targetHouseholdId,
       uid: cleanUid,
     );
-    return result.dataOrNull ?? 0;
+
+    if (isClosed || actionSession != _session) {
+      return Result.failure(
+        const ValidationFailure(
+          'Session changed before balance check completed.',
+        ),
+      );
+    }
+
+    if (result.isSuccess && result.dataOrNull != null) {
+      return Result.success(result.dataOrNull!);
+    }
+
+    return Result.failure(
+      result.failureOrNull ??
+          const UnknownFailure(
+            'Could not verify outstanding balance. Please try again.',
+          ),
+    );
   }
 
   /// Regenerates the 6-digit household PIN (admin only).
@@ -309,10 +496,17 @@ class ManageHouseholdCubit extends Cubit<ManageHouseholdState> {
       return Result.failure(failure);
     }
 
+    final actionSession = _session;
     _setSubmitting(true);
 
     final result = await useCase(targetHouseholdId);
-    if (isClosed) return result;
+    if (isClosed || actionSession != _session) {
+      return Result.failure(
+        const ValidationFailure(
+          'Session changed before PIN regeneration completed.',
+        ),
+      );
+    }
 
     if (result.isSuccess && result.dataOrNull != null) {
       final newPin = result.dataOrNull!;
@@ -326,7 +520,10 @@ class ManageHouseholdCubit extends Cubit<ManageHouseholdState> {
           adminUid: activeHousehold.adminUid,
           createdAt: activeHousehold.createdAt,
         );
-        householdCubit?.setHousehold(_household!, currentUid: _currentUid);
+        (_boundGlobalCubit ?? householdCubit)?.setHousehold(
+          _household!,
+          currentUid: _currentUid,
+        );
       }
       _emitLoadedState(
         isSubmitting: false,
@@ -369,13 +566,20 @@ class ManageHouseholdCubit extends Cubit<ManageHouseholdState> {
       return Result.failure(failure);
     }
 
+    final actionSession = _session;
     _setSubmitting(true);
 
     final result = await useCase(
       householdId: targetHouseholdId,
       newAdminUid: cleanTargetUid,
     );
-    if (isClosed) return result;
+    if (isClosed || actionSession != _session) {
+      return Result.failure(
+        const ValidationFailure(
+          'Session changed before admin transfer completed.',
+        ),
+      );
+    }
 
     if (result.isSuccess) {
       if (activeHousehold != null) {
@@ -464,6 +668,7 @@ class ManageHouseholdCubit extends Cubit<ManageHouseholdState> {
       return Result.failure(failure);
     }
 
+    final actionSession = _session;
     _setSubmitting(true);
 
     final targetName = state.displayNameFor(cleanTargetUid);
@@ -476,7 +681,13 @@ class ManageHouseholdCubit extends Cubit<ManageHouseholdState> {
         fromUid: cleanTargetUid,
         toUid: adminUid,
       );
-      if (isClosed) return reassignResult;
+      if (isClosed || actionSession != _session) {
+        return Result.failure(
+          const ValidationFailure(
+            'Session changed before member removal completed.',
+          ),
+        );
+      }
       if (reassignResult.isFailure) {
         final message =
             reassignResult.failureOrNull?.message ??
@@ -490,7 +701,13 @@ class ManageHouseholdCubit extends Cubit<ManageHouseholdState> {
       householdId: targetHouseholdId,
       uid: cleanTargetUid,
     );
-    if (isClosed) return removeResult;
+    if (isClosed || actionSession != _session) {
+      return Result.failure(
+        const ValidationFailure(
+          'Session changed before member removal completed.',
+        ),
+      );
+    }
 
     if (removeResult.isSuccess) {
       _members = _members.where((m) => m.uid != cleanTargetUid).toList();
@@ -526,18 +743,22 @@ class ManageHouseholdCubit extends Cubit<ManageHouseholdState> {
       return Result.failure(failure);
     }
 
+    final actionSession = _session;
     _setSubmitting(true);
 
     final result = await useCase(targetHouseholdId);
-    if (isClosed) return result;
+    if (isClosed || actionSession != _session) {
+      return Result.failure(
+        const ValidationFailure('Session changed before leaving completed.'),
+      );
+    }
 
     if (result.isSuccess) {
-      householdCubit?.clearHousehold();
-      _emitLoadedState(
-        isSubmitting: false,
-        lastAction: ManageHouseholdAction.leftHousehold,
-        actionMessage: 'You have left the household.',
-      );
+      _resetSessionState();
+      (_boundGlobalCubit ?? householdCubit)?.clearHousehold();
+      if (!isClosed) {
+        emit(const ManageHouseholdStateError('No active household found.'));
+      }
       return Result.success(null);
     } else {
       final message =
