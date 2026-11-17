@@ -87,4 +87,16 @@ void main() {
     expect(decline.onPressed, isNull);
     expect(accept.onPressed, isNull);
   });
+
+  testWidgets('fits a short, wide screen without overflowing', (tester) async {
+    tester.view.physicalSize = const Size(800, 360);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+
+    await tester.pumpWidget(_wrap([_request('a', DateTime(2026, 11, 10))]));
+
+    expect(tester.takeException(), isNull);
+    expect(find.text('Accept'), findsOneWidget);
+    expect(find.text('Decline'), findsOneWidget);
+  });
 }
