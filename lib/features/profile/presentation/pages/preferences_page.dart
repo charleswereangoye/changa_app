@@ -43,88 +43,95 @@ class PreferencesPage extends StatelessWidget {
           body: SafeArea(
             child: !state.isLoaded
                 ? const Center(child: CircularProgressIndicator())
-                : ListView(
-                    padding: const EdgeInsets.fromLTRB(
-                      AppSpacing.lg,
-                      AppSpacing.sm,
-                      AppSpacing.lg,
-                      AppSpacing.xxl,
+                : Align(
+                    alignment: Alignment.topCenter,
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 560),
+                      child: ListView(
+                        padding: const EdgeInsets.fromLTRB(
+                          AppSpacing.lg,
+                          AppSpacing.sm,
+                          AppSpacing.lg,
+                          AppSpacing.xxl,
+                        ),
+                        children: [
+                          const _SectionLabel('Appearance', first: true),
+                          SegmentedButton<ThemeMode>(
+                            key: const Key('theme-selector'),
+                            showSelectedIcon: false,
+                            segments: const [
+                              ButtonSegment(
+                                value: ThemeMode.system,
+                                label: Text('System'),
+                              ),
+                              ButtonSegment(
+                                value: ThemeMode.light,
+                                label: Text('Light'),
+                              ),
+                              ButtonSegment(
+                                value: ThemeMode.dark,
+                                label: Text('Dark'),
+                              ),
+                            ],
+                            selected: {state.themeMode},
+                            onSelectionChanged: (selection) =>
+                                cubit.setThemeMode(selection.first),
+                          ),
+                          const _SectionLabel('Notifications'),
+                          SwitchListTile(
+                            key: const Key('notify-nudges-switch'),
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text('Payment nudges'),
+                            subtitle: const Text(
+                              'When a housemate reminds you about a debt.',
+                            ),
+                            value: state.notifyNudges,
+                            onChanged: cubit.setNotifyNudges,
+                          ),
+                          SwitchListTile(
+                            key: const Key('notify-chores-switch'),
+                            contentPadding: EdgeInsets.zero,
+                            title: const Text('Chore updates'),
+                            subtitle: const Text(
+                              'Swap requests and replies to your swaps.',
+                            ),
+                            value: state.notifyChores,
+                            onChanged: cubit.setNotifyChores,
+                          ),
+                          const _SectionLabel('Default payment method'),
+                          Wrap(
+                            spacing: AppSpacing.sm,
+                            runSpacing: AppSpacing.sm,
+                            children: [
+                              for (final (method, label) in _settlementMethods)
+                                ChoiceChip(
+                                  key: Key('settlement-${method.name}'),
+                                  label: Text(label),
+                                  selected:
+                                      state.defaultSettlementMethod == method,
+                                  onSelected: (_) =>
+                                      cubit.setDefaultSettlementMethod(method),
+                                ),
+                            ],
+                          ),
+                          const _SectionLabel('Default split'),
+                          Wrap(
+                            spacing: AppSpacing.sm,
+                            runSpacing: AppSpacing.sm,
+                            children: [
+                              for (final (type, label) in _splitTypes)
+                                ChoiceChip(
+                                  key: Key('split-${type.name}'),
+                                  label: Text(label),
+                                  selected: state.defaultSplitType == type,
+                                  onSelected: (_) =>
+                                      cubit.setDefaultSplitType(type),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
-                    children: [
-                      const _SectionLabel('Appearance', first: true),
-                      SegmentedButton<ThemeMode>(
-                        key: const Key('theme-selector'),
-                        showSelectedIcon: false,
-                        segments: const [
-                          ButtonSegment(
-                            value: ThemeMode.system,
-                            label: Text('System'),
-                          ),
-                          ButtonSegment(
-                            value: ThemeMode.light,
-                            label: Text('Light'),
-                          ),
-                          ButtonSegment(
-                            value: ThemeMode.dark,
-                            label: Text('Dark'),
-                          ),
-                        ],
-                        selected: {state.themeMode},
-                        onSelectionChanged: (selection) =>
-                            cubit.setThemeMode(selection.first),
-                      ),
-                      const _SectionLabel('Notifications'),
-                      SwitchListTile(
-                        key: const Key('notify-nudges-switch'),
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('Payment nudges'),
-                        subtitle: const Text(
-                          'When a housemate reminds you about a debt.',
-                        ),
-                        value: state.notifyNudges,
-                        onChanged: cubit.setNotifyNudges,
-                      ),
-                      SwitchListTile(
-                        key: const Key('notify-chores-switch'),
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('Chore updates'),
-                        subtitle: const Text(
-                          'Swap requests and replies to your swaps.',
-                        ),
-                        value: state.notifyChores,
-                        onChanged: cubit.setNotifyChores,
-                      ),
-                      const _SectionLabel('Default payment method'),
-                      Wrap(
-                        spacing: AppSpacing.sm,
-                        runSpacing: AppSpacing.sm,
-                        children: [
-                          for (final (method, label) in _settlementMethods)
-                            ChoiceChip(
-                              key: Key('settlement-${method.name}'),
-                              label: Text(label),
-                              selected: state.defaultSettlementMethod == method,
-                              onSelected: (_) =>
-                                  cubit.setDefaultSettlementMethod(method),
-                            ),
-                        ],
-                      ),
-                      const _SectionLabel('Default split'),
-                      Wrap(
-                        spacing: AppSpacing.sm,
-                        runSpacing: AppSpacing.sm,
-                        children: [
-                          for (final (type, label) in _splitTypes)
-                            ChoiceChip(
-                              key: Key('split-${type.name}'),
-                              label: Text(label),
-                              selected: state.defaultSplitType == type,
-                              onSelected: (_) =>
-                                  cubit.setDefaultSplitType(type),
-                            ),
-                        ],
-                      ),
-                    ],
                   ),
           ),
         );
