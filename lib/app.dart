@@ -1,20 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'core/router/app_router.dart';
+import 'core/router/route_names.dart';
+import 'core/services/local_notification_service.dart';
 import 'core/theme/app_theme.dart';
 import 'features/auth/presentation/cubit/auth_cubit.dart';
 import 'features/household/presentation/cubit/household_cubit.dart';
+import 'features/notifications/domain/entities/app_notification.dart';
 import 'features/notifications/presentation/cubit/notifications_cubit.dart';
+import 'features/notifications/presentation/widgets/local_notification_listener.dart';
+import 'features/notifications/presentation/widgets/notification_listener_host.dart';
 import 'features/profile/presentation/cubit/preferences_cubit.dart';
 import 'features/profile/presentation/cubit/preferences_state.dart';
 import 'injection_container.dart';
-
-import 'dart:async';
-
-import 'core/router/route_names.dart';
-import 'features/notifications/domain/entities/app_notification.dart';
-import 'features/notifications/presentation/widgets/notification_listener_host.dart';
 
 /// The root widget of the Changa application.
 class ChangaApp extends StatelessWidget {
@@ -74,6 +75,7 @@ class ChangaApp extends StatelessWidget {
             final cubit = sl.isRegistered<HouseholdCubit>()
                 ? sl<HouseholdCubit>()
                 : HouseholdCubit();
+
             cubit.bindAuthCubit(context.read<AuthCubit>());
             return cubit;
           },
@@ -91,6 +93,7 @@ class ChangaApp extends StatelessWidget {
       child: BlocListener<AuthCubit, AuthState>(
         listener: (context, state) {
           final householdCubit = context.read<HouseholdCubit>();
+
           if (state is Authenticated) {
             householdCubit.onAuthUserChanged(state.user.uid);
           } else if (state is Unauthenticated) {
@@ -106,14 +109,12 @@ class ChangaApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             themeMode: preferences.themeMode,
             routerConfig: AppRouter.router,
-            builder: (context, preferences) => MaterialApp.router(
-              title: 'Changa',
-              debugShowCheckedModeBanner: false,
-              theme: AppTheme.lightTheme,
-              themeMode: preferences.themeMode,
-              routerConfig: AppRouter.router,
-              builder: (context, child) => NotificationListenerHost(
-                navigatorKey: AppRouter.rootNavigatorKey,
+            builder: (context, child) => NotificationListenerHost(
+              navigatorKey: AppRouter.rootNavigatorKey,
+              onOpen: (notification) =>
+                  _openNotification(context, notification),
+              child: LocalNotificationListener(
+                service: sl<LocalNotificationService>(),
                 onOpen: (notification) =>
                     _openNotification(context, notification),
                 child: child ?? const SizedBox.shrink(),
