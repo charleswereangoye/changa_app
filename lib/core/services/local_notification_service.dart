@@ -141,9 +141,9 @@ class LocalNotificationService {
         'notificationId': notificationId,
         'type': type,
         'refId': refId,
-        if (recipientUid != null) 'recipientUid': recipientUid,
-        if (actorUid != null) 'actorUid': actorUid,
-        if (householdId != null) 'householdId': householdId,
+        'recipientUid': ?recipientUid,
+        'actorUid': ?actorUid,
+        'householdId': ?householdId,
       }),
     );
 
