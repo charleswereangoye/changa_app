@@ -10,9 +10,54 @@ import 'features/profile/presentation/cubit/preferences_cubit.dart';
 import 'features/profile/presentation/cubit/preferences_state.dart';
 import 'injection_container.dart';
 
+import 'dart:async';
+
+import 'core/router/route_names.dart';
+import 'features/notifications/domain/entities/app_notification.dart';
+import 'features/notifications/presentation/widgets/notification_listener_host.dart';
+
 /// The root widget of the Changa application.
 class ChangaApp extends StatelessWidget {
   const ChangaApp({super.key});
+
+  void _openNotification(BuildContext context, AppNotification notification) {
+    final auth = context.read<AuthCubit>().state;
+    final household = context.read<HouseholdCubit>().state;
+
+    if (auth is! Authenticated ||
+        household is! HouseholdStateLoaded ||
+        household.currentMember?.uid != auth.user.uid ||
+        notification.recipientUid != auth.user.uid) {
+      return;
+    }
+
+    switch (notification.type) {
+      case 'swapRequest':
+      case 'swapResponse':
+        AppRouter.router.goNamed(RouteNames.chores);
+        return;
+
+      case 'nudge':
+      case 'newExpense':
+      case 'settled':
+        final otherUid = notification.actorUid;
+
+        if (otherUid.trim().isEmpty || otherUid == auth.user.uid) {
+          return;
+        }
+
+        unawaited(
+          AppRouter.router.pushNamed<void>(
+            RouteNames.debtDetail,
+            pathParameters: {'uid': otherUid},
+          ),
+        );
+        return;
+
+      default:
+        return;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,6 +106,19 @@ class ChangaApp extends StatelessWidget {
             theme: AppTheme.lightTheme,
             themeMode: preferences.themeMode,
             routerConfig: AppRouter.router,
+            builder: (context, preferences) => MaterialApp.router(
+              title: 'Changa',
+              debugShowCheckedModeBanner: false,
+              theme: AppTheme.lightTheme,
+              themeMode: preferences.themeMode,
+              routerConfig: AppRouter.router,
+              builder: (context, child) => NotificationListenerHost(
+                navigatorKey: AppRouter.rootNavigatorKey,
+                onOpen: (notification) =>
+                    _openNotification(context, notification),
+                child: child ?? const SizedBox.shrink(),
+              ),
+            ),
           ),
         ),
       ),
