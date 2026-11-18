@@ -274,4 +274,59 @@ void main() {
     verifyNever(() => notifications.markRead(any()));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('an expired banner keeps its notification unread', (
+    tester,
+  ) async {
+    await show(tester);
+    await queue(tester, _notification());
+
+    expect(find.byType(InAppBanner), findsOneWidget);
+
+    await tester.pump(const Duration(seconds: 4));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(InAppBanner), findsNothing);
+    expect(notificationState.pendingAlerts, isEmpty);
+    expect(notificationState.unread, hasLength(1));
+    expect(opened, isEmpty);
+    verifyNever(() => notifications.markRead(any()));
+  });
+
+  testWidgets('closing one banner displays the next queued notification', (
+    tester,
+  ) async {
+    final first = _notification(id: 'first');
+    final second = _notification(id: 'second');
+
+    await show(tester);
+
+    publish(
+      NotificationsState(
+        status: NotificationsStatus.loaded,
+        unread: [second, first],
+        pendingAlerts: [first, second],
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text(first.title), findsOneWidget);
+    expect(find.text(second.title), findsNothing);
+
+    await tester.tap(find.byKey(const ValueKey('notification-banner-dismiss')));
+    await tester.pumpAndSettle();
+
+    expect(find.text(first.title), findsNothing);
+    expect(find.text(second.title), findsOneWidget);
+    expect(find.byType(InAppBanner), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('notification-banner-dismiss')));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(InAppBanner), findsNothing);
+    expect(notificationState.pendingAlerts, isEmpty);
+    expect(notificationState.unread, hasLength(2));
+    expect(opened, isEmpty);
+    verifyNever(() => notifications.markRead(any()));
+  });
 }
