@@ -11,7 +11,7 @@ import '../../../../core/widgets/primary_button.dart';
 import '../../../../injection_container.dart';
 import '../cubit/sign_up_cubit.dart';
 import '../widgets/auth_back_button.dart';
-import '../widgets/social_auth_button.dart';
+import '../widgets/google_sign_in_button.dart';
 
 /// Screen allowing new users to create their Changa account.
 class SignUpPage extends StatefulWidget {
@@ -233,32 +233,12 @@ class _SignUpPageState extends State<SignUpPage> {
                           ),
                           const SizedBox(height: 14),
 
-                          // Social Buttons (Google & Apple)
-                          Row(
-                            children: [
-                              Expanded(
-                                child: SocialAuthButton(
-                                  label: 'Google',
-                                  onPressed: () {
-                                    context
-                                        .read<SignUpCubit>()
-                                        .signUpWithGoogle();
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: SocialAuthButton(
-                                  label: 'Apple',
-                                  onPressed: () {
-                                    AppSnackbar.info(
-                                      context,
-                                      'Apple Sign-In is only available on iOS devices.',
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
+                          // Social Button (Google only)
+                          GoogleSignInButton(
+                            label: 'Google',
+                            onPressed: () {
+                              context.read<SignUpCubit>().signUpWithGoogle();
+                            },
                           ),
                           const SizedBox(height: 16),
 

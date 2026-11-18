@@ -28,7 +28,7 @@ void main() {
       expect(find.text('Create Account'), findsOneWidget);
       expect(find.text('or continue with'), findsOneWidget);
       expect(find.text('Google'), findsOneWidget);
-      expect(find.text('Apple'), findsOneWidget);
+      expect(find.text('Apple'), findsNothing);
       expect(find.textContaining('Log In'), findsOneWidget);
     },
   );
