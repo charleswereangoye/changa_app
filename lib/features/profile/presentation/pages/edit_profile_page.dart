@@ -44,7 +44,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       _ownsCubit = false;
     } else if (GetIt.instance.isRegistered<ProfileCubit>()) {
       _cubit = GetIt.instance<ProfileCubit>();
-      _ownsCubit = true;
+      _ownsCubit = false;
     } else {
       _cubit = ProfileCubit();
       _ownsCubit = true;
@@ -61,12 +61,15 @@ class _EditProfilePageState extends State<EditProfilePage> {
     super.didChangeDependencies();
     // Pre-populate if not supplied via constructor and fields are still empty
     if (_nameController.text.isEmpty && _emailController.text.isEmpty) {
-      final authUser = context.read<AuthCubit>().state.user;
-      if (authUser != null) {
-        _nameController.text = authUser.fullName;
-        _phoneController.text = authUser.phone;
-        _emailController.text = authUser.email;
-      }
+      try {
+        final authUser =
+            widget.initialUser ?? context.read<AuthCubit>().state.user;
+        if (authUser != null) {
+          _nameController.text = authUser.fullName;
+          _phoneController.text = authUser.phone;
+          _emailController.text = authUser.email;
+        }
+      } catch (_) {}
     }
   }
 
@@ -104,8 +107,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
         } catch (_) {}
       }
       AppSnackbar.success(context, 'Profile updated successfully.');
-      if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
+      if (mounted && Navigator.of(context).canPop()) {
+        Navigator.of(context).pop(updatedUser);
       }
     } else {
       final err = (_cubit.state is ProfileStateError)

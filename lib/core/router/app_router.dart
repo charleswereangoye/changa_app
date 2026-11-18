@@ -1,6 +1,7 @@
 import 'package:go_router/go_router.dart';
 
 import '../../features/activity/presentation/pages/activity_page.dart';
+import '../../features/auth/domain/entities/app_user.dart';
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/onboarding_page.dart';
@@ -165,7 +166,9 @@ class AppRouter {
       GoRoute(
         path: '/profile/edit',
         name: RouteNames.editProfile,
-        builder: (context, state) => const EditProfilePage(),
+        builder: (context, state) => EditProfilePage(
+          initialUser: state.extra is AppUser ? state.extra as AppUser : null,
+        ),
       ),
       GoRoute(
         path: '/profile/preferences',

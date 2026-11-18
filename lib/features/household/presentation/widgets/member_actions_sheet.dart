@@ -90,7 +90,7 @@ class MemberActionsSheet extends StatelessWidget {
                 ),
                 leading: const Icon(
                   Icons.person_remove_outlined,
-                  color: AppColors.sunglo,
+                  color: AppColors.lightGreen,
                 ),
                 title: const Text(
                   'Remove from household',
@@ -98,7 +98,7 @@ class MemberActionsSheet extends StatelessWidget {
                     fontFamily: 'Poppins',
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
-                    color: AppColors.sunglo,
+                    color: AppColors.lightGreen,
                   ),
                 ),
                 onTap: () {

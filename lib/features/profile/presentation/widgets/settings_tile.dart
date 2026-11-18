@@ -33,13 +33,15 @@ class SettingsTile extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     const snowDrift = Color(0xFFF0F4F2);
     final iconBgColor = isDestructive
-        ? (isDark ? const Color(0xFF331515) : AppColors.vanillaIce)
+        ? (isDark
+              ? const Color(0xFF0E3834)
+              : AppColors.lightGreen.withValues(alpha: 0.18))
         : (isDark ? const Color(0xFF0E3834) : snowDrift);
     final iconColor = isDestructive
-        ? AppColors.sunglo
+        ? AppColors.lightGreen
         : (isDark ? AppColors.lightGreen : AppColors.sherwoodGreen);
     final textColor = isDestructive
-        ? AppColors.sunglo
+        ? AppColors.lightGreen
         : (isDark ? AppColors.ginFizz : AppColors.sherwoodGreen);
     final subtitleColor = isDark ? AppColors.pewter : AppColors.edward;
     final dividerColor = isDark
@@ -110,8 +112,8 @@ class SettingsTile extends StatelessWidget {
                       ),
                       decoration: BoxDecoration(
                         color: isDark
-                            ? const Color(0xFF331515)
-                            : AppColors.vanillaIce,
+                            ? const Color(0xFF0E3834)
+                            : AppColors.lightGreen.withValues(alpha: 0.18),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -120,7 +122,7 @@ class SettingsTile extends StatelessWidget {
                           fontFamily: 'Poppins',
                           fontSize: 10,
                           fontWeight: FontWeight.w700,
-                          color: AppColors.sunglo,
+                          color: AppColors.lightGreen,
                           letterSpacing: 0.5,
                         ),
                       ),

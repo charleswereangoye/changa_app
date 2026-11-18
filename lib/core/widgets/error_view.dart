@@ -32,10 +32,10 @@ class ErrorView extends StatelessWidget {
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: AppColors.vanillaIce,
+                color: AppColors.lightGreen.withValues(alpha: 0.18),
                 shape: BoxShape.circle,
               ),
-              child: Icon(icon, color: AppColors.sunglo, size: 28),
+              child: Icon(icon, color: AppColors.lightGreen, size: 28),
             ),
             const SizedBox(height: 16),
             Text(

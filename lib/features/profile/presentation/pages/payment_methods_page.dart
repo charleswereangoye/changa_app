@@ -188,13 +188,15 @@ class _PaymentMethodCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final cardBg = isDark ? const Color(0xFF072B28) : AppColors.white;
     final borderColor = isSelected
-        ? (isDark ? AppColors.lightGreen : AppColors.sherwoodGreen)
+        ? AppColors.lightGreen
         : (isDark
               ? const Color(0xFF0F3E3A)
               : AppColors.edward.withValues(alpha: 0.15));
 
     final iconBg = isSelected
-        ? (isDark ? const Color(0xFF0D3834) : const Color(0xFFF0F4F2))
+        ? (isDark
+              ? const Color(0xFF0D3834)
+              : AppColors.lightGreen.withValues(alpha: 0.15))
         : (isDark ? const Color(0xFF041E1C) : const Color(0xFFF7FAF8));
 
     final iconColor = isSelected
@@ -257,20 +259,18 @@ class _PaymentMethodCard extends StatelessWidget {
                               vertical: 2,
                             ),
                             decoration: BoxDecoration(
-                              color: isDark
-                                  ? AppColors.lightGreen.withValues(alpha: 0.2)
-                                  : AppColors.athsSpecial,
+                              color: AppColors.lightGreen.withValues(
+                                alpha: 0.25,
+                              ),
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            child: Text(
+                            child: const Text(
                               'DEFAULT',
                               style: TextStyle(
                                 fontFamily: 'Poppins',
                                 fontSize: 10,
                                 fontWeight: FontWeight.w700,
-                                color: isDark
-                                    ? AppColors.lightGreen
-                                    : AppColors.sherwoodGreen,
+                                color: AppColors.sherwoodGreen,
                               ),
                             ),
                           ),
@@ -295,27 +295,19 @@ class _PaymentMethodCard extends StatelessWidget {
                 height: 22,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: isSelected
-                      ? (isDark
-                            ? AppColors.lightGreen
-                            : AppColors.sherwoodGreen)
-                      : Colors.transparent,
+                  color: isSelected ? AppColors.lightGreen : Colors.transparent,
                   border: Border.all(
                     color: isSelected
-                        ? (isDark
-                              ? AppColors.lightGreen
-                              : AppColors.sherwoodGreen)
+                        ? AppColors.lightGreen
                         : (isDark ? AppColors.pewter : AppColors.edward),
                     width: 2,
                   ),
                 ),
                 child: isSelected
-                    ? Icon(
+                    ? const Icon(
                         Icons.check_rounded,
                         size: 14,
-                        color: isDark
-                            ? AppColors.sherwoodGreen
-                            : AppColors.ginFizz,
+                        color: AppColors.sherwoodGreen,
                       )
                     : null,
               ),

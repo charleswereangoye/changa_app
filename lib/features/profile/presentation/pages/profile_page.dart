@@ -16,6 +16,7 @@ import '../../../auth/domain/entities/app_user.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../chores/domain/entities/chore.dart';
 import '../../../chores/domain/repositories/chore_repository.dart';
+import '../../../dashboard/domain/logic/calculate_harmony_score.dart';
 import '../../../dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../../household/domain/usecases/leave_household.dart';
 import '../../../household/presentation/cubit/household_cubit.dart';
@@ -54,10 +55,10 @@ class _ProfileView extends StatelessWidget {
     final householdState = context.watch<HouseholdCubit>().state;
     final profileState = context.watch<ProfileCubit>().state;
 
-    // Resolve user from ProfileCubit if loaded, otherwise from global AuthCubit
-    final AppUser? user = profileState is ProfileStateLoaded
-        ? profileState.user
-        : authState.user;
+    // Resolve user: global AuthCubit is the session authority; fall back to ProfileCubit if loaded
+    final AppUser? user =
+        authState.user ??
+        (profileState is ProfileStateLoaded ? profileState.user : null);
 
     final fallbackUser =
         user ??
@@ -129,9 +130,19 @@ class _ProfileView extends StatelessWidget {
                         )
                         .length;
 
-                    final dynamicScore = sl.isRegistered<DashboardCubit>()
-                        ? sl<DashboardCubit>().state.harmony?.value
-                        : null;
+                    final dynamicScore =
+                        sl.isRegistered<DashboardCubit>() &&
+                            sl<DashboardCubit>().state.harmony != null
+                        ? sl<DashboardCubit>().state.harmony!.value
+                        : (chores.isNotEmpty
+                              ? const CalculateHarmonyScore()
+                                    .call(
+                                      chores: chores,
+                                      debts: const [],
+                                      now: DateTime.now(),
+                                    )
+                                    ?.value
+                              : null);
 
                     return ProfileHeader(
                       user: fallbackUser,
@@ -178,14 +189,29 @@ class _ProfileView extends StatelessWidget {
                         title: 'Edit Profile',
                         subtitle: 'Update your name and phone number',
                         icon: Icons.person_outline_rounded,
-                        onTap: () => context.pushNamed(RouteNames.editProfile),
+                        onTap: () async {
+                          try {
+                            final updated = await context.pushNamed<AppUser?>(
+                              RouteNames.editProfile,
+                              extra: fallbackUser,
+                            );
+                            if (updated != null && context.mounted) {
+                              context.read<AuthCubit>().updateUser(updated);
+                              context.read<ProfileCubit>().emitUser(updated);
+                            }
+                          } catch (_) {}
+                        },
                       ),
                       SettingsTile(
                         key: const Key('profile-tile-preferences'),
                         title: 'Notification Preferences',
                         subtitle: 'Manage nudges, chores & alerts',
                         icon: Icons.notifications_none_rounded,
-                        onTap: () => context.pushNamed(RouteNames.preferences),
+                        onTap: () {
+                          try {
+                            context.pushNamed(RouteNames.preferences);
+                          } catch (_) {}
+                        },
                       ),
                       SettingsTile(
                         key: const Key('profile-tile-payment-methods'),
@@ -193,8 +219,11 @@ class _ProfileView extends StatelessWidget {
                         subtitle: 'Default settlement options',
                         icon: Icons.credit_card_rounded,
                         showDivider: false,
-                        onTap: () =>
-                            context.pushNamed(RouteNames.paymentMethods),
+                        onTap: () {
+                          try {
+                            context.pushNamed(RouteNames.paymentMethods);
+                          } catch (_) {}
+                        },
                       ),
                     ],
                   ),
@@ -388,11 +417,20 @@ class _ProfileView extends StatelessWidget {
     );
 
     if (confirmed == true && context.mounted) {
-      await context.read<AuthCubit>().signOut();
-      if (context.mounted) {
+      final authCubit = context.read<AuthCubit>();
+      await authCubit.signOut();
+      if (!context.mounted) return;
+      if (authCubit.state is Unauthenticated) {
         try {
           context.goNamed(RouteNames.login);
         } catch (_) {}
+      } else if (authCubit.state is AuthFailureState) {
+        AppSnackbar.error(
+          context,
+          (authCubit.state as AuthFailureState).message,
+        );
+      } else {
+        AppSnackbar.error(context, 'Failed to log out. Please try again.');
       }
     }
   }

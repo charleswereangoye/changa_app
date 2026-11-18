@@ -50,8 +50,11 @@ class ConfirmDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final confirmColor = isDestructive
-        ? AppColors.sunglo
+        ? AppColors.lightGreen
         : AppColors.sherwoodGreen;
+    final confirmTextColor = isDestructive
+        ? AppColors.sherwoodGreen
+        : AppColors.white;
 
     return AlertDialog(
       backgroundColor: AppColors.white,
@@ -113,7 +116,7 @@ class ConfirmDialog extends StatelessWidget {
           },
           style: FilledButton.styleFrom(
             backgroundColor: confirmColor,
-            foregroundColor: AppColors.white,
+            foregroundColor: confirmTextColor,
             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),

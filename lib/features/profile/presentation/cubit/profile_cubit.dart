@@ -59,6 +59,10 @@ class ProfileCubit extends Cubit<ProfileState> {
     }
   }
 
+  void emitUser(AppUser user) {
+    emit(ProfileStateLoaded(user));
+  }
+
   @override
   Future<void> close() {
     _userSubscription?.cancel();

@@ -66,7 +66,6 @@ void main() {
       ],
       child: MaterialApp(
         theme: AppTheme.lightTheme,
-        darkTheme: AppTheme.darkTheme,
         home: const PaymentMethodsPage(),
       ),
     );

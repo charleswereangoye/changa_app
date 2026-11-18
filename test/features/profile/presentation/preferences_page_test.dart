@@ -47,7 +47,8 @@ void main() {
     await tester.pump();
 
     expect(find.byType(CircularProgressIndicator), findsNothing);
-    expect(find.text('Appearance'), findsOneWidget);
+    expect(find.text('Notifications'), findsOneWidget);
+    expect(find.text('Appearance'), findsNothing);
     expect(find.text('Default payment method'), findsOneWidget);
   });
 

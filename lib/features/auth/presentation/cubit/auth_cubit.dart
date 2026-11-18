@@ -44,7 +44,12 @@ class AuthCubit extends Cubit<AuthState> {
     if (result.isSuccess) {
       emit(const Unauthenticated());
     } else {
-      emit(AuthFailureState(result.failureOrNull!.message));
+      emit(
+        AuthFailureState(
+          result.failureOrNull!.message,
+          currentUser: state.user ?? authRepository.currentUser,
+        ),
+      );
     }
   }
 

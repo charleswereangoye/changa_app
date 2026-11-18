@@ -166,5 +166,83 @@ void main() {
         ),
       ).called(1);
     });
+
+    testWidgets(
+      'regression: saving then reopening the profile editor populates the latest saved data',
+      (tester) async {
+        final updatedUser = AppUser(
+          uid: 'u_amara',
+          fullName: 'Amara Diallo',
+          email: 'amara@changa.rw',
+          phone: '+250 788 333 444',
+          householdId: 'h_kigali',
+          createdAt: DateTime(2024, 8, 1),
+        );
+
+        when(
+          () => mockProfileCubit.editProfile(
+            fullName: 'Amara Diallo',
+            phone: '+250 788 333 444',
+          ),
+        ).thenAnswer((_) async {
+          when(() => mockProfileCubit.state)
+              .thenReturn(ProfileStateLoaded(updatedUser));
+          when(() => mockAuthRepository.currentUser).thenReturn(updatedUser);
+          return true;
+        });
+
+        final authCubit = AuthCubit(authRepository: mockAuthRepository);
+
+        // Open editor the first time
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.lightTheme,
+            home: BlocProvider<AuthCubit>.value(
+              value: authCubit,
+              child: EditProfilePage(
+                cubit: mockProfileCubit,
+                initialUser: testUser,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Amara Okoye'), findsOneWidget);
+
+        await tester.enterText(
+          find.byKey(const Key('edit-profile-name-input')),
+          'Amara Diallo',
+        );
+        await tester.enterText(
+          find.byKey(const Key('edit-profile-phone-input')),
+          '+250 788 333 444',
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byKey(const Key('edit-profile-save-button')));
+        await tester.pumpAndSettle();
+
+        // Reopen editor with the updated user
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppTheme.lightTheme,
+            home: BlocProvider<AuthCubit>.value(
+              value: authCubit,
+              child: EditProfilePage(
+                cubit: mockProfileCubit,
+                initialUser: updatedUser,
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Amara Diallo'), findsOneWidget);
+        expect(find.text('+250 788 333 444'), findsOneWidget);
+
+        authCubit.close();
+      },
+    );
   });
 }
