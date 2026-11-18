@@ -30,14 +30,21 @@ class SettingsTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     const snowDrift = Color(0xFFF0F4F2);
-    final iconBgColor = isDestructive ? AppColors.vanillaIce : snowDrift;
+    final iconBgColor = isDestructive
+        ? (isDark ? const Color(0xFF331515) : AppColors.vanillaIce)
+        : (isDark ? const Color(0xFF0E3834) : snowDrift);
     final iconColor = isDestructive
         ? AppColors.sunglo
-        : AppColors.sherwoodGreen;
+        : (isDark ? AppColors.lightGreen : AppColors.sherwoodGreen);
     final textColor = isDestructive
         ? AppColors.sunglo
-        : AppColors.sherwoodGreen;
+        : (isDark ? AppColors.ginFizz : AppColors.sherwoodGreen);
+    final subtitleColor = isDark ? AppColors.pewter : AppColors.edward;
+    final dividerColor = isDark
+        ? const Color(0xFF0F3E3A)
+        : AppColors.sherwoodGreen.withValues(alpha: 0.05);
 
     return Material(
       color: Colors.transparent,
@@ -82,11 +89,11 @@ class SettingsTile extends StatelessWidget {
                           const SizedBox(height: 2),
                           Text(
                             subtitle!,
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontFamily: 'Poppins',
                               fontSize: 12,
                               fontWeight: FontWeight.w400,
-                              color: AppColors.edward,
+                              color: subtitleColor,
                             ),
                           ),
                         ],
@@ -102,7 +109,9 @@ class SettingsTile extends StatelessWidget {
                         vertical: 4,
                       ),
                       decoration: BoxDecoration(
-                        color: AppColors.vanillaIce,
+                        color: isDark
+                            ? const Color(0xFF331515)
+                            : AppColors.vanillaIce,
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
@@ -121,10 +130,10 @@ class SettingsTile extends StatelessWidget {
 
                   // Trailing widget or Chevron
                   trailing ??
-                      const Icon(
+                      Icon(
                         Icons.chevron_right_rounded,
                         size: 20,
-                        color: AppColors.edward,
+                        color: subtitleColor,
                       ),
                 ],
               ),
@@ -132,11 +141,7 @@ class SettingsTile extends StatelessWidget {
             if (showDivider)
               Padding(
                 padding: const EdgeInsets.only(left: 68, right: 16),
-                child: Divider(
-                  height: 1,
-                  thickness: 1,
-                  color: AppColors.sherwoodGreen.withValues(alpha: 0.05),
-                ),
+                child: Divider(height: 1, thickness: 1, color: dividerColor),
               ),
           ],
         ),

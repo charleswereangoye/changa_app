@@ -48,6 +48,11 @@ class AuthCubit extends Cubit<AuthState> {
     }
   }
 
+  void updateUser(AppUser updatedUser) {
+    authRepository.updateCurrentUser(updatedUser);
+    emit(Authenticated(updatedUser));
+  }
+
   @override
   Future<void> close() {
     _authSubscription?.cancel();

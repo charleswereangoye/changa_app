@@ -11,6 +11,7 @@ class AppBottomSheet extends StatelessWidget {
   final Widget child;
   final VoidCallback? onClose;
   final EdgeInsetsGeometry padding;
+  final Color? backgroundColor;
 
   const AppBottomSheet({
     super.key,
@@ -18,6 +19,7 @@ class AppBottomSheet extends StatelessWidget {
     required this.child,
     this.onClose,
     this.padding = const EdgeInsets.fromLTRB(20, 12, 20, 24),
+    this.backgroundColor,
   });
 
   /// Helper to show an AppBottomSheet modal.
@@ -26,6 +28,7 @@ class AppBottomSheet extends StatelessWidget {
     required Widget child,
     String? title,
     bool isScrollControlled = true,
+    Color? backgroundColor,
   }) {
     return showModalBottomSheet<T>(
       context: context,
@@ -34,6 +37,7 @@ class AppBottomSheet extends StatelessWidget {
       builder: (sheetContext) => AppBottomSheet(
         title: title,
         onClose: () => Navigator.of(sheetContext).pop(),
+        backgroundColor: backgroundColor,
         child: child,
       ),
     );
@@ -41,10 +45,15 @@ class AppBottomSheet extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultBg = isDark ? const Color(0xFF072B28) : AppColors.white;
+    final sheetBg = backgroundColor ?? defaultBg;
+    final titleColor = isDark ? AppColors.ginFizz : AppColors.sherwoodGreen;
+
     return Container(
-      decoration: const BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      decoration: BoxDecoration(
+        color: sheetBg,
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
       ),
       child: SafeArea(
         top: false,
@@ -73,11 +82,11 @@ class AppBottomSheet extends StatelessWidget {
                   children: [
                     Text(
                       title!,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontFamily: 'Poppins',
                         fontSize: 18,
                         fontWeight: FontWeight.w700,
-                        color: AppColors.sherwoodGreen,
+                        color: titleColor,
                       ),
                     ),
                     if (onClose != null)

@@ -18,6 +18,7 @@ import '../../features/household/presentation/pages/household_created_page.dart'
 import '../../features/household/presentation/pages/join_household_page.dart';
 import '../../features/household/presentation/pages/manage_household_page.dart';
 import '../../features/profile/presentation/pages/edit_profile_page.dart';
+import '../../features/profile/presentation/pages/payment_methods_page.dart';
 import '../../features/profile/presentation/pages/preferences_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
 import 'home_shell.dart';
@@ -170,6 +171,11 @@ class AppRouter {
         path: '/profile/preferences',
         name: RouteNames.preferences,
         builder: (context, state) => const PreferencesPage(),
+      ),
+      GoRoute(
+        path: '/profile/payment-methods',
+        name: RouteNames.paymentMethods,
+        builder: (context, state) => const PaymentMethodsPage(),
       ),
     ],
   );

@@ -30,6 +30,11 @@ class AuthRepositoryImpl implements AuthRepository {
   AppUser? get currentUser => _cachedUser;
 
   @override
+  void updateCurrentUser(AppUser user) {
+    _cachedUser = user;
+  }
+
+  @override
   Future<Result<AppUser>> signUpWithEmail({
     required String fullName,
     required String email,

@@ -16,6 +16,7 @@ import '../../../auth/domain/entities/app_user.dart';
 import '../../../auth/presentation/cubit/auth_cubit.dart';
 import '../../../chores/domain/entities/chore.dart';
 import '../../../chores/domain/repositories/chore_repository.dart';
+import '../../../dashboard/presentation/cubit/dashboard_cubit.dart';
 import '../../../household/domain/usecases/leave_household.dart';
 import '../../../household/presentation/cubit/household_cubit.dart';
 import '../cubit/profile_cubit.dart';
@@ -71,33 +72,38 @@ class _ProfileView extends StatelessWidget {
     final household = householdState.household;
     final joinedAt = householdState.currentMember?.joinedAt ?? user?.createdAt;
     final credits = householdState.myCredits;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF072B28) : AppColors.white;
+    final cardBorder = isDark
+        ? Border.all(color: const Color(0xFF0F3E3A))
+        : null;
 
     return Scaffold(
-      backgroundColor: AppColors.ginFizz,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        backgroundColor: AppColors.ginFizz,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         elevation: 0,
         centerTitle: true,
         leading: Navigator.of(context).canPop()
             ? IconButton(
                 icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-                color: AppColors.sherwoodGreen,
+                color: isDark ? AppColors.ginFizz : AppColors.sherwoodGreen,
                 onPressed: () => context.pop(),
               )
             : null,
-        title: const Text(
+        title: Text(
           'Profile',
           style: TextStyle(
             fontFamily: 'Poppins',
             fontSize: 18,
             fontWeight: FontWeight.w700,
-            color: AppColors.sherwoodGreen,
+            color: isDark ? AppColors.ginFizz : AppColors.sherwoodGreen,
           ),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.settings_outlined),
-            color: AppColors.sherwoodGreen,
+            color: isDark ? AppColors.ginFizz : AppColors.sherwoodGreen,
             tooltip: 'Preferences',
             onPressed: () => context.pushNamed(RouteNames.preferences),
           ),
@@ -123,11 +129,15 @@ class _ProfileView extends StatelessWidget {
                         )
                         .length;
 
+                    final dynamicScore = sl.isRegistered<DashboardCubit>()
+                        ? sl<DashboardCubit>().state.harmony?.value
+                        : null;
+
                     return ProfileHeader(
                       user: fallbackUser,
                       householdName: household.name,
                       joinedAt: joinedAt,
-                      harmonyScore: chores.isNotEmpty ? 84 : null,
+                      harmonyScore: dynamicScore,
                       credits: credits,
                       choresDone: choresDone,
                     );
@@ -150,8 +160,9 @@ class _ProfileView extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: cardBg,
                     borderRadius: BorderRadius.circular(16),
+                    border: cardBorder,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.02),
@@ -182,7 +193,8 @@ class _ProfileView extends StatelessWidget {
                         subtitle: 'Default settlement options',
                         icon: Icons.credit_card_rounded,
                         showDivider: false,
-                        onTap: () => context.pushNamed(RouteNames.preferences),
+                        onTap: () =>
+                            context.pushNamed(RouteNames.paymentMethods),
                       ),
                     ],
                   ),
@@ -197,8 +209,9 @@ class _ProfileView extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: cardBg,
                     borderRadius: BorderRadius.circular(16),
+                    border: cardBorder,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.02),
@@ -250,8 +263,9 @@ class _ProfileView extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: AppColors.white,
+                    color: cardBg,
                     borderRadius: BorderRadius.circular(16),
+                    border: cardBorder,
                     boxShadow: [
                       BoxShadow(
                         color: Colors.black.withValues(alpha: 0.02),
@@ -384,33 +398,39 @@ class _ProfileView extends StatelessWidget {
   }
 
   void _showHelpSheet(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     AppBottomSheet.show(
       context: context,
       title: 'Help & FAQ',
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: const [
-          _HelpItem(
-            question: 'How does splitting work?',
-            answer: 'You can split bills equally, by exact amounts, or by percentage. Any house credits you have earned will automatically be applied to reduce your share!',
+      backgroundColor: isDark ? const Color(0xFF041E1C) : AppColors.ginFizz,
+      child: Flexible(
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: const [
+              _HelpItem(
+                question: 'How does splitting work?',
+                answer: 'You can split bills equally, by exact amounts, or by percentage. Any house credits you have earned will automatically be applied to reduce your share!',
+              ),
+              SizedBox(height: 12),
+              _HelpItem(
+                question: 'What are House Credits?',
+                answer: 'Complete chores on the roster to earn credits (10, 20, or 30 pts depending on difficulty). 100 credits = 1,000 RWF off your next bill.',
+              ),
+              SizedBox(height: 12),
+              _HelpItem(
+                question: 'What is Harmony Score?',
+                answer: 'Harmony is a shared household score (0 to 100) reflecting chores done on time and debts settled promptly. It represents community health, never blame.',
+              ),
+              SizedBox(height: 12),
+              _HelpItem(
+                question: 'Need more assistance?',
+                answer: 'Reach out to our team at support@changa.rw or speak with your household administrator.',
+              ),
+              SizedBox(height: 16),
+            ],
           ),
-          SizedBox(height: 16),
-          _HelpItem(
-            question: 'What are House Credits?',
-            answer: 'Complete chores on the roster to earn credits (10, 20, or 30 pts depending on difficulty). 100 credits = 1,000 RWF off your next bill.',
-          ),
-          SizedBox(height: 16),
-          _HelpItem(
-            question: 'What is Harmony Score?',
-            answer: 'Harmony is a shared household score (0 to 100) reflecting chores done on time and debts settled promptly. It represents community health, never blame.',
-          ),
-          SizedBox(height: 16),
-          _HelpItem(
-            question: 'Need more assistance?',
-            answer: 'Reach out to our team at support@changa.rw or speak with your household administrator.',
-          ),
-          SizedBox(height: 24),
-        ],
+        ),
       ),
     );
   }
@@ -424,30 +444,49 @@ class _HelpItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          question,
-          style: const TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 14,
-            fontWeight: FontWeight.w600,
-            color: AppColors.sherwoodGreen,
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF072B28) : AppColors.white;
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cardBg,
+        borderRadius: BorderRadius.circular(16),
+        border: isDark ? Border.all(color: const Color(0xFF0F3E3A)) : null,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: 0.02),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
           ),
-        ),
-        const SizedBox(height: 4),
-        Text(
-          answer,
-          style: const TextStyle(
-            fontFamily: 'Poppins',
-            fontSize: 13,
-            fontWeight: FontWeight.w400,
-            color: AppColors.edward,
-            height: 1.4,
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            question,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: isDark ? AppColors.lightGreen : AppColors.sherwoodGreen,
+            ),
           ),
-        ),
-      ],
+          const SizedBox(height: 6),
+          Text(
+            answer,
+            style: TextStyle(
+              fontFamily: 'Poppins',
+              fontSize: 13,
+              fontWeight: FontWeight.w400,
+              color: isDark ? AppColors.pewter : AppColors.edward,
+              height: 1.45,
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

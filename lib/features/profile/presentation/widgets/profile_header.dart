@@ -29,6 +29,7 @@ class ProfileHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final effectiveDate = joinedAt ?? user.createdAt;
     final memberSince = DateFormat('MMM yyyy').format(effectiveDate);
     final householdSubtitle =
@@ -43,13 +44,16 @@ class ProfileHeader extends StatelessWidget {
           padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
           child: Column(
             children: [
-              // 88x88 Avatar with white border and subtle shadow
+              // 88x88 Avatar with white/green border and subtle shadow
               Container(
                 width: 88,
                 height: 88,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  border: Border.all(color: AppColors.white, width: 2),
+                  border: Border.all(
+                    color: isDark ? AppColors.lightGreen : AppColors.white,
+                    width: 2,
+                  ),
                   boxShadow: [
                     BoxShadow(
                       color: Colors.black.withValues(alpha: 0.06),
@@ -70,11 +74,11 @@ class ProfileHeader extends StatelessWidget {
               Text(
                 user.fullName.isEmpty ? 'Changa Member' : user.fullName,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 20,
                   fontWeight: FontWeight.w700,
-                  color: AppColors.sherwoodGreen,
+                  color: isDark ? AppColors.ginFizz : AppColors.sherwoodGreen,
                 ),
               ),
               const SizedBox(height: 4),
@@ -83,11 +87,11 @@ class ProfileHeader extends StatelessWidget {
               Text(
                 householdSubtitle,
                 textAlign: TextAlign.center,
-                style: const TextStyle(
+                style: TextStyle(
                   fontFamily: 'Poppins',
                   fontSize: 12,
                   fontWeight: FontWeight.w400,
-                  color: AppColors.edward,
+                  color: isDark ? AppColors.pewter : AppColors.edward,
                 ),
               ),
             ],
@@ -138,11 +142,17 @@ class _StatCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF072B28) : AppColors.white;
+    final valueColor = isDark ? AppColors.lightGreen : AppColors.sherwoodGreen;
+    final labelColor = isDark ? AppColors.pewter : AppColors.edward;
+
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: cardBg,
         borderRadius: BorderRadius.circular(16),
+        border: isDark ? Border.all(color: const Color(0xFF0F3E3A)) : null,
         boxShadow: [
           BoxShadow(
             color: Colors.black.withValues(alpha: 0.02),
@@ -157,22 +167,22 @@ class _StatCard extends StatelessWidget {
           Text(
             value,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 20,
               fontWeight: FontWeight.w700,
-              color: AppColors.sherwoodGreen,
+              color: valueColor,
             ),
           ),
           const SizedBox(height: 4),
           Text(
             label,
             textAlign: TextAlign.center,
-            style: const TextStyle(
+            style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 10,
               fontWeight: FontWeight.w400,
-              color: AppColors.edward,
+              color: labelColor,
             ),
           ),
         ],

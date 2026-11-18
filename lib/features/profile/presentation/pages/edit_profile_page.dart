@@ -95,35 +95,54 @@ class _EditProfilePageState extends State<EditProfilePage> {
     _isSaving = false;
 
     if (success) {
+      final updatedUser = (_cubit.state is ProfileStateLoaded)
+          ? (_cubit.state as ProfileStateLoaded).user
+          : null;
+      if (updatedUser != null && mounted) {
+        try {
+          context.read<AuthCubit>().updateUser(updatedUser);
+        } catch (_) {}
+      }
       AppSnackbar.success(context, 'Profile updated successfully.');
       if (Navigator.of(context).canPop()) {
         Navigator.of(context).pop();
       }
+    } else {
+      final err = (_cubit.state is ProfileStateError)
+          ? (_cubit.state as ProfileStateError).message
+          : 'Failed to update profile. Please try again.';
+      AppSnackbar.error(context, err);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF072B28) : AppColors.white;
+    final cardBorder = isDark
+        ? Border.all(color: const Color(0xFF0F3E3A))
+        : null;
+
     return BlocProvider<ProfileCubit>.value(
       value: _cubit,
       child: Scaffold(
-        backgroundColor: AppColors.ginFizz,
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         appBar: AppBar(
-          backgroundColor: AppColors.ginFizz,
+          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
           elevation: 0,
           centerTitle: true,
           leading: IconButton(
             icon: const Icon(Icons.arrow_back_ios_new_rounded, size: 20),
-            color: AppColors.sherwoodGreen,
+            color: isDark ? AppColors.ginFizz : AppColors.sherwoodGreen,
             onPressed: () => context.pop(),
           ),
-          title: const Text(
+          title: Text(
             'Edit Profile',
             style: TextStyle(
               fontFamily: 'Poppins',
               fontSize: 18,
               fontWeight: FontWeight.w700,
-              color: AppColors.sherwoodGreen,
+              color: isDark ? AppColors.ginFizz : AppColors.sherwoodGreen,
             ),
           ),
         ),
@@ -155,7 +174,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 border: Border.all(
-                                  color: AppColors.white,
+                                  color: isDark
+                                      ? AppColors.lightGreen
+                                      : AppColors.white,
                                   width: 2,
                                 ),
                                 boxShadow: [
@@ -204,8 +225,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                       Container(
                         padding: const EdgeInsets.all(20),
                         decoration: BoxDecoration(
-                          color: AppColors.white,
+                          color: cardBg,
                           borderRadius: BorderRadius.circular(16),
+                          border: cardBorder,
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withValues(alpha: 0.02),

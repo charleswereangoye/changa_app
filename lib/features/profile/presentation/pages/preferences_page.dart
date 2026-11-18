@@ -10,7 +10,7 @@ import 'package:changa_app/features/profile/presentation/cubit/preferences_cubit
 import 'package:changa_app/features/profile/presentation/cubit/preferences_state.dart';
 
 /// Theme, notification toggles and the defaults used when adding expenses
-/// and settling up. Needs a [PreferencesCubit] above it.
+/// and settling up. Uses light and dark green palette throughout.
 class PreferencesPage extends StatelessWidget {
   const PreferencesPage({super.key});
 
@@ -29,6 +29,7 @@ class PreferencesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<PreferencesCubit>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return BlocConsumer<PreferencesCubit, PreferencesState>(
       listenWhen: (previous, current) =>
@@ -39,7 +40,16 @@ class PreferencesPage extends StatelessWidget {
       },
       builder: (context, state) {
         return Scaffold(
-          appBar: AppBar(title: const Text('Preferences')),
+          appBar: AppBar(
+            title: Text(
+              'Preferences',
+              style: TextStyle(
+                fontFamily: 'Poppins',
+                fontWeight: FontWeight.w700,
+                color: isDark ? AppColors.ginFizz : AppColors.sherwoodGreen,
+              ),
+            ),
+          ),
           body: SafeArea(
             child: !state.isLoaded
                 ? const Center(child: CircularProgressIndicator())
@@ -59,6 +69,39 @@ class PreferencesPage extends StatelessWidget {
                           SegmentedButton<ThemeMode>(
                             key: const Key('theme-selector'),
                             showSelectedIcon: false,
+                            style: ButtonStyle(
+                              backgroundColor: WidgetStateProperty.resolveWith((
+                                states,
+                              ) {
+                                if (states.contains(WidgetState.selected)) {
+                                  return isDark
+                                      ? AppColors.lightGreen
+                                      : AppColors.sherwoodGreen;
+                                }
+                                return isDark
+                                    ? const Color(0xFF072B28)
+                                    : AppColors.white;
+                              }),
+                              foregroundColor: WidgetStateProperty.resolveWith((
+                                states,
+                              ) {
+                                if (states.contains(WidgetState.selected)) {
+                                  return isDark
+                                      ? AppColors.sherwoodGreen
+                                      : AppColors.ginFizz;
+                                }
+                                return isDark
+                                    ? AppColors.ginFizz
+                                    : AppColors.sherwoodGreen;
+                              }),
+                              side: WidgetStatePropertyAll(
+                                BorderSide(
+                                  color: isDark
+                                      ? AppColors.lightGreen
+                                      : AppColors.sherwoodGreen,
+                                ),
+                              ),
+                            ),
                             segments: const [
                               ButtonSegment(
                                 value: ThemeMode.system,
@@ -81,9 +124,36 @@ class PreferencesPage extends StatelessWidget {
                           SwitchListTile(
                             key: const Key('notify-nudges-switch'),
                             contentPadding: EdgeInsets.zero,
-                            title: const Text('Payment nudges'),
-                            subtitle: const Text(
+                            activeThumbColor: isDark
+                                ? AppColors.sherwoodGreen
+                                : AppColors.lightGreen,
+                            activeTrackColor: isDark
+                                ? AppColors.lightGreen
+                                : AppColors.sherwoodGreen,
+                            inactiveThumbColor: isDark
+                                ? AppColors.pewter
+                                : AppColors.edward,
+                            inactiveTrackColor: isDark
+                                ? const Color(0xFF0F3E3A)
+                                : AppColors.edward.withValues(alpha: 0.25),
+                            title: Text(
+                              'Payment nudges',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w600,
+                                color: isDark
+                                    ? AppColors.ginFizz
+                                    : AppColors.sherwoodGreen,
+                              ),
+                            ),
+                            subtitle: Text(
                               'When a housemate reminds you about a debt.',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                color: isDark
+                                    ? AppColors.pewter
+                                    : AppColors.edward,
+                              ),
                             ),
                             value: state.notifyNudges,
                             onChanged: cubit.setNotifyNudges,
@@ -91,9 +161,36 @@ class PreferencesPage extends StatelessWidget {
                           SwitchListTile(
                             key: const Key('notify-chores-switch'),
                             contentPadding: EdgeInsets.zero,
-                            title: const Text('Chore updates'),
-                            subtitle: const Text(
+                            activeThumbColor: isDark
+                                ? AppColors.sherwoodGreen
+                                : AppColors.lightGreen,
+                            activeTrackColor: isDark
+                                ? AppColors.lightGreen
+                                : AppColors.sherwoodGreen,
+                            inactiveThumbColor: isDark
+                                ? AppColors.pewter
+                                : AppColors.edward,
+                            inactiveTrackColor: isDark
+                                ? const Color(0xFF0F3E3A)
+                                : AppColors.edward.withValues(alpha: 0.25),
+                            title: Text(
+                              'Chore updates',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                fontWeight: FontWeight.w600,
+                                color: isDark
+                                    ? AppColors.ginFizz
+                                    : AppColors.sherwoodGreen,
+                              ),
+                            ),
+                            subtitle: Text(
                               'Swap requests and replies to your swaps.',
+                              style: TextStyle(
+                                fontFamily: 'Poppins',
+                                color: isDark
+                                    ? AppColors.pewter
+                                    : AppColors.edward,
+                              ),
                             ),
                             value: state.notifyChores,
                             onChanged: cubit.setNotifyChores,
@@ -106,9 +203,41 @@ class PreferencesPage extends StatelessWidget {
                               for (final (method, label) in _settlementMethods)
                                 ChoiceChip(
                                   key: Key('settlement-${method.name}'),
-                                  label: Text(label),
+                                  label: Text(
+                                    label,
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      color:
+                                          state.defaultSettlementMethod ==
+                                              method
+                                          ? (isDark
+                                                ? AppColors.sherwoodGreen
+                                                : AppColors.ginFizz)
+                                          : (isDark
+                                                ? AppColors.ginFizz
+                                                : AppColors.sherwoodGreen),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                                   selected:
                                       state.defaultSettlementMethod == method,
+                                  selectedColor: isDark
+                                      ? AppColors.lightGreen
+                                      : AppColors.sherwoodGreen,
+                                  backgroundColor: isDark
+                                      ? const Color(0xFF072B28)
+                                      : AppColors.white,
+                                  side: BorderSide(
+                                    color:
+                                        state.defaultSettlementMethod == method
+                                        ? (isDark
+                                              ? AppColors.lightGreen
+                                              : AppColors.sherwoodGreen)
+                                        : AppColors.edward.withValues(
+                                            alpha: 0.3,
+                                          ),
+                                  ),
+                                  showCheckmark: false,
                                   onSelected: (_) =>
                                       cubit.setDefaultSettlementMethod(method),
                                 ),
@@ -122,8 +251,37 @@ class PreferencesPage extends StatelessWidget {
                               for (final (type, label) in _splitTypes)
                                 ChoiceChip(
                                   key: Key('split-${type.name}'),
-                                  label: Text(label),
+                                  label: Text(
+                                    label,
+                                    style: TextStyle(
+                                      fontFamily: 'Poppins',
+                                      color: state.defaultSplitType == type
+                                          ? (isDark
+                                                ? AppColors.sherwoodGreen
+                                                : AppColors.ginFizz)
+                                          : (isDark
+                                                ? AppColors.ginFizz
+                                                : AppColors.sherwoodGreen),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
                                   selected: state.defaultSplitType == type,
+                                  selectedColor: isDark
+                                      ? AppColors.lightGreen
+                                      : AppColors.sherwoodGreen,
+                                  backgroundColor: isDark
+                                      ? const Color(0xFF072B28)
+                                      : AppColors.white,
+                                  side: BorderSide(
+                                    color: state.defaultSplitType == type
+                                        ? (isDark
+                                              ? AppColors.lightGreen
+                                              : AppColors.sherwoodGreen)
+                                        : AppColors.edward.withValues(
+                                            alpha: 0.3,
+                                          ),
+                                  ),
+                                  showCheckmark: false,
                                   onSelected: (_) =>
                                       cubit.setDefaultSplitType(type),
                                 ),
@@ -148,6 +306,7 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
       padding: EdgeInsets.only(
         top: first ? 0 : AppSpacing.xl,
@@ -156,8 +315,9 @@ class _SectionLabel extends StatelessWidget {
       child: Text(
         text,
         style: Theme.of(context).textTheme.titleSmall?.copyWith(
+          fontFamily: 'Poppins',
           fontWeight: FontWeight.w700,
-          color: AppColors.sherwoodGreen,
+          color: isDark ? AppColors.lightGreen : AppColors.sherwoodGreen,
         ),
       ),
     );

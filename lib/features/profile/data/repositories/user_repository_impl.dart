@@ -81,6 +81,12 @@ class UserRepositoryImpl implements UserRepository {
         fullName: fullName,
         phone: phone,
       );
+      try {
+        if (fullName != null && fullName.isNotEmpty) {
+          await (firebaseAuth ?? FirebaseAuth.instance).currentUser
+              ?.updateDisplayName(fullName);
+        }
+      } catch (_) {}
       return Result.success(updated);
     } catch (e) {
       return Result.failure(_mapException(e));

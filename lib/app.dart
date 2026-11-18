@@ -73,6 +73,7 @@ class ChangaApp extends StatelessWidget {
             title: 'Changa',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
             themeMode: preferences.themeMode,
             routerConfig: AppRouter.router,
           ),
