@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
 import 'package:changa_app/features/activity/data/activity_writer.dart';
 import 'package:changa_app/features/auth/presentation/cubit/auth_cubit.dart';
+import 'package:changa_app/features/chores/domain/usecases/reassign_chores.dart';
+import 'package:changa_app/features/debts/domain/usecases/get_outstanding_balance.dart';
 import 'package:changa_app/features/household/data/datasources/household_remote_datasource.dart';
 import 'package:changa_app/features/household/data/repositories/household_repository_impl.dart';
 import 'package:changa_app/features/household/domain/repositories/household_repository.dart';
@@ -18,6 +20,7 @@ import 'package:changa_app/features/household/domain/usecases/watch_members.dart
 import 'package:changa_app/features/household/presentation/cubit/create_household_cubit.dart';
 import 'package:changa_app/features/household/presentation/cubit/household_cubit.dart';
 import 'package:changa_app/features/household/presentation/cubit/join_household_cubit.dart';
+import 'package:changa_app/features/household/presentation/cubit/manage_household_cubit.dart';
 import 'package:changa_app/features/profile/domain/usecases/get_users_by_ids.dart';
 import 'package:changa_app/features/profile/domain/usecases/watch_user.dart';
 
@@ -79,7 +82,7 @@ void initHousehold(GetIt sl) {
     sl.registerLazySingleton(() => WatchMembers(sl<HouseholdRepository>()));
   }
 
-  // Cubits (B8)
+  // Cubits (B8 & B12)
   if (!sl.isRegistered<HouseholdCubit>()) {
     sl.registerLazySingleton<HouseholdCubit>(
       () => HouseholdCubit(
@@ -103,6 +106,30 @@ void initHousehold(GetIt sl) {
       () => JoinHouseholdCubit(
         previewHouseholdByPin: sl<PreviewHouseholdByPin>(),
         joinHousehold: sl<JoinHousehold>(),
+      ),
+    );
+  }
+  if (!sl.isRegistered<ManageHouseholdCubit>()) {
+    sl.registerFactory<ManageHouseholdCubit>(
+      () => ManageHouseholdCubit(
+        watchHousehold: sl<WatchHousehold>(),
+        watchMembers: sl<WatchMembers>(),
+        getUsersByIds: sl.isRegistered<GetUsersByIds>()
+            ? sl<GetUsersByIds>()
+            : null,
+        regeneratePin: sl<RegeneratePin>(),
+        removeMember: sl<RemoveMember>(),
+        transferAdmin: sl<TransferAdmin>(),
+        leaveHousehold: sl<LeaveHousehold>(),
+        getOutstandingBalance: sl.isRegistered<GetOutstandingBalance>()
+            ? sl<GetOutstandingBalance>()
+            : null,
+        reassignChores: sl.isRegistered<ReassignChores>()
+            ? sl<ReassignChores>()
+            : null,
+        householdCubit: sl.isRegistered<HouseholdCubit>()
+            ? sl<HouseholdCubit>()
+            : null,
       ),
     );
   }
