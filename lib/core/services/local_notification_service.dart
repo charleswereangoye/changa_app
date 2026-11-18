@@ -101,6 +101,9 @@ class LocalNotificationService {
     required bool notifyNudges,
     required bool notifyChores,
     String? refId,
+    String? recipientUid,
+    String? actorUid,
+    String? householdId,
   }) async {
     if (!_supportsNotifications) return false;
 
@@ -138,6 +141,9 @@ class LocalNotificationService {
         'notificationId': notificationId,
         'type': type,
         'refId': refId,
+        if (recipientUid != null) 'recipientUid': recipientUid,
+        if (actorUid != null) 'actorUid': actorUid,
+        if (householdId != null) 'householdId': householdId,
       }),
     );
 
