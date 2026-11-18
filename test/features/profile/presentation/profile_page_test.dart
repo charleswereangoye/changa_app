@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
+import 'package:changa_app/core/error/result.dart';
 import 'package:changa_app/core/theme/app_theme.dart';
 import 'package:changa_app/features/auth/domain/entities/app_user.dart';
 import 'package:changa_app/features/auth/domain/repositories/auth_repository.dart';
@@ -175,6 +176,14 @@ void main() {
         findsOneWidget,
       );
       expect(find.text('Cancel'), findsOneWidget);
+
+      when(() => mockAuthRepository.signOut())
+          .thenAnswer((_) async => Result.success(null));
+
+      await tester.tap(find.byKey(const Key('confirm-dialog-confirm')));
+      await tester.pumpAndSettle();
+
+      verify(() => mockAuthRepository.signOut()).called(1);
     });
 
     testWidgets('tapping Help & FAQ opens FAQ bottom sheet', (tester) async {

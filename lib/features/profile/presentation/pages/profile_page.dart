@@ -375,6 +375,11 @@ class _ProfileView extends StatelessWidget {
 
     if (confirmed == true && context.mounted) {
       await context.read<AuthCubit>().signOut();
+      if (context.mounted) {
+        try {
+          context.goNamed(RouteNames.login);
+        } catch (_) {}
+      }
     }
   }
 

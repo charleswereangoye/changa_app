@@ -41,7 +41,9 @@ class AuthCubit extends Cubit<AuthState> {
 
   Future<void> signOut() async {
     final result = await authRepository.signOut();
-    if (result.isFailure) {
+    if (result.isSuccess) {
+      emit(const Unauthenticated());
+    } else {
       emit(AuthFailureState(result.failureOrNull!.message));
     }
   }
