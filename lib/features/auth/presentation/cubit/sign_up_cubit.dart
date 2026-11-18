@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../domain/entities/app_user.dart';
 import '../../domain/repositories/auth_repository.dart';
 
 part 'sign_up_state.dart';
@@ -55,7 +56,9 @@ class SignUpCubit extends Cubit<SignUpState> {
       );
 
       if (result.isSuccess) {
-        emit(state.copyWith(status: SignUpStatus.success));
+        emit(
+          state.copyWith(status: SignUpStatus.success, user: result.dataOrNull),
+        );
       } else {
         emit(
           state.copyWith(
@@ -76,7 +79,9 @@ class SignUpCubit extends Cubit<SignUpState> {
     if (repo != null) {
       final result = await repo.signInWithGoogle();
       if (result.isSuccess) {
-        emit(state.copyWith(status: SignUpStatus.success));
+        emit(
+          state.copyWith(status: SignUpStatus.success, user: result.dataOrNull),
+        );
       } else {
         emit(
           state.copyWith(
@@ -98,7 +103,9 @@ class SignUpCubit extends Cubit<SignUpState> {
     if (repo != null) {
       final result = await repo.signInWithApple();
       if (result.isSuccess) {
-        emit(state.copyWith(status: SignUpStatus.success));
+        emit(
+          state.copyWith(status: SignUpStatus.success, user: result.dataOrNull),
+        );
       } else {
         emit(
           state.copyWith(

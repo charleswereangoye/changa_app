@@ -20,7 +20,31 @@ class AuthRepositoryImpl implements AuthRepository {
         _cachedUser = null;
         return null;
       }
-      final profile = await remoteDataSource.getUserProfile(firebaseUser.uid);
+      if (_cachedUser != null &&
+          _cachedUser!.uid == firebaseUser.uid &&
+          _cachedUser!.fullName.isNotEmpty) {
+        return _cachedUser;
+      }
+      AppUser? profile = await remoteDataSource.getUserProfile(
+        firebaseUser.uid,
+      );
+      if (profile == null) {
+        // Retry once after brief delay for newly created Firestore user documents
+        await Future.delayed(const Duration(milliseconds: 300));
+        profile = await remoteDataSource.getUserProfile(firebaseUser.uid);
+      }
+      if (profile == null &&
+          _cachedUser != null &&
+          _cachedUser!.uid == firebaseUser.uid) {
+        profile = _cachedUser;
+      }
+      profile ??= AppUser(
+        uid: firebaseUser.uid,
+        fullName: firebaseUser.displayName ?? '',
+        email: firebaseUser.email ?? '',
+        phone: firebaseUser.phoneNumber ?? '',
+        createdAt: DateTime.now(),
+      );
       _cachedUser = profile;
       return profile;
     });

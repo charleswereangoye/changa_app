@@ -1,5 +1,9 @@
+// Owner: A - Person A (Foundation, Authentication, Profile)
+// Screen: Preferences Screen: notification toggles and default options
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
 import 'package:changa_app/core/enums/settlement_method.dart';
 import 'package:changa_app/core/enums/split_type.dart';
@@ -10,7 +14,7 @@ import 'package:changa_app/features/profile/presentation/cubit/preferences_cubit
 import 'package:changa_app/features/profile/presentation/cubit/preferences_state.dart';
 
 /// Notification toggles and defaults used when adding expenses and settling up.
-/// Uses light green for nudges and active switches.
+/// Uses card-based layout matching Profile and clean light green active elements.
 class PreferencesPage extends StatelessWidget {
   const PreferencesPage({super.key});
 
@@ -29,6 +33,11 @@ class PreferencesPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cubit = context.read<PreferencesCubit>();
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final cardBg = isDark ? const Color(0xFF072B28) : AppColors.white;
+    final cardBorder = isDark
+        ? Border.all(color: const Color(0xFF0F3E3A))
+        : null;
 
     return BlocConsumer<PreferencesCubit, PreferencesState>(
       listenWhen: (previous, current) =>
@@ -43,12 +52,24 @@ class PreferencesPage extends StatelessWidget {
           appBar: AppBar(
             backgroundColor: Theme.of(context).scaffoldBackgroundColor,
             elevation: 0,
-            title: const Text(
+            centerTitle: true,
+            leading: Navigator.of(context).canPop()
+                ? IconButton(
+                    icon: const Icon(
+                      Icons.arrow_back_ios_new_rounded,
+                      size: 20,
+                    ),
+                    color: isDark ? AppColors.ginFizz : AppColors.sherwoodGreen,
+                    onPressed: () => context.pop(),
+                  )
+                : null,
+            title: Text(
               'Preferences',
               style: TextStyle(
                 fontFamily: 'Poppins',
+                fontSize: 18,
                 fontWeight: FontWeight.w700,
-                color: AppColors.sherwoodGreen,
+                color: isDark ? AppColors.ginFizz : AppColors.sherwoodGreen,
               ),
             ),
           ),
@@ -62,131 +83,298 @@ class PreferencesPage extends StatelessWidget {
                       child: ListView(
                         padding: const EdgeInsets.fromLTRB(
                           AppSpacing.lg,
-                          AppSpacing.sm,
+                          AppSpacing.xs,
                           AppSpacing.lg,
                           AppSpacing.xxl,
                         ),
                         children: [
+                          // Notifications Section
                           const _SectionLabel('Notifications', first: true),
-                          SwitchListTile(
-                            key: const Key('notify-nudges-switch'),
-                            contentPadding: EdgeInsets.zero,
-                            activeThumbColor: AppColors.white,
-                            activeTrackColor: AppColors.lightGreen,
-                            inactiveThumbColor: AppColors.edward,
-                            inactiveTrackColor: AppColors.edward.withValues(
-                              alpha: 0.25,
-                            ),
-                            title: const Text(
-                              'Payment nudges',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.sherwoodGreen,
+                          Material(
+                            color: cardBg,
+                            borderRadius: BorderRadius.circular(16),
+                            clipBehavior: Clip.antiAlias,
+                            elevation: 0,
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                border: cardBorder,
+                              ),
+                              child: Column(
+                                children: [
+                                  SwitchListTile(
+                                    key: const Key('notify-nudges-switch'),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 4,
+                                    ),
+                                    activeThumbColor: AppColors.white,
+                                    activeTrackColor: AppColors.lightGreen,
+                                    inactiveThumbColor: isDark
+                                        ? AppColors.edward
+                                        : AppColors.white,
+                                    inactiveTrackColor: isDark
+                                        ? AppColors.edward.withValues(
+                                            alpha: 0.25,
+                                          )
+                                        : AppColors.edward.withValues(
+                                            alpha: 0.3,
+                                          ),
+                                    title: Text(
+                                      'Payment nudges',
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? AppColors.ginFizz
+                                            : AppColors.sherwoodGreen,
+                                      ),
+                                    ),
+                                    subtitle: const Text(
+                                      'When a housemate reminds you about a debt.',
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 13,
+                                        color: AppColors.edward,
+                                      ),
+                                    ),
+                                    value: state.notifyNudges,
+                                    onChanged: cubit.setNotifyNudges,
+                                  ),
+                                  Divider(
+                                    height: 1,
+                                    indent: 16,
+                                    endIndent: 16,
+                                    color: isDark
+                                        ? const Color(0xFF0F3E3A)
+                                        : const Color(0xFFF0F0EB),
+                                  ),
+                                  SwitchListTile(
+                                    key: const Key('notify-chores-switch'),
+                                    contentPadding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 4,
+                                    ),
+                                    activeThumbColor: AppColors.white,
+                                    activeTrackColor: AppColors.lightGreen,
+                                    inactiveThumbColor: isDark
+                                        ? AppColors.edward
+                                        : AppColors.white,
+                                    inactiveTrackColor: isDark
+                                        ? AppColors.edward.withValues(
+                                            alpha: 0.25,
+                                          )
+                                        : AppColors.edward.withValues(
+                                            alpha: 0.3,
+                                          ),
+                                    title: Text(
+                                      'Chore updates',
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600,
+                                        color: isDark
+                                            ? AppColors.ginFizz
+                                            : AppColors.sherwoodGreen,
+                                      ),
+                                    ),
+                                    subtitle: const Text(
+                                      'Swap requests and replies to your swaps.',
+                                      style: TextStyle(
+                                        fontFamily: 'Poppins',
+                                        fontSize: 13,
+                                        color: AppColors.edward,
+                                      ),
+                                    ),
+                                    value: state.notifyChores,
+                                    onChanged: cubit.setNotifyChores,
+                                  ),
+                                ],
                               ),
                             ),
-                            subtitle: const Text(
-                              'When a housemate reminds you about a debt.',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                color: AppColors.edward,
-                              ),
-                            ),
-                            value: state.notifyNudges,
-                            onChanged: cubit.setNotifyNudges,
                           ),
-                          SwitchListTile(
-                            key: const Key('notify-chores-switch'),
-                            contentPadding: EdgeInsets.zero,
-                            activeThumbColor: AppColors.white,
-                            activeTrackColor: AppColors.lightGreen,
-                            inactiveThumbColor: AppColors.edward,
-                            inactiveTrackColor: AppColors.edward.withValues(
-                              alpha: 0.25,
-                            ),
-                            title: const Text(
-                              'Chore updates',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                fontWeight: FontWeight.w600,
-                                color: AppColors.sherwoodGreen,
-                              ),
-                            ),
-                            subtitle: const Text(
-                              'Swap requests and replies to your swaps.',
-                              style: TextStyle(
-                                fontFamily: 'Poppins',
-                                color: AppColors.edward,
-                              ),
-                            ),
-                            value: state.notifyChores,
-                            onChanged: cubit.setNotifyChores,
-                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Default payment method Section
                           const _SectionLabel('Default payment method'),
-                          Wrap(
-                            spacing: AppSpacing.sm,
-                            runSpacing: AppSpacing.sm,
-                            children: [
-                              for (final (method, label) in _settlementMethods)
-                                ChoiceChip(
-                                  key: Key('settlement-${method.name}'),
-                                  label: Text(
-                                    label,
-                                    style: const TextStyle(
+                          Material(
+                            color: cardBg,
+                            borderRadius: BorderRadius.circular(16),
+                            elevation: 0,
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                border: cardBorder,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Your default payment method shown when housemates settle with you.',
+                                    style: TextStyle(
                                       fontFamily: 'Poppins',
-                                      color: AppColors.sherwoodGreen,
-                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
+                                      color: isDark
+                                          ? AppColors.ginFizz.withValues(
+                                              alpha: 0.7,
+                                            )
+                                          : AppColors.edward,
                                     ),
                                   ),
-                                  selected:
-                                      state.defaultSettlementMethod == method,
-                                  selectedColor: AppColors.lightGreen,
-                                  backgroundColor: AppColors.white,
-                                  side: BorderSide(
-                                    color:
-                                        state.defaultSettlementMethod == method
-                                        ? AppColors.lightGreen
-                                        : AppColors.edward.withValues(
-                                            alpha: 0.3,
+                                  const SizedBox(height: 14),
+                                  Wrap(
+                                    spacing: AppSpacing.sm,
+                                    runSpacing: AppSpacing.sm,
+                                    children: [
+                                      for (final (method, label)
+                                          in _settlementMethods)
+                                        ChoiceChip(
+                                          key: Key('settlement-${method.name}'),
+                                          label: Text(
+                                            label,
+                                            style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color:
+                                                  state.defaultSettlementMethod ==
+                                                      method
+                                                  ? (isDark
+                                                        ? AppColors.black
+                                                        : AppColors
+                                                              .sherwoodGreen)
+                                                  : (isDark
+                                                        ? AppColors.ginFizz
+                                                        : AppColors
+                                                              .sherwoodGreen),
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
+                                          selected:
+                                              state.defaultSettlementMethod ==
+                                              method,
+                                          selectedColor: AppColors.lightGreen,
+                                          backgroundColor: isDark
+                                              ? const Color(0xFF041E1C)
+                                              : AppColors.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                          side: BorderSide(
+                                            color:
+                                                state.defaultSettlementMethod ==
+                                                    method
+                                                ? AppColors.lightGreen
+                                                : (isDark
+                                                      ? const Color(0xFF0F3E3A)
+                                                      : AppColors.edward
+                                                            .withValues(
+                                                              alpha: 0.3,
+                                                            )),
+                                          ),
+                                          showCheckmark: false,
+                                          onSelected: (_) =>
+                                              cubit.setDefaultSettlementMethod(
+                                                method,
+                                              ),
+                                        ),
+                                    ],
                                   ),
-                                  showCheckmark: false,
-                                  onSelected: (_) =>
-                                      cubit.setDefaultSettlementMethod(method),
-                                ),
-                            ],
+                                ],
+                              ),
+                            ),
                           ),
+
+                          const SizedBox(height: 16),
+
+                          // Default split Section
                           const _SectionLabel('Default split'),
-                          Wrap(
-                            spacing: AppSpacing.sm,
-                            runSpacing: AppSpacing.sm,
-                            children: [
-                              for (final (type, label) in _splitTypes)
-                                ChoiceChip(
-                                  key: Key('split-${type.name}'),
-                                  label: Text(
-                                    label,
-                                    style: const TextStyle(
+                          Material(
+                            color: cardBg,
+                            borderRadius: BorderRadius.circular(16),
+                            elevation: 0,
+                            child: Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(16),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(16),
+                                border: cardBorder,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Default calculation rule applied when you record group expenses.',
+                                    style: TextStyle(
                                       fontFamily: 'Poppins',
-                                      color: AppColors.sherwoodGreen,
-                                      fontWeight: FontWeight.w600,
+                                      fontSize: 13,
+                                      color: isDark
+                                          ? AppColors.ginFizz.withValues(
+                                              alpha: 0.7,
+                                            )
+                                          : AppColors.edward,
                                     ),
                                   ),
-                                  selected: state.defaultSplitType == type,
-                                  selectedColor: AppColors.lightGreen,
-                                  backgroundColor: AppColors.white,
-                                  side: BorderSide(
-                                    color: state.defaultSplitType == type
-                                        ? AppColors.lightGreen
-                                        : AppColors.edward.withValues(
-                                            alpha: 0.3,
+                                  const SizedBox(height: 14),
+                                  Wrap(
+                                    spacing: AppSpacing.sm,
+                                    runSpacing: AppSpacing.sm,
+                                    children: [
+                                      for (final (type, label) in _splitTypes)
+                                        ChoiceChip(
+                                          key: Key('split-${type.name}'),
+                                          label: Text(
+                                            label,
+                                            style: TextStyle(
+                                              fontFamily: 'Poppins',
+                                              color:
+                                                  state.defaultSplitType == type
+                                                  ? (isDark
+                                                        ? AppColors.black
+                                                        : AppColors
+                                                              .sherwoodGreen)
+                                                  : (isDark
+                                                        ? AppColors.ginFizz
+                                                        : AppColors
+                                                              .sherwoodGreen),
+                                              fontWeight: FontWeight.w600,
+                                            ),
                                           ),
+                                          selected:
+                                              state.defaultSplitType == type,
+                                          selectedColor: AppColors.lightGreen,
+                                          backgroundColor: isDark
+                                              ? const Color(0xFF041E1C)
+                                              : AppColors.white,
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(
+                                              10,
+                                            ),
+                                          ),
+                                          side: BorderSide(
+                                            color:
+                                                state.defaultSplitType == type
+                                                ? AppColors.lightGreen
+                                                : (isDark
+                                                      ? const Color(0xFF0F3E3A)
+                                                      : AppColors.edward
+                                                            .withValues(
+                                                              alpha: 0.3,
+                                                            )),
+                                          ),
+                                          showCheckmark: false,
+                                          onSelected: (_) =>
+                                              cubit.setDefaultSplitType(type),
+                                        ),
+                                    ],
                                   ),
-                                  showCheckmark: false,
-                                  onSelected: (_) =>
-                                      cubit.setDefaultSplitType(type),
-                                ),
-                            ],
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -207,17 +395,17 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Padding(
-      padding: EdgeInsets.only(
-        top: first ? 0 : AppSpacing.xl,
-        bottom: AppSpacing.sm,
-      ),
+      padding: EdgeInsets.only(left: 4, top: first ? 0 : 8, bottom: 8),
       child: Text(
         text,
-        style: Theme.of(context).textTheme.titleSmall?.copyWith(
+        style: TextStyle(
           fontFamily: 'Poppins',
+          fontSize: 14,
           fontWeight: FontWeight.w700,
-          color: AppColors.sherwoodGreen,
+          color: isDark ? AppColors.ginFizz : AppColors.sherwoodGreen,
+          letterSpacing: 0.2,
         ),
       ),
     );

@@ -9,6 +9,7 @@ import '../../../../core/widgets/app_snackbar.dart';
 import '../../../../core/widgets/app_text_field.dart';
 import '../../../../core/widgets/primary_button.dart';
 import '../../../../injection_container.dart';
+import '../cubit/auth_cubit.dart';
 import '../cubit/sign_up_cubit.dart';
 import '../widgets/auth_back_button.dart';
 import '../widgets/google_sign_in_button.dart';
@@ -59,6 +60,11 @@ class _SignUpPageState extends State<SignUpPage> {
           child: BlocConsumer<SignUpCubit, SignUpState>(
             listener: (context, state) {
               if (state.isSuccess) {
+                if (state.user != null) {
+                  try {
+                    context.read<AuthCubit>().updateUser(state.user!);
+                  } catch (_) {}
+                }
                 context.goNamed(RouteNames.createHousehold);
               } else if (state.isFailure && state.errorMessage != null) {
                 AppSnackbar.error(context, state.errorMessage!);
