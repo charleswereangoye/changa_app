@@ -347,41 +347,47 @@ class _ChoreList extends StatelessWidget {
         final now = DateTime.now();
         final cubit = context.read<ChoresCubit>();
 
-        return ListView(
-          padding: const EdgeInsets.fromLTRB(
-            AppSpacing.lg,
-            0,
-            AppSpacing.lg,
-            AppSpacing.huge + AppSpacing.xxl,
-          ),
-          children: [
-            Text(
-              dayName,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
+        return Align(
+          alignment: Alignment.topCenter,
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 640),
+            child: ListView(
+              padding: const EdgeInsets.fromLTRB(
+                AppSpacing.lg,
+                0,
+                AppSpacing.lg,
+                AppSpacing.huge + AppSpacing.xxl,
               ),
-            ),
-            const SizedBox(height: AppSpacing.md),
-            for (final chore in state.chores) ...[
-              ChoreCard(
-                chore: chore,
-                isMine: chore.assignedToUid == meUid,
-                assigneeName: chore.assignedToUid == meUid
-                    ? 'You'
-                    : nameOf(chore.assignedToUid).split(' ').first,
-                isMissed: DateHelpers.isMissed(chore, now),
-                isCompleting: state.completingIds.contains(chore.id),
-                onComplete: () => cubit.completeChore(chore.id),
-                onSwap: onSwap == null ? null : () => onSwap!(chore),
-                onEdit: () => context.pushNamed(
-                  RouteNames.editChore,
-                  pathParameters: {'id': chore.id},
-                  extra: chore,
+              children: [
+                Text(
+                  dayName,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
-              ),
-              const SizedBox(height: AppSpacing.md),
-            ],
-          ],
+                const SizedBox(height: AppSpacing.md),
+                for (final chore in state.chores) ...[
+                  ChoreCard(
+                    chore: chore,
+                    isMine: chore.assignedToUid == meUid,
+                    assigneeName: chore.assignedToUid == meUid
+                        ? 'You'
+                        : nameOf(chore.assignedToUid).split(' ').first,
+                    isMissed: DateHelpers.isMissed(chore, now),
+                    isCompleting: state.completingIds.contains(chore.id),
+                    onComplete: () => cubit.completeChore(chore.id),
+                    onSwap: onSwap == null ? null : () => onSwap!(chore),
+                    onEdit: () => context.pushNamed(
+                      RouteNames.editChore,
+                      pathParameters: {'id': chore.id},
+                      extra: chore,
+                    ),
+                  ),
+                  const SizedBox(height: AppSpacing.md),
+                ],
+              ],
+            ),
+          ),
         );
       },
     );

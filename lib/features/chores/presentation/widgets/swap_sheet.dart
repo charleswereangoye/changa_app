@@ -28,6 +28,7 @@ class SwapSheet extends StatelessWidget {
       isScrollControlled: true,
       useSafeArea: true,
       showDragHandle: true,
+      constraints: const BoxConstraints(maxWidth: 560),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       builder: (_) => BlocProvider<SwapCubit>(
         create: (_) => SwapCubit(

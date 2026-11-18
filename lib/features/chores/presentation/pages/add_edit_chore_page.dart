@@ -202,112 +202,121 @@ class _ChoreFormState extends State<_ChoreForm> {
               ],
             ),
             body: SafeArea(
-              child: SingleChildScrollView(
-                padding: EdgeInsets.fromLTRB(
-                  AppSpacing.lg,
-                  AppSpacing.sm,
-                  AppSpacing.lg,
-                  AppSpacing.lg + MediaQuery.viewInsetsOf(context).bottom,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    if (locked) ...[
-                      const _Note(
-                        'This chore is already done, so it can’t be changed.',
-                      ),
-                      const SizedBox(height: AppSpacing.md),
-                    ],
-                    const _SectionLabel('Chore', first: true),
-                    TextField(
-                      key: const Key('chore-title-field'),
-                      controller: _title,
-                      enabled: !busy && !locked,
-                      textCapitalization: TextCapitalization.sentences,
-                      textInputAction: TextInputAction.done,
-                      inputFormatters: [
-                        LengthLimitingTextInputFormatter(
-                          AddChoreCubit.maxTitleLength,
-                        ),
-                      ],
-                      style: AppTextStyles.bodyMedium,
-                      onChanged: cubit.titleChanged,
-                      decoration: _decoration(
-                        hint: 'Wash dishes, take out the bins',
-                        errorText: state.titleError,
-                      ),
+              child: Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 560),
+                  child: SingleChildScrollView(
+                    padding: EdgeInsets.fromLTRB(
+                      AppSpacing.lg,
+                      AppSpacing.sm,
+                      AppSpacing.lg,
+                      AppSpacing.lg + MediaQuery.viewInsetsOf(context).bottom,
                     ),
-                    const _SectionLabel('Difficulty'),
-                    DifficultySelector(
-                      selected: state.difficulty,
-                      enabled: !busy && !locked,
-                      onChanged: cubit.difficultyChanged,
-                    ),
-                    const _SectionLabel('Assigned to'),
-                    Wrap(
-                      spacing: AppSpacing.sm,
-                      runSpacing: AppSpacing.sm,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        for (final person in state.assignees)
-                          ChoiceChip(
-                            key: Key('assignee-${person.uid}'),
-                            label: Text(person.name),
-                            selected: person.uid == state.assigneeUid,
-                            onSelected: busy || locked
-                                ? null
-                                : (_) => cubit.assigneeChanged(person.uid),
+                        if (locked) ...[
+                          const _Note(
+                            'This chore is already done, so it can’t be changed.',
                           ),
+                          const SizedBox(height: AppSpacing.md),
+                        ],
+                        const _SectionLabel('Chore', first: true),
+                        TextField(
+                          key: const Key('chore-title-field'),
+                          controller: _title,
+                          enabled: !busy && !locked,
+                          textCapitalization: TextCapitalization.sentences,
+                          textInputAction: TextInputAction.done,
+                          inputFormatters: [
+                            LengthLimitingTextInputFormatter(
+                              AddChoreCubit.maxTitleLength,
+                            ),
+                          ],
+                          style: AppTextStyles.bodyMedium,
+                          onChanged: cubit.titleChanged,
+                          decoration: _decoration(
+                            hint: 'Wash dishes, take out the bins',
+                            errorText: state.titleError,
+                          ),
+                        ),
+                        const _SectionLabel('Difficulty'),
+                        DifficultySelector(
+                          selected: state.difficulty,
+                          enabled: !busy && !locked,
+                          onChanged: cubit.difficultyChanged,
+                        ),
+                        const _SectionLabel('Assigned to'),
+                        Wrap(
+                          spacing: AppSpacing.sm,
+                          runSpacing: AppSpacing.sm,
+                          children: [
+                            for (final person in state.assignees)
+                              ChoiceChip(
+                                key: Key('assignee-${person.uid}'),
+                                label: Text(person.name),
+                                selected: person.uid == state.assigneeUid,
+                                onSelected: busy || locked
+                                    ? null
+                                    : (_) => cubit.assigneeChanged(person.uid),
+                              ),
+                          ],
+                        ),
+                        const _SectionLabel('Due'),
+                        OutlinedButton.icon(
+                          key: const Key('chore-due-button'),
+                          onPressed: busy || locked
+                              ? null
+                              : () => _pickDate(context, state),
+                          icon: const Icon(
+                            Icons.calendar_today_outlined,
+                            size: 18,
+                          ),
+                          label: Text(_dayText(state.dueDate)),
+                          style: OutlinedButton.styleFrom(
+                            minimumSize: const Size.fromHeight(52),
+                            alignment: Alignment.centerLeft,
+                            foregroundColor: AppColors.sherwoodGreen,
+                            side: const BorderSide(color: AppColors.edward),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: AppSpacing.lg),
+                        if (state.isEdit)
+                          state.isSeries
+                              ? const _Note(
+                                  'Part of a weekly rotation. Changes here only '
+                                  'affect this week.',
+                                )
+                              : const SizedBox.shrink()
+                        else
+                          SwitchListTile(
+                            key: const Key('chore-rotate-switch'),
+                            contentPadding: EdgeInsets.zero,
+                            value: state.rotate,
+                            onChanged: busy ? null : cubit.rotateChanged,
+                            title: Text(
+                              'Rotate between everyone',
+                              style: theme.textTheme.bodyMedium?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            subtitle: const Text(
+                              'Moves to the next housemate every week.',
+                            ),
+                          ),
+                        const SizedBox(height: AppSpacing.xxl),
+                        PrimaryButton(
+                          text: state.isEdit ? 'Save changes' : 'Save chore',
+                          isLoading: busy,
+                          onPressed: state.canSubmit ? cubit.submit : null,
+                        ),
                       ],
                     ),
-                    const _SectionLabel('Due'),
-                    OutlinedButton.icon(
-                      key: const Key('chore-due-button'),
-                      onPressed: busy || locked
-                          ? null
-                          : () => _pickDate(context, state),
-                      icon: const Icon(Icons.calendar_today_outlined, size: 18),
-                      label: Text(_dayText(state.dueDate)),
-                      style: OutlinedButton.styleFrom(
-                        minimumSize: const Size.fromHeight(52),
-                        alignment: Alignment.centerLeft,
-                        foregroundColor: AppColors.sherwoodGreen,
-                        side: const BorderSide(color: AppColors.edward),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: AppSpacing.lg),
-                    if (state.isEdit)
-                      state.isSeries
-                          ? const _Note(
-                              'Part of a weekly rotation. Changes here only '
-                              'affect this week.',
-                            )
-                          : const SizedBox.shrink()
-                    else
-                      SwitchListTile(
-                        key: const Key('chore-rotate-switch'),
-                        contentPadding: EdgeInsets.zero,
-                        value: state.rotate,
-                        onChanged: busy ? null : cubit.rotateChanged,
-                        title: Text(
-                          'Rotate between everyone',
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                        subtitle: const Text(
-                          'Moves to the next housemate every week.',
-                        ),
-                      ),
-                    const SizedBox(height: AppSpacing.xxl),
-                    PrimaryButton(
-                      text: state.isEdit ? 'Save changes' : 'Save chore',
-                      isLoading: busy,
-                      onPressed: state.canSubmit ? cubit.submit : null,
-                    ),
-                  ],
+                  ),
                 ),
               ),
             ),
