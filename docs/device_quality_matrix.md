@@ -2,11 +2,11 @@
 
 ## Test build
 
-- Date: 2026-11-18
-- Tester: Dianah — Person D
+- Date: 2026-11-19
+- Tester: Dianah
 - Branch: feature/d-device-quality
-- App commit: 9f7151b
-- Current device: iPhone 16e Simulator
+- App commit: e303f1a
+- Current device: D11 Small — iPhone SE (3rd generation), 4.7-inch
 - OS: iOS 26.3
 
 Record the new app commit whenever the tested code changes.
@@ -29,7 +29,7 @@ Record the new app commit whenever the tested code changes.
 
 | Configuration | Device | Status |
 |---|---|---|
-| Small device, 5.5 inches or smaller | To select | Pending |
+| Small device, 5.5 inches or smaller | D11 Small — iPhone SE (3rd generation), iOS 26.3 | In progress |
 | Large device, 6.7 inches or larger | To select | Pending |
 | Additional simulator | iPhone 16e, iOS 26.3 | In progress |
 
@@ -42,7 +42,7 @@ Record results with the device name and app commit in the evidence notes.
 | Screen or flow | Small portrait | Small landscape | Large portrait | Large landscape | Large text | Keyboard | Evidence / issue |
 |---|---|---|---|---|---|---|---|
 | Splash and onboarding | Pending | Pending | Pending | Pending | Pending | N/A | |
-| Login | Pending | Pending | Pending | Pending | Pending | Pending | |
+| Login | Pass (layout) | Pass (layout) | Pending | Pending | Pending | Pass (small device) | User-tested on D11 Small; see notes below |
 | Sign up | Pending | Pending | Pending | Pending | Pending | Pending | |
 | Forgot password | Pending | Pending | Pending | Pending | Pending | Pending | |
 | Email verification | Pending | Pending | Pending | Pending | Pending | N/A | |
@@ -96,3 +96,14 @@ For each failure, record:
 - Physical-phone release checks belong to D12.
 - Simulator checks do not establish that the release APK works.
 - Features awaiting merge must be retested after integration.
+
+## Test log — 2026-11-19
+
+### Login — D11 Small
+
+- Build: e303f1a
+- Portrait layout: passed.
+- Landscape layout: passed.
+- Keyboard open: fields and Log In remain reachable by scrolling.
+- No overflow, clipping, or overlapping controls reported.
+- Large text, measured contrast, and measured tap sizes: pending.
