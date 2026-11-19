@@ -43,8 +43,8 @@ Record results with the device name and app commit in the evidence notes.
 |---|---|---|---|---|---|---|---|
 | Splash and onboarding | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Login | Pass (layout) | Pass (layout) | Pending | Pending | Pending | Pass (small device) | User-tested on D11 Small; see notes below |
-| Sign up | Pending | Pending | Pending | Pending | Pending | Pending | |
-| Forgot password | Pending | Pending | Pending | Pending | Pending | Pending | |
+| Sign up | Pass (layout) | Pass (layout) | Pending | Pending | Pending | Pass (small device) | User-tested on D11 Small |
+| Forgot password | Pass (layout) | Pass (layout) | Pending | Pending | Pending | Pass (small device) | User-tested on D11 Small |
 | Email verification | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Create household | Pending | Pending | Pending | Pending | Pending | Pending | |
 | Household created / PIN | Pending | Pending | Pending | Pending | Pending | N/A | |
@@ -105,5 +105,12 @@ For each failure, record:
 - Portrait layout: passed.
 - Landscape layout: passed.
 - Keyboard open: fields and Log In remain reachable by scrolling.
+- No overflow, clipping, or overlapping controls reported.
+- Large text, measured contrast, and measured tap sizes: pending.
+
+### Sign Up and Forgot Password — D11 Small
+
+- Portrait and landscape layouts: passed.
+- Fields and submission controls remain reachable with the keyboard open.
 - No overflow, clipping, or overlapping controls reported.
 - Large text, measured contrast, and measured tap sizes: pending.
