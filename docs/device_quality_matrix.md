@@ -49,8 +49,8 @@ Record results with the device name and app commit in the evidence notes.
 | Create household | Pending | Pending | Pending | Pending | Pending | Pending | |
 | Household created / PIN | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Join household | Pending | Pending | Pending | Pending | Pending | Pending | |
-| Dashboard, empty and active | Pending | Pending | Pending | Pending | Pending | N/A | |
-| Add expense | Pending | Pending | Pending | Pending | Pending | Pending | |
+| Dashboard, empty and active | Pass (tested state) | Pass (tested state) | Pending | Pending | Pending | N/A | D11 Small; other data state pending |
+| Add expense | Pass (layout) | Pass (layout) | Pending | Pending | Pending | Pass (small device) | User-tested on D11 Small |
 | Debt details and nudge | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Settle up | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Chore roster | Pending | Pending | Pending | Pending | Pending | N/A | |
