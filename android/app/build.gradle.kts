@@ -47,7 +47,7 @@ val verifyReleaseSigning = tasks.register("verifyReleaseSigning") {
 }
 
 android {
-    namespace = "com.example.changa_app"
+    namespace = "rw.changa.app"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -58,7 +58,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.example.changa_app"
+        applicationId = "rw.changa.app"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

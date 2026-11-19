@@ -1,4 +1,4 @@
-package com.example.changa_app
+package rw.changa.app
 
 import io.flutter.embedding.android.FlutterActivity
 
