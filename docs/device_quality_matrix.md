@@ -114,3 +114,12 @@ For each failure, record:
 - Fields and submission controls remain reachable with the keyboard open.
 - No overflow, clipping, or overlapping controls reported.
 - Large text, measured contrast, and measured tap sizes: pending.
+
+### Remaining available screens — D11 Small
+
+- Tester reports portrait, landscape, keyboard, and rotation checks passed
+  for the remaining available screens at normal text size.
+- Profile and Edit Profile currently display placeholders:
+  final-screen testing is blocked pending integration.
+- Notification banner and nudge modal testing is blocked pending integration.
+- Large-text, contrast, tap-size, and large-device checks remain pending.
