@@ -185,6 +185,33 @@ class AuthRepositoryImpl implements AuthRepository {
     }
   }
 
+  @override
+  Future<Result<void>> sendEmailVerification() async {
+    try {
+      await remoteDataSource.sendEmailVerification();
+      return Result.success(null);
+    } on FirebaseAuthException catch (e) {
+      return Result.failure(_mapFirebaseAuthException(e));
+    } catch (e) {
+      return Result.failure(UnknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<bool>> reloadAndCheckEmailVerified() async {
+    try {
+      final isVerified = await remoteDataSource.reloadAndCheckEmailVerified();
+      if (_cachedUser != null) {
+        _cachedUser = _cachedUser!.copyWith(emailVerified: isVerified);
+      }
+      return Result.success(isVerified);
+    } on FirebaseAuthException catch (e) {
+      return Result.failure(_mapFirebaseAuthException(e));
+    } catch (e) {
+      return Result.failure(UnknownFailure(e.toString()));
+    }
+  }
+
   Failure _mapFirebaseAuthException(FirebaseAuthException e) {
     switch (e.code) {
       case 'user-not-found':

@@ -22,6 +22,8 @@ import '../../features/profile/presentation/pages/edit_profile_page.dart';
 import '../../features/profile/presentation/pages/payment_methods_page.dart';
 import '../../features/profile/presentation/pages/preferences_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/auth/presentation/cubit/auth_cubit.dart';
+import '../../injection_container.dart';
 import 'home_shell.dart';
 import 'route_names.dart';
 
@@ -31,6 +33,38 @@ class AppRouter {
 
   static final GoRouter router = GoRouter(
     initialLocation: '/',
+    redirect: (context, state) {
+      final path = state.uri.path;
+      if (path == '/') return null;
+
+      if (!sl.isRegistered<AuthCubit>()) return null;
+      final authState = sl<AuthCubit>().state;
+
+      final isAuthRoute =
+          path == '/login' ||
+          path == '/sign-up' ||
+          path == '/forgot-password' ||
+          path == '/verify-email' ||
+          path == '/onboarding';
+
+      if (authState is Unauthenticated) {
+        if (!isAuthRoute) return '/login';
+        return null;
+      }
+
+      if (authState is Authenticated) {
+        final user = authState.user;
+        if (!user.emailVerified &&
+            user.email.isNotEmpty &&
+            !user.email.endsWith('@google.com')) {
+          if (path != '/verify-email' && !isAuthRoute) {
+            return '/verify-email';
+          }
+        }
+      }
+
+      return null;
+    },
     routes: [
       // Splash & Onboarding
       GoRoute(
