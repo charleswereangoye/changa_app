@@ -65,7 +65,11 @@ class _SignUpPageState extends State<SignUpPage> {
                     context.read<AuthCubit>().updateUser(state.user!);
                   } catch (_) {}
                 }
-                context.goNamed(RouteNames.createHousehold);
+                if (state.user?.emailVerified == true) {
+                  context.goNamed(RouteNames.createHousehold);
+                } else {
+                  context.goNamed(RouteNames.verifyEmail);
+                }
               } else if (state.isFailure && state.errorMessage != null) {
                 AppSnackbar.error(context, state.errorMessage!);
               }

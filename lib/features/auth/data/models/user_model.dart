@@ -11,10 +11,15 @@ class UserModel extends AppUser {
     required super.email,
     required super.phone,
     super.householdId,
+    super.emailVerified = false,
     required super.createdAt,
   });
 
-  factory UserModel.fromMap(Map<String, dynamic> map, String uid) {
+  factory UserModel.fromMap(
+    Map<String, dynamic> map,
+    String uid, {
+    bool emailVerified = false,
+  }) {
     DateTime createdAtDate;
     final rawCreatedAt = map[UserFields.createdAt];
     if (rawCreatedAt is Timestamp) {
@@ -31,13 +36,17 @@ class UserModel extends AppUser {
       email: map[UserFields.email] as String? ?? '',
       phone: map[UserFields.phone] as String? ?? '',
       householdId: map[UserFields.householdId] as String?,
+      emailVerified: emailVerified,
       createdAt: createdAtDate,
     );
   }
 
-  factory UserModel.fromDocument(DocumentSnapshot doc) {
+  factory UserModel.fromDocument(
+    DocumentSnapshot doc, {
+    bool emailVerified = false,
+  }) {
     final data = doc.data() as Map<String, dynamic>? ?? {};
-    return UserModel.fromMap(data, doc.id);
+    return UserModel.fromMap(data, doc.id, emailVerified: emailVerified);
   }
 
   Map<String, dynamic> toMap() {

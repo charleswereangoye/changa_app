@@ -1,4 +1,17 @@
 // Owner: A - Person A (Foundation, Authentication, Profile)
-// Description: UseCase: Stream authentication state changes
+// Description: UseCase: Stream user authentication state changes
 
-// TODO(A): Implement WatchAuthState according to project specification
+import '../../../../core/usecase/usecase.dart';
+import '../entities/app_user.dart';
+import '../repositories/auth_repository.dart';
+
+class WatchAuthState implements StreamUseCase<AppUser?, NoParams> {
+  final AuthRepository repository;
+
+  const WatchAuthState(this.repository);
+
+  @override
+  Stream<AppUser?> call(NoParams params) {
+    return repository.authStateChanges;
+  }
+}

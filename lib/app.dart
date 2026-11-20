@@ -59,7 +59,8 @@ class ChangaApp extends StatelessWidget {
                   location == '/onboarding' ||
                   location == '/login' ||
                   location == '/sign-up' ||
-                  location == '/forgot-password';
+                  location == '/forgot-password' ||
+                  location == '/verify-email';
               if (!isAuthScreen) {
                 AppRouter.router.goNamed(RouteNames.login);
               }

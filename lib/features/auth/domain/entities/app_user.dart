@@ -7,6 +7,7 @@ class AppUser extends Equatable {
   final String email;
   final String phone;
   final String? householdId;
+  final bool emailVerified;
   final DateTime createdAt;
 
   const AppUser({
@@ -15,6 +16,7 @@ class AppUser extends Equatable {
     required this.email,
     required this.phone,
     this.householdId,
+    this.emailVerified = false,
     required this.createdAt,
   });
 
@@ -24,6 +26,7 @@ class AppUser extends Equatable {
     String? email,
     String? phone,
     String? householdId,
+    bool? emailVerified,
     DateTime? createdAt,
   }) {
     return AppUser(
@@ -32,6 +35,7 @@ class AppUser extends Equatable {
       email: email ?? this.email,
       phone: phone ?? this.phone,
       householdId: householdId ?? this.householdId,
+      emailVerified: emailVerified ?? this.emailVerified,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -43,6 +47,7 @@ class AppUser extends Equatable {
     email,
     phone,
     householdId,
+    emailVerified,
     createdAt,
   ];
 }
