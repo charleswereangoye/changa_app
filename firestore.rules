@@ -1,8 +1,13 @@
+// Owner: B - Person B (Database Design, Security Rules, Household, Activity Feed)
+// Description: Final Cloud Firestore security rules for Changa (Task B9 & B14)
+
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // helper functions
+    // -------------------------------------------------------------------------
+    // Helper Functions
+    // -------------------------------------------------------------------------
 
     function isSignedIn() {
       return request.auth != null;
@@ -20,8 +25,8 @@ service cloud.firestore {
       return /databases/$(database)/documents/households/$(hid)/members/$(uid);
     }
 
-    // True if a member document exists for the caller in households/{hid}
-    // Includes existsAfter so atomic batch/transaction writes (createHousehold & joinHousehold) pass
+    // True if a member document exists for the caller in households/{hid}.
+    // Includes existsAfter so atomic batch/transaction writes (createHousehold & joinHousehold) pass.
     function isMember(hid) {
       return isSignedIn() && (
         exists(memberDocPath(hid, request.auth.uid)) ||
@@ -29,7 +34,7 @@ service cloud.firestore {
       );
     }
 
-    // True if the caller is the existing admin of households/{hid} (pre-write state only)
+    // True if the caller is the existing admin of households/{hid} (pre-write state only).
     function isAdmin(hid) {
       return isSignedIn() && (
         (exists(memberDocPath(hid, request.auth.uid)) &&
@@ -39,7 +44,7 @@ service cloud.firestore {
       );
     }
 
-    // True only when a brand-new household is being created in the same atomic batch
+    // True only when a brand-new household is being created in the same atomic batch.
     function isCreatingHouseholdAsAdmin(hid) {
       return isSignedIn() &&
         !exists(householdDocPath(hid)) &&
@@ -47,7 +52,7 @@ service cloud.firestore {
         getAfter(householdDocPath(hid)).data.adminUid == request.auth.uid;
     }
 
-    // True if the caller has a verified membership document in targetUserData's household
+    // True if the caller has a verified membership document in targetUserData's household.
     function isHousemate(targetUserData) {
       return isSignedIn() &&
         targetUserData.get('householdId', null) is string &&
@@ -61,7 +66,9 @@ service cloud.firestore {
         val.trim().size() <= maxLen;
     }
 
+    // -------------------------------------------------------------------------
     // 1. users/{uid} (UserFields)
+    // -------------------------------------------------------------------------
     match /users/{uid} {
       // Read: the owner, or a verified housemate in the same household
       allow read: if isOwner(uid) || isHousemate(resource.data);
@@ -84,9 +91,11 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+    // -------------------------------------------------------------------------
     // 2. householdPins/{pin} (PinFields: householdId, createdAt)
+    // -------------------------------------------------------------------------
     match /householdPins/{pin} {
-      // Read: any signed-in user can get one document. List is denied.
+      // Read: any signed-in user can get one document by PIN. Listing all PINs is denied.
       allow get: if isSignedIn();
       allow list: if false;
 
@@ -111,7 +120,9 @@ service cloud.firestore {
       allow delete: if isAdmin(resource.data.householdId);
     }
 
+    // -------------------------------------------------------------------------
     // 3. households/{hid} (HouseholdFields)
+    // -------------------------------------------------------------------------
     match /households/{hid} {
       // Read: members (plus signed-in single-doc get when looking up via a valid PIN in previewHouseholdByPin/joinHousehold)
       allow get: if isMember(hid) || (
@@ -151,16 +162,18 @@ service cloud.firestore {
       // Delete: nobody
       allow delete: if false;
 
+      // -----------------------------------------------------------------------
       // 4. households/{hid}/members/{uid} (MemberFields: role, credits, joinedAt)
+      // -----------------------------------------------------------------------
       match /members/{uid} {
         // Read: members (plus signed-in read when previewing/joining an active household or checking stale membership)
         allow read: if isMember(hid) || isOwner(uid) || (
           isSignedIn() && exists(householdDocPath(hid))
         );
 
-        // Create: the creator adds themselves as admin at household creation,
+        // Create: creator adds themselves as admin at household creation,
         // or a user adds themselves as member with a valid PIN.
-        // Starting credits must be strictly 0 so a joiner cannot mint arbitrary credits.
+        // Starting credits must be strictly 0.
         allow create: if isOwner(uid) &&
           request.resource.data.keys().hasAll(['role', 'credits', 'joinedAt']) &&
           request.resource.data.role in ['admin', 'member'] &&
@@ -173,8 +186,7 @@ service cloud.firestore {
              exists(/databases/$(database)/documents/householdPins/$(get(householdDocPath(hid)).data.pin)))
           );
 
-        // Update: the admin (roles), or any member but only the credits field.
-        // Credits can NEVER become negative (request.resource.data.credits >= 0).
+        // Update: the admin (roles), or any member but only the credits field (credits >= 0).
         allow update: if (
           (isAdmin(hid) &&
            request.resource.data.diff(resource.data).affectedKeys().hasOnly(['role']) &&
@@ -189,7 +201,9 @@ service cloud.firestore {
         allow delete: if isAdmin(hid) || isOwner(uid);
       }
 
+      // -----------------------------------------------------------------------
       // 5. households/{hid}/expenses/{id} (ExpenseFields)
+      // -----------------------------------------------------------------------
       match /expenses/{id} {
         // Read: members
         allow read: if isMember(hid);
@@ -218,7 +232,9 @@ service cloud.firestore {
           resource.data.paidByUid == request.auth.uid;
       }
 
+      // -----------------------------------------------------------------------
       // 6. households/{hid}/debts/{id} (DebtFields)
+      // -----------------------------------------------------------------------
       match /debts/{id} {
         // Read: members
         allow read: if isMember(hid);
@@ -248,7 +264,9 @@ service cloud.firestore {
           resource.data.creditorUid == request.auth.uid;
       }
 
+      // -----------------------------------------------------------------------
       // 7. households/{hid}/chores/{id} (ChoreFields)
+      // -----------------------------------------------------------------------
       match /chores/{id} {
         // Read: members
         allow read: if isMember(hid);
@@ -263,7 +281,7 @@ service cloud.firestore {
            (request.resource.data.creditsAwarded is number &&
             request.resource.data.creditsAwarded >= 0));
 
-        // Update: the assignee (completion fields) or the creator or the admin
+        // Update: the assignee (completion fields) or the creator or the admin, or reassignment of assignedToUid
         allow update: if isMember(hid) && (
           isAdmin(hid) ||
           resource.data.createdByUid == request.auth.uid ||
@@ -285,7 +303,9 @@ service cloud.firestore {
         );
       }
 
+      // -----------------------------------------------------------------------
       // 8. households/{hid}/swapRequests/{id} (SwapRequestFields)
+      // -----------------------------------------------------------------------
       match /swapRequests/{id} {
         // Read: only fromUid or toUid
         allow read: if isMember(hid) && (
@@ -313,7 +333,9 @@ service cloud.firestore {
         allow delete: if false;
       }
 
+      // -----------------------------------------------------------------------
       // 9. households/{hid}/activities/{id} (ActivityFields)
+      // -----------------------------------------------------------------------
       match /activities/{id} {
         // Read: members
         allow read: if isMember(hid);
@@ -326,11 +348,13 @@ service cloud.firestore {
            (request.resource.data.amount is number &&
             request.resource.data.amount >= 0));
 
-        // Update & Delete: nobody (immutable)
+        // Update & Delete: nobody (immutable audit log)
         allow update, delete: if false;
       }
 
+      // -----------------------------------------------------------------------
       // 10. households/{hid}/notifications/{id} (NotificationFields)
+      // -----------------------------------------------------------------------
       match /notifications/{id} {
         // Read: only the recipient
         allow read: if isMember(hid) &&
