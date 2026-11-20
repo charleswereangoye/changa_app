@@ -34,4 +34,7 @@ abstract class AuthRepository {
 
   /// Sends a password reset email.
   Future<Result<void>> sendPasswordReset(String email);
+
+  /// Updates the locally cached current user entity.
+  void updateCurrentUser(AppUser user);
 }

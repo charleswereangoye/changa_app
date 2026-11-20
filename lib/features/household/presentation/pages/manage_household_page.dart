@@ -739,9 +739,11 @@ class _HouseholdConfirmDialog extends StatelessWidget {
           onPressed: onConfirm,
           style: ElevatedButton.styleFrom(
             backgroundColor: isDestructive
-                ? AppColors.sunglo
+                ? AppColors.lightGreen
                 : AppColors.sherwoodGreen,
-            foregroundColor: AppColors.white,
+            foregroundColor: isDestructive
+                ? AppColors.sherwoodGreen
+                : AppColors.white,
             elevation: 0,
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),

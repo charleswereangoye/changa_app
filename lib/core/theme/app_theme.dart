@@ -38,6 +38,54 @@ class AppTheme {
         elevation: 0,
         centerTitle: true,
       ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          backgroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return AppColors.sherwoodGreen;
+            }
+            return AppColors.white;
+          }),
+          foregroundColor: WidgetStateProperty.resolveWith((states) {
+            if (states.contains(WidgetState.selected)) {
+              return AppColors.ginFizz;
+            }
+            return AppColors.sherwoodGreen;
+          }),
+          side: const WidgetStatePropertyAll(
+            BorderSide(color: AppColors.sherwoodGreen),
+          ),
+        ),
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return AppColors.white;
+          }
+          return AppColors.edward;
+        }),
+        trackColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
+            return AppColors.lightGreen;
+          }
+          return AppColors.edward.withValues(alpha: 0.3);
+        }),
+      ),
+      chipTheme: ChipThemeData(
+        backgroundColor: AppColors.white,
+        selectedColor: AppColors.sherwoodGreen,
+        side: const BorderSide(color: AppColors.sherwoodGreen),
+        labelStyle: const TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: 13,
+          color: AppColors.sherwoodGreen,
+        ),
+        secondaryLabelStyle: const TextStyle(
+          fontFamily: 'Poppins',
+          fontSize: 13,
+          color: AppColors.ginFizz,
+        ),
+      ),
     );
   }
 }

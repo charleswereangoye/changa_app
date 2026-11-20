@@ -268,9 +268,9 @@ class HouseholdCreatedPage extends StatelessWidget {
                                   _InviteChannelButton(
                                     icon: Icons.share_outlined,
                                     label: 'Share',
-                                    backgroundColor: AppColors.sunglo
-                                        .withValues(alpha: 0.15),
-                                    iconColor: AppColors.sunglo,
+                                    backgroundColor: AppColors.lightGreen
+                                        .withValues(alpha: 0.18),
+                                    iconColor: AppColors.lightGreen,
                                     onTap: canShare
                                         ? () => _shareInvite(rawPin)
                                         : null,
@@ -278,9 +278,9 @@ class HouseholdCreatedPage extends StatelessWidget {
                                   _InviteChannelButton(
                                     icon: Icons.link_rounded,
                                     label: 'Copy Link',
-                                    backgroundColor: AppColors.sunglo
-                                        .withValues(alpha: 0.15),
-                                    iconColor: AppColors.sunglo,
+                                    backgroundColor: AppColors.lightGreen
+                                        .withValues(alpha: 0.18),
+                                    iconColor: AppColors.lightGreen,
                                     onTap: canShare
                                         ? () => _copyInviteMessage(
                                             context,
