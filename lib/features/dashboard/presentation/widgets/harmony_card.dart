@@ -19,6 +19,17 @@ class HarmonyCard extends StatelessWidget {
   final HarmonyScore? score;
   final VoidCallback onInfo;
 
+  static String encouragement(HarmonyScore? score) {
+    if (score == null) {
+      return 'Add a chore or an expense and your score will appear.';
+    }
+    return switch (score.tier) {
+      HarmonyTier.thriving => 'Your home is running smoothly. Keep it up!',
+      HarmonyTier.steady => 'Doing well. A few more tasks on time will help.',
+      HarmonyTier.needsAttention => "Let's get things back on track together.",
+    };
+  }
+
   @override
   Widget build(BuildContext context) {
     final ready = status == DashboardSection.ready;
@@ -27,12 +38,9 @@ class HarmonyCard extends StatelessWidget {
       DashboardSection.failed => "Couldn't load the score",
       DashboardSection.ready => score?.tier.label ?? 'Not enough data yet',
     };
-    final detail = ready && score == null
-        ? 'Add a chore or an expense and your score will appear.'
-        : 'Based on chores done on time and bills settled promptly.';
 
     return Container(
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
         color: AppColors.sherwoodGreen,
         borderRadius: BorderRadius.circular(24),
@@ -52,28 +60,11 @@ class HarmonyCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        'Household Harmony',
-                        style: AppTextStyles.bodySmall.copyWith(
-                          color: AppColors.ginFizz.withValues(alpha: 0.7),
-                        ),
-                      ),
-                    ),
-                    IconButton(
-                      key: const Key('harmony-info'),
-                      onPressed: onInfo,
-                      tooltip: 'How is this calculated?',
-                      visualDensity: VisualDensity.compact,
-                      icon: const Icon(
-                        Icons.info_outline,
-                        color: AppColors.ginFizz,
-                        size: 20,
-                      ),
-                    ),
-                  ],
+                Text(
+                  'Harmony Score',
+                  style: AppTextStyles.bodySmall.copyWith(
+                    color: AppColors.ginFizz.withValues(alpha: 0.7),
+                  ),
                 ),
                 Text(
                   headline,
@@ -85,9 +76,26 @@ class HarmonyCard extends StatelessWidget {
                 ),
                 const SizedBox(height: AppSpacing.xs),
                 Text(
-                  detail,
+                  ready ? encouragement(score) : '',
                   style: AppTextStyles.bodySmall.copyWith(
                     color: AppColors.ginFizz.withValues(alpha: 0.8),
+                  ),
+                ),
+                const SizedBox(height: AppSpacing.xs),
+                InkWell(
+                  key: const Key('harmony-info'),
+                  onTap: onInfo,
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      vertical: AppSpacing.xs,
+                    ),
+                    child: Text(
+                      "What's this? →",
+                      style: AppTextStyles.label.copyWith(
+                        color: AppColors.lightGreen,
+                      ),
+                    ),
                   ),
                 ),
               ],

@@ -16,6 +16,7 @@ class BalanceSummaryCard extends StatelessWidget {
     required this.names,
     required this.onRetry,
     this.onMemberTap,
+    this.onSettleUp,
   });
 
   final DashboardSection status;
@@ -23,15 +24,17 @@ class BalanceSummaryCard extends StatelessWidget {
   final Map<String, String> names;
   final VoidCallback onRetry;
   final ValueChanged<String>? onMemberTap;
+  final VoidCallback? onSettleUp;
 
   @override
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(AppSpacing.lg),
+      padding: const EdgeInsets.all(AppSpacing.xl),
       decoration: BoxDecoration(
-        color: AppColors.athsSpecial,
+        color: AppColors.white,
         borderRadius: BorderRadius.circular(24),
+        border: Border.all(color: AppColors.athsSpecial),
       ),
       child: switch (status) {
         DashboardSection.loading => const SizedBox(
@@ -55,6 +58,7 @@ class BalanceSummaryCard extends StatelessWidget {
           summary: summary,
           names: names,
           onMemberTap: onMemberTap,
+          onSettleUp: onSettleUp,
         ),
       },
     );
@@ -66,11 +70,13 @@ class _Loaded extends StatelessWidget {
     required this.summary,
     required this.names,
     required this.onMemberTap,
+    required this.onSettleUp,
   });
 
   final BalanceSummary? summary;
   final Map<String, String> names;
   final ValueChanged<String>? onMemberTap;
+  final VoidCallback? onSettleUp;
 
   @override
   Widget build(BuildContext context) {
@@ -84,39 +90,61 @@ class _Loaded extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
               child: _Total(
                 label: 'You are owed',
                 amount: data?.youAreOwed ?? 0,
-                color: AppColors.leafGreen,
+                color: AppColors.sherwoodGreen,
               ),
             ),
             Expanded(
               child: _Total(
                 label: 'You owe',
                 amount: data?.youOwe ?? 0,
-                color: AppColors.sunglo,
+                color: AppColors.lightGreen,
               ),
             ),
+            if (onSettleUp != null)
+              FilledButton(
+                key: const Key('balance-settle-up'),
+                onPressed: onSettleUp,
+                style: FilledButton.styleFrom(
+                  backgroundColor: AppColors.athsSpecial,
+                  foregroundColor: AppColors.sherwoodGreen,
+                  shape: const StadiumBorder(),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppSpacing.lg,
+                    vertical: AppSpacing.md,
+                  ),
+                  textStyle: AppTextStyles.label,
+                ),
+                child: const Text('Settle Up'),
+              ),
           ],
         ),
         const SizedBox(height: AppSpacing.md),
         if (entries.isEmpty)
-          Row(
-            children: [
-              const Icon(
-                Icons.check_circle_outline,
-                color: AppColors.leafGreen,
-                size: 20,
-              ),
-              const SizedBox(width: AppSpacing.sm),
-              Text(
-                "You're all settled up.",
-                key: const Key('balance-settled'),
-                style: AppTextStyles.bodyMedium,
-              ),
-            ],
+          Container(
+            key: const Key('balance-settled'),
+            width: double.infinity,
+            padding: const EdgeInsets.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              color: AppColors.ginFizz,
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                const Icon(
+                  Icons.check_circle,
+                  color: AppColors.leafGreen,
+                  size: 22,
+                ),
+                const SizedBox(width: AppSpacing.sm),
+                const Text('All settled up', style: AppTextStyles.label),
+              ],
+            ),
           )
         else
           for (final entry in entries)
@@ -146,11 +174,13 @@ class _Loaded extends StatelessWidget {
                         MoneyText(
                           entry.value.abs(),
                           style: AppTextStyles.label.copyWith(
-                            color: MoneyText.colorFor(entry.value),
+                            color: entry.value > 0
+                                ? AppColors.sherwoodGreen
+                                : AppColors.lightGreen,
                           ),
                         ),
                         Text(
-                          entry.value > 0 ? 'owes you' : 'you owe',
+                          entry.value > 0 ? 'owes you' : 'to pay back',
                           style: AppTextStyles.bodySmall,
                         ),
                       ],

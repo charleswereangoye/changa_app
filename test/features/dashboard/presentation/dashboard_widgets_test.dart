@@ -3,6 +3,7 @@ import 'package:changa_app/features/dashboard/domain/entities/harmony_score.dart
 import 'package:changa_app/features/dashboard/presentation/cubit/dashboard_cubit.dart';
 import 'package:changa_app/features/dashboard/presentation/widgets/balance_summary_card.dart';
 import 'package:changa_app/features/dashboard/presentation/widgets/dashboard_empty_state.dart';
+import 'package:changa_app/features/dashboard/presentation/widgets/dashboard_header.dart';
 import 'package:changa_app/features/dashboard/presentation/widgets/harmony_card.dart';
 import 'package:changa_app/features/dashboard/presentation/widgets/harmony_explainer_sheet.dart';
 import 'package:changa_app/features/dashboard/presentation/widgets/quick_actions.dart';
@@ -94,7 +95,8 @@ void main() {
   testWidgets('HarmonyExplainerSheet explains the tiers', (tester) async {
     await _show(tester, const HarmonyExplainerSheet());
 
-    expect(find.text('How Harmony works'), findsOneWidget);
+    expect(find.text('Harmony & Credits'), findsOneWidget);
+    expect(find.text('Got it'), findsOneWidget);
     expect(find.text('Thriving'), findsOneWidget);
     expect(find.text('Needs attention'), findsOneWidget);
   });
@@ -123,7 +125,24 @@ void main() {
       expect(find.text('Chloe'), findsOneWidget);
       expect(find.text('Dan'), findsOneWidget);
       expect(find.text('owes you'), findsOneWidget);
-      expect(find.text('you owe'), findsOneWidget);
+      expect(find.text('to pay back'), findsOneWidget);
+    });
+
+    testWidgets('Settle Up calls back', (tester) async {
+      var taps = 0;
+      await _show(
+        tester,
+        BalanceSummaryCard(
+          status: DashboardSection.ready,
+          summary: summary,
+          names: _names,
+          onRetry: () {},
+          onSettleUp: () => taps++,
+        ),
+      );
+
+      await tester.tap(find.byKey(const Key('balance-settle-up')));
+      expect(taps, 1);
     });
 
     testWidgets('tapping a person reports their uid', (tester) async {
@@ -181,7 +200,7 @@ void main() {
       expect(find.byKey(const Key('balance-row-chloe')), findsNothing);
       expect(find.text('Chloe'), findsNothing);
       expect(find.byKey(const Key('balance-row-dan')), findsOneWidget);
-      expect(find.text('you owe'), findsOneWidget);
+      expect(find.text('to pay back'), findsOneWidget);
     });
 
     testWidgets('only cancelled-out people reads as settled up', (
@@ -204,7 +223,7 @@ void main() {
 
       expect(find.byKey(const Key('balance-settled')), findsOneWidget);
       expect(find.byKey(const Key('balance-row-chloe')), findsNothing);
-      expect(find.text('you owe'), findsNothing);
+      expect(find.text('to pay back'), findsNothing);
     });
 
     testWidgets('failed shows a retry button', (tester) async {
@@ -230,16 +249,14 @@ void main() {
       tester,
       QuickActions(
         onAddExpense: () => taps.add('expense'),
-        onSettleUp: () => taps.add('settle'),
         onAddChore: () => taps.add('chore'),
       ),
     );
 
     await tester.tap(find.byKey(const Key('quick-add-expense')));
-    await tester.tap(find.byKey(const Key('quick-settle-up')));
     await tester.tap(find.byKey(const Key('quick-add-chore')));
 
-    expect(taps, ['expense', 'settle', 'chore']);
+    expect(taps, ['expense', 'chore']);
   });
 
   group('RecentActivityList', () {
@@ -275,7 +292,7 @@ void main() {
 
       expect(find.text('You added an expense of RWF 12,000'), findsOneWidget);
       expect(find.text('Chloe sent you a friendly nudge'), findsOneWidget);
-      expect(find.text('2 h ago'), findsOneWidget);
+      expect(find.text('Paid by You · 2 h ago'), findsOneWidget);
       expect(find.text('Yesterday'), findsOneWidget);
     });
 
@@ -311,6 +328,20 @@ void main() {
       );
       expect(text, 'A housemate joined the household');
     });
+  });
+
+  testWidgets('DashboardHeader greets by first name', (tester) async {
+    await _show(
+      tester,
+      const DashboardHeader(
+        householdName: 'Kigali Nest',
+        uid: 'amara',
+        displayName: 'Amara Kamau',
+      ),
+    );
+
+    expect(find.text('KIGALI NEST'), findsOneWidget);
+    expect(find.text('Hi, Amara 👋'), findsOneWidget);
   });
 
   testWidgets('DashboardEmptyState shows both actions', (tester) async {

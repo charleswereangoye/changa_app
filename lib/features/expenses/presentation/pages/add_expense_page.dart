@@ -1,6 +1,3 @@
-// Owner: C - Person C (Expenses, Dashboard, Documentation)
-// Screen: Add Expense Screen (bottom sheet): amount, category, split options
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -19,16 +16,12 @@ import 'package:changa_app/features/expenses/presentation/cubit/add_expense_cubi
 import 'package:changa_app/features/expenses/presentation/cubit/add_expense_state.dart';
 import 'package:changa_app/features/expenses/presentation/widgets/category_chips.dart';
 import 'package:changa_app/features/expenses/presentation/widgets/participant_selector.dart';
-import 'package:changa_app/features/expenses/presentation/widgets/share_input_row.dart';
+import 'package:changa_app/features/expenses/presentation/widgets/split_member_row.dart';
 import 'package:changa_app/features/expenses/presentation/widgets/split_type_selector.dart';
 
-/// The content of the Add Expense bottom sheet. It needs an
-/// [AddExpenseCubit] above it; [AddExpensePage.show] creates one.
 class AddExpensePage extends StatelessWidget {
   const AddExpensePage({super.key});
 
-  /// Opens the form as a bottom sheet (dashboard quick action and the
-  /// centre [+] button).
   static Future<void> show(
     BuildContext context, {
     required String householdId,
@@ -40,8 +33,10 @@ class AddExpensePage extends StatelessWidget {
       context: context,
       isScrollControlled: true,
       useSafeArea: true,
-      showDragHandle: true,
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.ginFizz,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+      ),
       builder: (_) => BlocProvider(
         create: (_) => AddExpenseCubit(
           addExpense: GetIt.instance<AddExpense>(),
@@ -55,7 +50,6 @@ class AddExpensePage extends StatelessWidget {
     );
   }
 
-  /// The saved preference uses the app-wide enum; this form uses its own.
   static SplitType splitTypeFromPreference(pref.SplitType value) =>
       switch (value) {
         pref.SplitType.equal => SplitType.equal,
@@ -82,8 +76,6 @@ class AddExpensePage extends StatelessWidget {
         }
       },
       builder: (context, state) {
-        // While the save runs the form is locked and cannot be dismissed with
-        // the back button or by tapping outside.
         final busy = state.status == AddExpenseStatus.submitting;
 
         return PopScope(
@@ -99,25 +91,95 @@ class AddExpensePage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text('Add expense', style: AppTextStyles.heading2),
-                  const SizedBox(height: AppSpacing.lg),
-                  TextField(
-                    key: const Key('amount-field'),
-                    enabled: !busy,
-                    keyboardType: TextInputType.number,
-                    inputFormatters: [
-                      FilteringTextInputFormatter.digitsOnly,
-                      LengthLimitingTextInputFormatter(9),
+                  Row(
+                    children: [
+                      IconButton(
+                        key: const Key('add-expense-close'),
+                        onPressed: busy
+                            ? null
+                            : () => Navigator.of(context).maybePop(),
+                        tooltip: 'Close',
+                        icon: const Icon(
+                          Icons.close,
+                          color: AppColors.sherwoodGreen,
+                        ),
+                      ),
+                      const Expanded(
+                        child: Text(
+                          'Add Expense',
+                          textAlign: TextAlign.center,
+                          style: AppTextStyles.bodyLarge,
+                        ),
+                      ),
+                      TextButton(
+                        key: const Key('add-expense-save'),
+                        onPressed: state.isValid && !busy ? cubit.submit : null,
+                        child: Text(
+                          'Save',
+                          style: AppTextStyles.label.copyWith(
+                            color: state.isValid && !busy
+                                ? AppColors.leafGreen
+                                : AppColors.edward,
+                            fontSize: 15,
+                          ),
+                        ),
+                      ),
                     ],
-                    style: AppTextStyles.heading2,
-                    onChanged: cubit.amountChanged,
-                    decoration: _decoration(
-                      hint: '0',
-                      prefixText: 'RWF ',
-                      errorText: state.amountError,
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  Center(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(
+                          'RWF',
+                          style: AppTextStyles.heading2.copyWith(
+                            color: AppColors.edward,
+                          ),
+                        ),
+                        const SizedBox(width: AppSpacing.sm),
+                        IntrinsicWidth(
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(
+                              minWidth: 80,
+                              maxWidth: 220,
+                            ),
+                            child: TextField(
+                              key: const Key('amount-field'),
+                              enabled: !busy,
+                              keyboardType: TextInputType.number,
+                              textAlign: TextAlign.center,
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly,
+                                LengthLimitingTextInputFormatter(9),
+                              ],
+                              style: AppTextStyles.heading1.copyWith(
+                                fontSize: 40,
+                              ),
+                              onChanged: cubit.amountChanged,
+                              decoration: const InputDecoration(
+                                hintText: '0',
+                                hintStyle: TextStyle(
+                                  fontFamily: 'Poppins',
+                                  fontSize: 40,
+                                  fontWeight: FontWeight.w700,
+                                  color: AppColors.edward,
+                                ),
+                                border: InputBorder.none,
+                                enabledBorder: InputBorder.none,
+                                focusedBorder: InputBorder.none,
+                                disabledBorder: InputBorder.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(height: AppSpacing.md),
+                  if (state.amountError != null)
+                    Center(child: _ProblemText(state.amountError!)),
+                  const SizedBox(height: AppSpacing.lg),
                   TextField(
                     key: const Key('title-field'),
                     enabled: !busy,
@@ -126,8 +188,12 @@ class AddExpensePage extends StatelessWidget {
                     style: AppTextStyles.bodyMedium,
                     onChanged: cubit.titleChanged,
                     decoration: _decoration(
-                      hint: 'Groceries, Simba Supermarket',
+                      hint: 'What was it for?',
                       errorText: state.titleError,
+                      prefixIcon: const Icon(
+                        Icons.description_outlined,
+                        color: AppColors.edward,
+                      ),
                     ),
                   ),
                   const _SectionLabel('Category'),
@@ -156,33 +222,32 @@ class AddExpensePage extends StatelessWidget {
                       onChanged: cubit.splitTypeChanged,
                     ),
                   ),
-                  const _SectionLabel('Split with'),
+                  const SizedBox(height: AppSpacing.md),
                   IgnorePointer(
                     ignoring: busy,
-                    child: ParticipantSelector(
-                      keyPrefix: 'split-with',
-                      participants: state.participants,
-                      selectedUids: state.selectedUids,
-                      onTap: cubit.toggleParticipant,
+                    child: Column(
+                      children: [
+                        for (final person in state.participants)
+                          SplitMemberRow(
+                            participant: person,
+                            selected: state.selectedUids.contains(person.uid),
+                            splitType: state.splitType,
+                            share: state.preview?.shares[person.uid],
+                            initialText: state.weightTexts[person.uid] ?? '',
+                            enabled: !busy,
+                            onToggle: () => cubit.toggleParticipant(person.uid),
+                            onChanged: (text) =>
+                                cubit.weightChanged(person.uid, text),
+                          ),
+                      ],
                     ),
                   ),
                   if (state.participantsProblem != null) ...[
-                    const SizedBox(height: AppSpacing.sm),
+                    const SizedBox(height: AppSpacing.xs),
                     _ProblemText(state.participantsProblem!),
                   ],
                   if (state.splitType != SplitType.equal) ...[
-                    const SizedBox(height: AppSpacing.lg),
-                    for (final person in state.participants.where(
-                      (p) => state.selectedUids.contains(p.uid),
-                    ))
-                      ShareInputRow(
-                        participant: person,
-                        splitType: state.splitType,
-                        initialText: state.weightTexts[person.uid] ?? '',
-                        enabled: !busy,
-                        onChanged: (text) =>
-                            cubit.weightChanged(person.uid, text),
-                      ),
+                    const SizedBox(height: AppSpacing.sm),
                     _TotalLine(state: state),
                     if (state.visibleSplitProblem != null)
                       _ProblemText(state.visibleSplitProblem!),
@@ -196,7 +261,7 @@ class AddExpensePage extends StatelessWidget {
                   ],
                   const SizedBox(height: AppSpacing.lg),
                   PrimaryButton(
-                    text: 'Save expense',
+                    text: 'Save Expense',
                     isLoading: busy,
                     onPressed: state.isValid ? cubit.submit : null,
                   ),
@@ -212,7 +277,7 @@ class AddExpensePage extends StatelessWidget {
   static InputDecoration _decoration({
     String? hint,
     String? errorText,
-    String? prefixText,
+    Widget? prefixIcon,
   }) {
     OutlineInputBorder border(Color color) => OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
@@ -222,11 +287,12 @@ class AddExpensePage extends StatelessWidget {
     return InputDecoration(
       hintText: hint,
       hintStyle: AppTextStyles.bodySmall,
-      prefixText: prefixText,
-      prefixStyle: AppTextStyles.heading2,
+      prefixIcon: prefixIcon,
+      filled: true,
+      fillColor: AppColors.white,
       errorText: errorText,
       errorStyle: AppTextStyles.bodySmall.copyWith(color: AppColors.sunglo),
-      enabledBorder: border(AppColors.edward),
+      enabledBorder: border(AppColors.athsSpecial),
       focusedBorder: border(AppColors.sherwoodGreen),
       errorBorder: border(AppColors.sunglo),
       focusedErrorBorder: border(AppColors.sunglo),
@@ -242,8 +308,14 @@ class _SectionLabel extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(top: AppSpacing.lg, bottom: AppSpacing.sm),
-      child: Text(text, style: AppTextStyles.label),
+      padding: const EdgeInsets.only(top: AppSpacing.xl, bottom: AppSpacing.sm),
+      child: Text(
+        text.toUpperCase(),
+        style: AppTextStyles.bodySmall.copyWith(
+          letterSpacing: 1.1,
+          fontWeight: FontWeight.w600,
+        ),
+      ),
     );
   }
 }
@@ -262,7 +334,6 @@ class _ProblemText extends StatelessWidget {
   }
 }
 
-/// "Total: 100%" or "Remaining: RWF 0": green when right, coral when not.
 class _TotalLine extends StatelessWidget {
   const _TotalLine({required this.state});
 
@@ -295,6 +366,13 @@ class _PreviewBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final preview = state.preview;
+    final total = state.amount;
+    final count = state.selectedUids.length;
+    final people = count == 1 ? 'person' : 'people';
+    final summary = total == null || state.amountProblem != null
+        ? 'Enter the amount and choose who shares it to see the split.'
+        : 'Total ${CurrencyFormatter.format(total)} split between '
+              '$count $people';
 
     return Container(
       width: double.infinity,
@@ -304,9 +382,12 @@ class _PreviewBox extends StatelessWidget {
         borderRadius: BorderRadius.circular(12),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(_summary(preview), style: AppTextStyles.bodyMedium),
+          Text(
+            summary,
+            textAlign: TextAlign.center,
+            style: AppTextStyles.bodyMedium,
+          ),
           if (preview != null && preview.creditsUsed > 0) ...[
             const SizedBox(height: AppSpacing.xs),
             Text(
@@ -318,29 +399,5 @@ class _PreviewBox extends StatelessWidget {
         ],
       ),
     );
-  }
-
-  String _summary(SplitPreview? preview) {
-    if (preview == null) {
-      return 'Enter the amount and choose who shares it to see the split.';
-    }
-
-    final count = preview.shares.length;
-    final people = count == 1 ? 'person' : 'people';
-
-    switch (state.splitType) {
-      case SplitType.equal:
-        final values = preview.shares.values;
-        final low = values.reduce((a, b) => a < b ? a : b);
-        final high = values.reduce((a, b) => a > b ? a : b);
-        final each = low == high
-            ? CurrencyFormatter.format(low)
-            : '${CurrencyFormatter.format(low)} to ${CurrencyFormatter.format(high)}';
-        return 'Split equally among $count $people, $each each';
-      case SplitType.percent:
-        return 'Split by percent among $count $people';
-      case SplitType.exact:
-        return 'Split by exact amounts among $count $people';
-    }
   }
 }
