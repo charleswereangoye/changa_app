@@ -20,7 +20,7 @@ class DefaultFirebaseOptions {
 
   static const FirebaseOptions android = FirebaseOptions(
     apiKey: 'AIzaSyClV9dhfMNiRMo1uATgR3hQLjcGOL6P_HE',
-    appId: '1:740240029076:android:ed64bd0d8ecb5a2e1d4b81',
+    appId: '1:740240029076:android:1f9cca2d5d5f5a9c1d4b81',
     messagingSenderId: '740240029076',
     projectId: 'changa-app-87ed8',
     storageBucket: 'changa-app-87ed8.firebasestorage.app',
