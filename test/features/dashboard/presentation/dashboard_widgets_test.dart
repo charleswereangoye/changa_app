@@ -125,7 +125,7 @@ void main() {
       expect(find.text('Chloe'), findsOneWidget);
       expect(find.text('Dan'), findsOneWidget);
       expect(find.text('owes you'), findsOneWidget);
-      expect(find.text('you owe'), findsOneWidget);
+      expect(find.text('to pay back'), findsOneWidget);
     });
 
     testWidgets('Settle Up calls back', (tester) async {
@@ -200,7 +200,7 @@ void main() {
       expect(find.byKey(const Key('balance-row-chloe')), findsNothing);
       expect(find.text('Chloe'), findsNothing);
       expect(find.byKey(const Key('balance-row-dan')), findsOneWidget);
-      expect(find.text('you owe'), findsOneWidget);
+      expect(find.text('to pay back'), findsOneWidget);
     });
 
     testWidgets('only cancelled-out people reads as settled up', (
@@ -223,7 +223,7 @@ void main() {
 
       expect(find.byKey(const Key('balance-settled')), findsOneWidget);
       expect(find.byKey(const Key('balance-row-chloe')), findsNothing);
-      expect(find.text('you owe'), findsNothing);
+      expect(find.text('to pay back'), findsNothing);
     });
 
     testWidgets('failed shows a retry button', (tester) async {

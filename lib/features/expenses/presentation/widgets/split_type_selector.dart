@@ -28,7 +28,7 @@ class SplitTypeSelector extends StatelessWidget {
       style: SegmentedButton.styleFrom(
         backgroundColor: AppColors.white,
         foregroundColor: AppColors.sherwoodGreen,
-        selectedBackgroundColor: AppColors.lightGreen.withValues(alpha: 0.5),
+        selectedBackgroundColor: AppColors.lightGreen,
         selectedForegroundColor: AppColors.sherwoodGreen,
         side: const BorderSide(color: AppColors.athsSpecial),
         textStyle: AppTextStyles.label,

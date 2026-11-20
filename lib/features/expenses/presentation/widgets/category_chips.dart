@@ -35,7 +35,7 @@ class CategoryChips extends StatelessWidget {
       labelStyle: AppTextStyles.label.copyWith(color: foreground),
       selected: isSelected,
       showCheckmark: false,
-      selectedColor: AppColors.lightGreen.withValues(alpha: 0.5),
+      selectedColor: AppColors.lightGreen,
       backgroundColor: AppColors.white,
       side: BorderSide(
         color: isSelected ? AppColors.leafGreen : AppColors.athsSpecial,

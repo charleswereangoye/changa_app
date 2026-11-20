@@ -96,14 +96,14 @@ class _Loaded extends StatelessWidget {
               child: _Total(
                 label: 'You are owed',
                 amount: data?.youAreOwed ?? 0,
-                color: AppColors.leafGreen,
+                color: AppColors.sherwoodGreen,
               ),
             ),
             Expanded(
               child: _Total(
                 label: 'You owe',
                 amount: data?.youOwe ?? 0,
-                color: AppColors.sunglo,
+                color: AppColors.lightGreen,
               ),
             ),
             if (onSettleUp != null)
@@ -111,7 +111,7 @@ class _Loaded extends StatelessWidget {
                 key: const Key('balance-settle-up'),
                 onPressed: onSettleUp,
                 style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.lightGreen,
+                  backgroundColor: AppColors.athsSpecial,
                   foregroundColor: AppColors.sherwoodGreen,
                   shape: const StadiumBorder(),
                   padding: const EdgeInsets.symmetric(
@@ -174,11 +174,13 @@ class _Loaded extends StatelessWidget {
                         MoneyText(
                           entry.value.abs(),
                           style: AppTextStyles.label.copyWith(
-                            color: MoneyText.colorFor(entry.value),
+                            color: entry.value > 0
+                                ? AppColors.sherwoodGreen
+                                : AppColors.lightGreen,
                           ),
                         ),
                         Text(
-                          entry.value > 0 ? 'owes you' : 'you owe',
+                          entry.value > 0 ? 'owes you' : 'to pay back',
                           style: AppTextStyles.bodySmall,
                         ),
                       ],
