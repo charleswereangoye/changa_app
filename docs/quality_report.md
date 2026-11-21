@@ -82,4 +82,9 @@ Reproduce the saved coverage summary from the repository root:
 
     python3 tools/coverage_summary.py docs/evidence/quality/lcov-49a2a69.info
 
-Screenshots and the corresponding CI link remain to be attached.
+The quality-report PR's CI link remains to be attached after its checks pass.
+
+- [Saved analyzer/test log excerpt](evidence/quality/analyze-tests-49a2a69.png)
+- [Saved coverage summary screenshot](evidence/quality/coverage-summary-49a2a69.png)
+
+These screenshots show saved output for commit 49a2a69, not a new test run.
