@@ -51,7 +51,7 @@ void main() {
 
   ElevatedButton saveButton(WidgetTester tester) =>
       tester.widget<ElevatedButton>(
-        find.widgetWithText(ElevatedButton, 'Save expense'),
+        find.widgetWithText(ElevatedButton, 'Save Expense'),
       );
 
   testWidgets('Save is disabled until the form is valid', (tester) async {
@@ -64,9 +64,25 @@ void main() {
 
     expect(saveButton(tester).onPressed, isNotNull);
     expect(
-      find.text('Split equally among 3 people, RWF 4,000 each'),
+      find.text('Total RWF 12,000 split between 3 people'),
       findsOneWidget,
     );
+  });
+
+  testWidgets('the header Save follows the same rule as the button', (
+    tester,
+  ) async {
+    await pumpPage(tester);
+    TextButton headerSave() =>
+        tester.widget<TextButton>(find.byKey(const Key('add-expense-save')));
+    expect(headerSave().onPressed, isNull);
+
+    await tester.enterText(find.byKey(const Key('amount-field')), '12000');
+    await tester.enterText(find.byKey(const Key('title-field')), 'Groceries');
+    await tester.pump();
+
+    expect(headerSave().onPressed, isNotNull);
+    expect(find.text('Add Expense'), findsOneWidget);
   });
 
   testWidgets('a percent total of 90 shows the error', (tester) async {
@@ -109,7 +125,7 @@ void main() {
     await tester.enterText(find.byKey(const Key('title-field')), 'Groceries');
     await tester.pump();
 
-    await tester.tap(find.widgetWithText(ElevatedButton, 'Save expense'));
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Save Expense'));
     await tester.pump();
 
     expect(cubit.state.status, AddExpenseStatus.submitting);
@@ -123,7 +139,10 @@ void main() {
     );
 
     // Tapping an avatar while saving changes nothing.
-    await tester.tap(find.byKey(const ValueKey('split-with-bob')));
+    await tester.tap(
+      find.byKey(const ValueKey('split-with-bob')),
+      warnIfMissed: false,
+    );
     await tester.pump();
     expect(cubit.state.selectedUids, ['amara', 'bob', 'chloe']);
     expect(repo.addCalls, 1);

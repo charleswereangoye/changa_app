@@ -14,6 +14,17 @@ class AppConstants {
   static const int harmonySettleWindowDays = 7;
   static const int nudgeCooldownHours = 24;
 
+  // Money & Credits
+  static const int creditValueRwf = 10; // 1 credit = 10 RWF
+  static const int minExpenseAmount = 1;
+  static const int maxExpenseAmount = 100000000;
+
+  // Household & PIN
+  static const int pinLength = 6;
+  static const int pinMin = 100000;
+  static const int pinMax = 999999;
+  static const int maxHouseholdMembers = 10;
+
   // Google Sign-In Web Client ID (serverClientId required by Android Credential Manager)
   static const String googleServerClientId =
       '740240029076-jj2ng4ahetgu1a02dns51ocn0lpj57h1.apps.googleusercontent.com';

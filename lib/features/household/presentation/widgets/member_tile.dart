@@ -130,9 +130,9 @@ class _RoleBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final backgroundColor = isAdmin
-        ? AppColors.vanillaIce
+        ? AppColors.lightGreen.withValues(alpha: 0.18)
         : AppColors.athsSpecial;
-    final textColor = isAdmin ? AppColors.leafGreen : AppColors.sherwoodGreen;
+    final textColor = isAdmin ? AppColors.lightGreen : AppColors.sherwoodGreen;
     final label = isAdmin ? 'ADMIN' : 'MEMBER';
 
     return Container(

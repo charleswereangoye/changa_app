@@ -22,6 +22,14 @@
           }
         },
         {
+          "client_id": "740240029076-9dm9nfv8ddv0fj48njf061i7ec558o64.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.changa_app",
+            "certificate_hash": "9168154697ca87f930d26bb5bf1ac50a724aae85"
+          }
+        },
+        {
           "client_id": "740240029076-jj2ng4ahetgu1a02dns51ocn0lpj57h1.apps.googleusercontent.com",
           "client_type": 3
         }
@@ -37,6 +45,65 @@
             {
               "client_id": "740240029076-jj2ng4ahetgu1a02dns51ocn0lpj57h1.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "740240029076-kiv9q529oa0kgenkf6bcjkjj2thfrmnf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.changaApp"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:740240029076:android:1f9cca2d5d5f5a9c1d4b81",
+        "android_client_info": {
+          "package_name": "rw.changa.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "740240029076-gns1d0d8cmccilkql1mls1mnadcqhm0f.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "rw.changa.app",
+            "certificate_hash": "9168154697ca87f930d26bb5bf1ac50a724aae85"
+          }
+        },
+        {
+          "client_id": "740240029076-htvmpfc9pbci3okfavi1cg37seimj7gq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "rw.changa.app",
+            "certificate_hash": "0b15b59572f0121b87b196fbfc587701f7657919"
+          }
+        },
+        {
+          "client_id": "740240029076-jj2ng4ahetgu1a02dns51ocn0lpj57h1.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyClV9dhfMNiRMo1uATgR3hQLjcGOL6P_HE"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "740240029076-jj2ng4ahetgu1a02dns51ocn0lpj57h1.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "740240029076-kiv9q529oa0kgenkf6bcjkjj2thfrmnf.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.changaApp"
+              }
             }
           ]
         }

@@ -98,6 +98,20 @@ class ChangaApp extends StatelessWidget {
             householdCubit.onAuthUserChanged(state.user.uid);
           } else if (state is Unauthenticated) {
             householdCubit.clearHousehold();
+            try {
+              final location =
+                  AppRouter.router.routerDelegate.currentConfiguration.uri.path;
+              final isAuthScreen =
+                  location == '/' ||
+                  location == '/onboarding' ||
+                  location == '/login' ||
+                  location == '/sign-up' ||
+                  location == '/forgot-password' ||
+                  location == '/verify-email';
+              if (!isAuthScreen) {
+                AppRouter.router.goNamed(RouteNames.login);
+              }
+            } catch (_) {}
           }
         },
         child: BlocBuilder<PreferencesCubit, PreferencesState>(
@@ -107,7 +121,7 @@ class ChangaApp extends StatelessWidget {
             title: 'Changa',
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
-            themeMode: preferences.themeMode,
+            themeMode: ThemeMode.light,
             routerConfig: AppRouter.router,
             builder: (context, child) => NotificationListenerHost(
               navigatorKey: AppRouter.rootNavigatorKey,

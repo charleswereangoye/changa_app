@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/activity/presentation/pages/activity_page.dart';
+import '../../features/auth/domain/entities/app_user.dart';
 import '../../features/auth/presentation/pages/forgot_password_page.dart';
 import '../../features/auth/presentation/pages/login_page.dart';
 import '../../features/auth/presentation/pages/onboarding_page.dart';
@@ -19,8 +20,11 @@ import '../../features/household/presentation/pages/household_created_page.dart'
 import '../../features/household/presentation/pages/join_household_page.dart';
 import '../../features/household/presentation/pages/manage_household_page.dart';
 import '../../features/profile/presentation/pages/edit_profile_page.dart';
+import '../../features/profile/presentation/pages/payment_methods_page.dart';
 import '../../features/profile/presentation/pages/preferences_page.dart';
 import '../../features/profile/presentation/pages/profile_page.dart';
+import '../../features/auth/presentation/cubit/auth_cubit.dart';
+import '../../injection_container.dart';
 import 'home_shell.dart';
 import 'route_names.dart';
 
@@ -34,6 +38,38 @@ class AppRouter {
   static final GoRouter router = GoRouter(
     navigatorKey: rootNavigatorKey,
     initialLocation: '/',
+    redirect: (context, state) {
+      final path = state.uri.path;
+      if (path == '/') return null;
+
+      if (!sl.isRegistered<AuthCubit>()) return null;
+      final authState = sl<AuthCubit>().state;
+
+      final isAuthRoute =
+          path == '/login' ||
+          path == '/sign-up' ||
+          path == '/forgot-password' ||
+          path == '/verify-email' ||
+          path == '/onboarding';
+
+      if (authState is Unauthenticated) {
+        if (!isAuthRoute) return '/login';
+        return null;
+      }
+
+      if (authState is Authenticated) {
+        final user = authState.user;
+        if (!user.emailVerified &&
+            user.email.isNotEmpty &&
+            !user.email.endsWith('@google.com')) {
+          if (path != '/verify-email' && !isAuthRoute) {
+            return '/verify-email';
+          }
+        }
+      }
+
+      return null;
+    },
     routes: [
       // Splash & Onboarding
       GoRoute(
@@ -169,12 +205,19 @@ class AppRouter {
       GoRoute(
         path: '/profile/edit',
         name: RouteNames.editProfile,
-        builder: (context, state) => const EditProfilePage(),
+        builder: (context, state) => EditProfilePage(
+          initialUser: state.extra is AppUser ? state.extra as AppUser : null,
+        ),
       ),
       GoRoute(
         path: '/profile/preferences',
         name: RouteNames.preferences,
         builder: (context, state) => const PreferencesPage(),
+      ),
+      GoRoute(
+        path: '/profile/payment-methods',
+        name: RouteNames.paymentMethods,
+        builder: (context, state) => const PaymentMethodsPage(),
       ),
     ],
   );

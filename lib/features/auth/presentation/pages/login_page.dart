@@ -11,7 +11,7 @@ import '../../../../core/widgets/primary_button.dart';
 import '../../../../injection_container.dart';
 import '../cubit/login_cubit.dart';
 import '../widgets/auth_back_button.dart';
-import '../widgets/social_auth_button.dart';
+import '../widgets/google_sign_in_button.dart';
 
 /// Screen allowing existing users to log in to their Changa account.
 class LoginPage extends StatefulWidget {
@@ -214,32 +214,12 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                           const SizedBox(height: 14),
 
-                          // Social Buttons (Google & Apple)
-                          Row(
-                            children: [
-                              Expanded(
-                                child: SocialAuthButton(
-                                  label: 'Google',
-                                  onPressed: () {
-                                    context
-                                        .read<LoginCubit>()
-                                        .loginWithGoogle();
-                                  },
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              Expanded(
-                                child: SocialAuthButton(
-                                  label: 'Apple',
-                                  onPressed: () {
-                                    AppSnackbar.info(
-                                      context,
-                                      'Apple Sign-In is only available on iOS devices.',
-                                    );
-                                  },
-                                ),
-                              ),
-                            ],
+                          // Social Button (Google only)
+                          GoogleSignInButton(
+                            label: 'Google',
+                            onPressed: () {
+                              context.read<LoginCubit>().loginWithGoogle();
+                            },
                           ),
                           const SizedBox(height: 16),
 

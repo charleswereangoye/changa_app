@@ -32,6 +32,15 @@ abstract class AuthRepository {
   /// Signs out the current user.
   Future<Result<void>> signOut();
 
+  /// Sends an email verification link to the currently signed in user.
+  Future<Result<void>> sendEmailVerification();
+
+  /// Reloads the user session and checks whether the email is verified.
+  Future<Result<bool>> reloadAndCheckEmailVerified();
+
   /// Sends a password reset email.
   Future<Result<void>> sendPasswordReset(String email);
+
+  /// Updates the locally cached current user entity.
+  void updateCurrentUser(AppUser user);
 }
