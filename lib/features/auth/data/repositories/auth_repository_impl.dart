@@ -20,7 +20,31 @@ class AuthRepositoryImpl implements AuthRepository {
         _cachedUser = null;
         return null;
       }
-      final profile = await remoteDataSource.getUserProfile(firebaseUser.uid);
+      if (_cachedUser != null &&
+          _cachedUser!.uid == firebaseUser.uid &&
+          _cachedUser!.fullName.isNotEmpty) {
+        return _cachedUser;
+      }
+      AppUser? profile = await remoteDataSource.getUserProfile(
+        firebaseUser.uid,
+      );
+      if (profile == null) {
+        // Retry once after brief delay for newly created Firestore user documents
+        await Future.delayed(const Duration(milliseconds: 300));
+        profile = await remoteDataSource.getUserProfile(firebaseUser.uid);
+      }
+      if (profile == null &&
+          _cachedUser != null &&
+          _cachedUser!.uid == firebaseUser.uid) {
+        profile = _cachedUser;
+      }
+      profile ??= AppUser(
+        uid: firebaseUser.uid,
+        fullName: firebaseUser.displayName ?? '',
+        email: firebaseUser.email ?? '',
+        phone: firebaseUser.phoneNumber ?? '',
+        createdAt: DateTime.now(),
+      );
       _cachedUser = profile;
       return profile;
     });
@@ -28,6 +52,11 @@ class AuthRepositoryImpl implements AuthRepository {
 
   @override
   AppUser? get currentUser => _cachedUser;
+
+  @override
+  void updateCurrentUser(AppUser user) {
+    _cachedUser = user;
+  }
 
   @override
   Future<Result<AppUser>> signUpWithEmail({
@@ -149,6 +178,33 @@ class AuthRepositoryImpl implements AuthRepository {
     try {
       await remoteDataSource.sendPasswordReset(email);
       return Result.success(null);
+    } on FirebaseAuthException catch (e) {
+      return Result.failure(_mapFirebaseAuthException(e));
+    } catch (e) {
+      return Result.failure(UnknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<void>> sendEmailVerification() async {
+    try {
+      await remoteDataSource.sendEmailVerification();
+      return Result.success(null);
+    } on FirebaseAuthException catch (e) {
+      return Result.failure(_mapFirebaseAuthException(e));
+    } catch (e) {
+      return Result.failure(UnknownFailure(e.toString()));
+    }
+  }
+
+  @override
+  Future<Result<bool>> reloadAndCheckEmailVerified() async {
+    try {
+      final isVerified = await remoteDataSource.reloadAndCheckEmailVerified();
+      if (_cachedUser != null) {
+        _cachedUser = _cachedUser!.copyWith(emailVerified: isVerified);
+      }
+      return Result.success(isVerified);
     } on FirebaseAuthException catch (e) {
       return Result.failure(_mapFirebaseAuthException(e));
     } catch (e) {

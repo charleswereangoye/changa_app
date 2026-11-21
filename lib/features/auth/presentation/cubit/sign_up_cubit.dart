@@ -1,14 +1,24 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../core/usecase/usecase.dart';
+import '../../domain/entities/app_user.dart';
 import '../../domain/repositories/auth_repository.dart';
+import '../../domain/usecases/sign_in_with_google.dart';
+import '../../domain/usecases/sign_up_with_email.dart';
 
 part 'sign_up_state.dart';
 
 class SignUpCubit extends Cubit<SignUpState> {
+  final SignUpWithEmail? signUpWithEmail;
+  final SignInWithGoogle? signInWithGoogle;
   final AuthRepository? authRepository;
 
-  SignUpCubit({this.authRepository}) : super(const SignUpState());
+  SignUpCubit({
+    this.signUpWithEmail,
+    this.signInWithGoogle,
+    this.authRepository,
+  }) : super(const SignUpState());
 
   void togglePasswordVisibility() {
     emit(state.copyWith(isPasswordVisible: !state.isPasswordVisible));
@@ -45,9 +55,29 @@ class SignUpCubit extends Cubit<SignUpState> {
 
     emit(state.copyWith(status: SignUpStatus.loading, errorMessage: null));
 
-    final repo = authRepository;
-    if (repo != null) {
-      final result = await repo.signUpWithEmail(
+    if (signUpWithEmail != null) {
+      final result = await signUpWithEmail!(
+        SignUpWithEmailParams(
+          fullName: fullName,
+          email: email,
+          phone: phone,
+          password: password,
+        ),
+      );
+      if (result.isSuccess) {
+        emit(
+          state.copyWith(status: SignUpStatus.success, user: result.dataOrNull),
+        );
+      } else {
+        emit(
+          state.copyWith(
+            status: SignUpStatus.failure,
+            errorMessage: result.failureOrNull?.message ?? 'Failed to sign up.',
+          ),
+        );
+      }
+    } else if (authRepository != null) {
+      final result = await authRepository!.signUpWithEmail(
         fullName: fullName,
         email: email,
         phone: phone,
@@ -55,7 +85,9 @@ class SignUpCubit extends Cubit<SignUpState> {
       );
 
       if (result.isSuccess) {
-        emit(state.copyWith(status: SignUpStatus.success));
+        emit(
+          state.copyWith(status: SignUpStatus.success, user: result.dataOrNull),
+        );
       } else {
         emit(
           state.copyWith(
@@ -72,11 +104,27 @@ class SignUpCubit extends Cubit<SignUpState> {
   Future<void> signUpWithGoogle() async {
     emit(state.copyWith(status: SignUpStatus.loading, errorMessage: null));
 
-    final repo = authRepository;
-    if (repo != null) {
-      final result = await repo.signInWithGoogle();
+    if (signInWithGoogle != null) {
+      final result = await signInWithGoogle!(const NoParams());
       if (result.isSuccess) {
-        emit(state.copyWith(status: SignUpStatus.success));
+        emit(
+          state.copyWith(status: SignUpStatus.success, user: result.dataOrNull),
+        );
+      } else {
+        emit(
+          state.copyWith(
+            status: SignUpStatus.failure,
+            errorMessage:
+                result.failureOrNull?.message ?? 'Google sign in failed.',
+          ),
+        );
+      }
+    } else if (authRepository != null) {
+      final result = await authRepository!.signInWithGoogle();
+      if (result.isSuccess) {
+        emit(
+          state.copyWith(status: SignUpStatus.success, user: result.dataOrNull),
+        );
       } else {
         emit(
           state.copyWith(
@@ -98,7 +146,9 @@ class SignUpCubit extends Cubit<SignUpState> {
     if (repo != null) {
       final result = await repo.signInWithApple();
       if (result.isSuccess) {
-        emit(state.copyWith(status: SignUpStatus.success));
+        emit(
+          state.copyWith(status: SignUpStatus.success, user: result.dataOrNull),
+        );
       } else {
         emit(
           state.copyWith(

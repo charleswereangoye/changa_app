@@ -44,6 +44,8 @@ android/key.properties
 *.keystore
 android/local.properties
 android/.gradle/
+android/build/
+android/app/build/
 
 # Environment files
 .env

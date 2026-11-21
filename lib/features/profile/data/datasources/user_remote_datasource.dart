@@ -96,17 +96,19 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     }
 
     if (updates.isNotEmpty) {
-      await docRef.update(updates);
+      await docRef.set(updates, SetOptions(merge: true));
     }
 
     final snap = await docRef.get();
-    if (!snap.exists || snap.data() == null) {
-      throw FirebaseException(
-        plugin: 'cloud_firestore',
-        code: 'not-found',
-        message: 'User profile not found for uid: $uid',
-      );
+    if (snap.exists && snap.data() != null) {
+      return UserModel.fromDocument(snap);
     }
-    return UserModel.fromDocument(snap);
+    return UserModel(
+      uid: uid,
+      fullName: fullName?.trim() ?? '',
+      email: '',
+      phone: phone?.trim() ?? '',
+      createdAt: DateTime.now(),
+    );
   }
 }

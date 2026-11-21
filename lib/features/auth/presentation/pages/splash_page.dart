@@ -1,7 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../../../../core/constants/firestore_paths.dart';
 import '../../../../core/constants/pref_keys.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -27,6 +30,38 @@ class _SplashPageState extends State<SplashPage> {
     // Show splash branding briefly matching Figma
     await Future.delayed(const Duration(seconds: 2));
     if (!mounted) return;
+
+    try {
+      final auth = FirebaseAuth.instance;
+      final currentUser = auth.currentUser;
+      if (currentUser != null) {
+        if (!currentUser.emailVerified &&
+            (currentUser.email != null &&
+                !currentUser.email!.endsWith('@google.com'))) {
+          context.go('/verify-email');
+          return;
+        }
+
+        // Fetch user document from firestore to check householdId
+        final doc = await FirebaseFirestore.instance
+            .doc(FirestorePaths.user(currentUser.uid))
+            .get();
+        if (!mounted) return;
+        if (doc.exists) {
+          final householdId = doc.data()?[UserFields.householdId] as String?;
+          if (householdId != null && householdId.isNotEmpty) {
+            context.go('/home/dashboard');
+            return;
+          } else {
+            context.go('/household/create');
+            return;
+          }
+        } else {
+          context.go('/household/create');
+          return;
+        }
+      }
+    } catch (_) {}
 
     final prefs = await SharedPreferences.getInstance();
     final onboardingSeen = prefs.getBool(PrefKeys.onboardingSeen) ?? false;

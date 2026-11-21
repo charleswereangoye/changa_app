@@ -24,4 +24,5 @@ class RouteNames {
   static const String manageHousehold = 'manageHousehold';
   static const String editProfile = 'editProfile';
   static const String preferences = 'preferences';
+  static const String paymentMethods = 'paymentMethods';
 }

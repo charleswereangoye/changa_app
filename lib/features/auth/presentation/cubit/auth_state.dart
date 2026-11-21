@@ -40,9 +40,13 @@ class Unauthenticated extends AuthState {
 
 class AuthFailureState extends AuthState {
   final String message;
+  final AppUser? currentUser;
 
-  const AuthFailureState(this.message);
+  const AuthFailureState(this.message, {this.currentUser});
 
   @override
-  List<Object?> get props => [message];
+  AppUser? get user => currentUser;
+
+  @override
+  List<Object?> get props => [message, currentUser];
 }

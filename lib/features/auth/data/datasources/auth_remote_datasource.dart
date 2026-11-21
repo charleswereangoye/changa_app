@@ -27,6 +27,8 @@ abstract class AuthRemoteDataSource {
   Future<UserModel> signInWithApple();
   Future<void> signOut();
   Future<void> sendPasswordReset(String email);
+  Future<void> sendEmailVerification();
+  Future<bool> reloadAndCheckEmailVerified();
   Future<UserModel?> getUserProfile(String uid);
 }
 
@@ -75,6 +77,10 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
     );
 
     await _firestore.doc(FirestorePaths.user(user.uid)).set(userModel.toMap());
+
+    try {
+      await user.sendEmailVerification();
+    } catch (_) {}
 
     return userModel;
   }
@@ -194,10 +200,29 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
+  Future<void> sendEmailVerification() async {
+    final user = _auth.currentUser;
+    if (user != null && !user.emailVerified) {
+      await user.sendEmailVerification();
+    }
+  }
+
+  @override
+  Future<bool> reloadAndCheckEmailVerified() async {
+    final user = _auth.currentUser;
+    if (user == null) return false;
+    await user.reload();
+    return _auth.currentUser?.emailVerified ?? false;
+  }
+
+  @override
   Future<UserModel?> getUserProfile(String uid) async {
     final doc = await _firestore.doc(FirestorePaths.user(uid)).get();
     if (doc.exists && doc.data() != null) {
-      return UserModel.fromDocument(doc);
+      final isVerified = _auth.currentUser?.uid == uid
+          ? (_auth.currentUser?.emailVerified ?? false)
+          : false;
+      return UserModel.fromDocument(doc, emailVerified: isVerified);
     }
     return null;
   }
