@@ -13,6 +13,10 @@ import 'package:changa_app/core/widgets/app_snackbar.dart';
 import 'package:changa_app/features/profile/presentation/cubit/preferences_cubit.dart';
 import 'package:changa_app/features/profile/presentation/cubit/preferences_state.dart';
 
+import 'package:changa_app/core/services/local_notification_service.dart';
+import 'package:changa_app/features/notifications/presentation/widgets/notification_permission_button.dart';
+import 'package:changa_app/injection_container.dart';
+
 /// Notification toggles and defaults used when adding expenses and settling up.
 /// Uses card-based layout matching Profile and clean light green active elements.
 class PreferencesPage extends StatelessWidget {
@@ -195,6 +199,11 @@ class PreferencesPage extends StatelessWidget {
                             ),
                           ),
 
+                          NotificationPermissionButton(
+                            requestPermission: () =>
+                                sl<LocalNotificationService>()
+                                    .requestPermission(),
+                          ),
                           const SizedBox(height: 16),
 
                           // Default payment method Section

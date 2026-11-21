@@ -227,4 +227,42 @@ void main() {
 
     verify(() => android.createNotificationChannel(any())).called(1);
   });
+
+  test('includes account household and actor IDs in the payload', () async {
+    final shown = await service.show(
+      notificationId: 'notification-2',
+      type: 'nudge',
+      title: 'A friendly reminder',
+      body: 'Jean sent you a reminder.',
+      notifyNudges: true,
+      notifyChores: true,
+      refId: 'expense-2',
+      recipientUid: 'amara',
+      actorUid: 'jean',
+      householdId: 'home-1',
+    );
+
+    expect(shown, isTrue);
+
+    final captured = verify(
+      () => plugin.show(
+        id: any(named: 'id'),
+        title: 'A friendly reminder',
+        body: 'Jean sent you a reminder.',
+        notificationDetails: any(named: 'notificationDetails'),
+        payload: captureAny(named: 'payload'),
+      ),
+    ).captured;
+
+    expect(jsonDecode(captured.single as String), {
+      'notificationId': 'notification-2',
+      'type': 'nudge',
+      'refId': 'expense-2',
+      'recipientUid': 'amara',
+      'actorUid': 'jean',
+      'householdId': 'home-1',
+    });
+
+    verifyNever(() => android.requestNotificationsPermission());
+  });
 }

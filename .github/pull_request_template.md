@@ -23,9 +23,9 @@
 
 ## How to Test
 <!-- Provide step-by-step instructions to reproduce or test the changes on a device or emulator -->
-1. 
-2. 
-3. 
+1.
+2.
+3.
 
 ## Definition of Done (Checklist)
 - [ ] `dart format --set-exit-if-changed .` is clean

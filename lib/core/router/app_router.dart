@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/activity/presentation/pages/activity_page.dart';
@@ -31,7 +32,11 @@ import 'route_names.dart';
 class AppRouter {
   AppRouter._();
 
+  static final GlobalKey<NavigatorState> rootNavigatorKey =
+      GlobalKey<NavigatorState>();
+
   static final GoRouter router = GoRouter(
+    navigatorKey: rootNavigatorKey,
     initialLocation: '/',
     redirect: (context, state) {
       final path = state.uri.path;
