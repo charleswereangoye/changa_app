@@ -71,3 +71,15 @@ Passing automated tests does not establish successful physical-device startup.
 - Test-run screenshot showing 737 passed.
 - Coverage-summary screenshot.
 - Link to the corresponding green CI run.
+
+## Saved evidence
+
+- [Analyzer and test output](evidence/quality/analyze-tests-49a2a69.txt)
+- [Coverage summary](evidence/quality/coverage-summary-49a2a69.txt)
+- [Raw LCOV data](evidence/quality/lcov-49a2a69.info)
+
+Reproduce the saved coverage summary from the repository root:
+
+    python3 tools/coverage_summary.py docs/evidence/quality/lcov-49a2a69.info
+
+Screenshots and the corresponding CI link remain to be attached.

@@ -1,0 +1,48 @@
+Source: docs/evidence/quality/lcov-49a2a69.info
+Scope: lib/ files represented in LCOV; firebase_options.dart excluded.
+
+Area                  Covered  Measured  Coverage
+-------------------------------------------------
+activity                  757       917    82.55%
+app / wiring                1        11     9.09%
+auth                      492       973    50.57%
+chores                    976      1295    75.37%
+core                      635       690    92.03%
+dashboard                 502       530    94.72%
+debts                    1095      1239    88.38%
+expenses                  897      1032    86.92%
+household                1524      2087    73.02%
+notifications             252       325    77.54%
+profile                   716       835    85.75%
+-------------------------------------------------
+TOTAL                    7847      9934    78.99%
+70% target within LCOV scope: MET
+Generated Firebase source files removed: 0
+
+lib/ Dart files absent from LCOV: 25
+Absence does not establish executable-line coverage for these files.
+  lib/app.dart
+  lib/core/constants/app_constants.dart
+  lib/core/enums/settlement_method.dart
+  lib/core/enums/split_type.dart
+  lib/core/router/app_router.dart
+  lib/core/router/home_shell.dart
+  lib/features/activity/domain/repositories/activity_repository.dart
+  lib/features/auth/domain/repositories/auth_repository.dart
+  lib/features/auth/presentation/pages/splash_page.dart
+  lib/features/auth/presentation/widgets/social_auth_button.dart
+  lib/features/chores/domain/repositories/chore_repository.dart
+  lib/features/chores/presentation/pages/add_edit_chore_page.dart
+  lib/features/dashboard/presentation/pages/dashboard_page.dart
+  lib/features/debts/domain/entities/debt_status.dart
+  lib/features/debts/domain/repositories/debt_repository.dart
+  lib/features/expenses/domain/entities/split_type.dart
+  lib/features/expenses/domain/repositories/expense_repository.dart
+  lib/features/expenses/presentation/open_add_expense.dart
+  lib/features/household/domain/repositories/household_repository.dart
+  lib/features/notifications/domain/repositories/notification_repository.dart
+  lib/features/notifications/presentation/widgets/in_app_banner.dart
+  lib/features/notifications/presentation/widgets/notification_listener_host.dart
+  lib/features/profile/domain/repositories/user_repository.dart
+  lib/features/profile/domain/services/preferences_store.dart
+  lib/main.dart
