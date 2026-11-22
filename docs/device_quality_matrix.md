@@ -49,7 +49,7 @@ Record results with the device name and app commit in the evidence notes.
 | Create household | Pending | Pending | Pending | Pending | Pending | Pending | |
 | Household created / PIN | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Join household | Pending | Pending | Pending | Pending | Pending | Pending | |
-| Dashboard, empty and active | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pending | N/A | Pass (large, tested state); small pending |
+| Dashboard, empty and active | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pending | N/A | Pass (both sizes, tested state) |
 | Add expense | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pending | Pass (both sizes) | User-tested on both sizes |
 | Debt details and nudge | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Debt Details layout passed; sending a nudge not verified |
 | Settle up | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Selection survives rotation; settlement submission not verified |
@@ -116,14 +116,12 @@ For each failure, record:
 - No overflow, clipping, or overlapping controls reported.
 - Large text, measured contrast, and measured tap sizes: pending.
 
-### Remaining available screens — D11 Small
+### D11 Small
 
-- Tester reports portrait, landscape, keyboard, and rotation checks passed
-  for the remaining available screens at normal text size.
-- Profile and Edit Profile currently display placeholders:
-  final-screen testing is blocked pending integration.
-- Notification banner and nudge modal testing is blocked pending integration.
-- Large-text, contrast, tap-size, and large-device checks remain pending.
+- D11 Small: tester reports largest-text dashboard checks passed in portrait and landscape using the layout fixes from e3fada1.
+- Small portrait evidence: docs/evidence/device-quality/iphonese-dashboard-largest-text-pass-portrait.png
+- Small landscape evidence: docs/evidence/device-quality/iphonese-dashboard-largest-text-pass-landscape.png
+- Other dashboard data states remain pending.
 
 ## Test log — 2026-11-22
 
