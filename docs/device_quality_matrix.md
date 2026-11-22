@@ -37,33 +37,34 @@ Test both portrait and landscape on the required device sizes.
 
 ## Screen checks
 
-Record results with the device name and app commit in the evidence notes.
+Results are tester-reported. A layout pass does not establish that
+submissions or database writes succeeded.
 
 | Screen or flow | Small portrait | Small landscape | Large portrait | Large landscape | Large text | Keyboard | Evidence / issue |
 |---|---|---|---|---|---|---|---|
 | Splash and onboarding | Pending | Pending | Pending | Pending | Pending | N/A | |
-| Login | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pending | Pass (both sizes) | Small: e303f1a; large: 38389f6 |
-| Sign up | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pending | Pass (both sizes) | Small: e303f1a; large: 38389f6 |
-| Forgot password | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pending | Pass (both sizes) | Small: e303f1a; large: 38389f6 |
+| Login | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (large); small pending | Pass (both sizes) | Small: e303f1a; large normal: 38389f6 |
+| Sign up | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (large); small pending | Pass (both sizes) | Small: e303f1a; large normal: 38389f6 |
+| Forgot password | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (large); small pending | Pass (both sizes) | Small: e303f1a; large normal: 38389f6 |
 | Email verification | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Create household | Pending | Pending | Pending | Pending | Pending | Pending | |
 | Household created / PIN | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Join household | Pending | Pending | Pending | Pending | Pending | Pending | |
-| Dashboard, empty and active | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pending | N/A | Pass (both sizes, tested state) |
-| Add expense | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pending | Pass (both sizes) | User-tested on both sizes |
-| Debt details and nudge | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Debt Details layout passed; sending a nudge not verified |
-| Settle up | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Selection survives rotation; settlement submission not verified |
+| Dashboard, empty and active | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pass (both sizes, tested state) | N/A | Largest-text fixes: e3fada1; before-and-after screenshots saved; other data states pending |
+| Add expense | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (large); small pending | Pass (both sizes) | Layout and entered-value preservation tested |
+| Debt details and nudge | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Sending a nudge remains unverified |
+| Settle up | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Payment selection survives rotation; submission unverified |
 | Chore roster | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | User-tested on D11 Large |
-| Add / edit chore | Pending | Pending | Pass (layout) | Pass (layout) | Pending | Pass (large device) | Entered values preserved after rotation |
-| Chore swap | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Swap dialog layout passed; request submission not verified |
-| Activity history | Pending | Pending | Pending | Pending | Pending | Pending | |
-| Profile | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Final Profile screen tested on D11 Large |
-| Edit profile | Pending | Pending | Pass (layout) | Pass (layout) | Pending | Pass (large device) | Entered text survives rotation |
-| Preferences | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Selections survive rotation |
+| Add / edit chore | Pending | Pending | Pass (layout) | Pass (layout) | Pending | Pass (large) | Entered values survive rotation |
+| Chore swap | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Dialog layout passed; submission unverified |
+| Activity history | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pending | Displayed state passed; empty and populated states not separately recorded |
+| Profile | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Final screen tested on D11 Large |
+| Edit profile | Pending | Pending | Pass (layout) | Pass (layout) | Pending | Pass (large) | Entered text survives rotation |
+| Preferences | Pending | Pending | Pass (layout) | Pass (layout) | Pass (large); small pending | N/A | Selections survive rotation |
 | Payment methods | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Selection survives rotation |
-| Manage household | Pending | Pending | Pass (layout) | Pass (layout) | Pending | Pass (tested editing form) | User-tested on D11 Large |
-| Harmony explanation | Pending | Pending | Pending | Pending | Pending | N/A | |
-| Notification banner and nudge modal | Pending | Pending | Pending | Pending | Pending | N/A | |
+| Manage household | Pending | Pending | Pass (layout) | Pass (layout) | Pending | Pass (large editing form) | Layout checks passed |
+| Harmony explanation | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Text and dismissal controls remain usable |
+| Notification banner and nudge modal | Pending | Pending | Pending | Pending | Pending | N/A | Integration retest required |
 
 ## Checks for each screen
 
@@ -172,3 +173,13 @@ For each failure, record:
 - Owners: C (dashboard), A (navigation shell).
 - Evidence: docs/evidence/device-quality/iphone16plus-dashboard-largest-text-fail.png
 - Retest: pending.
+
+### Activity History and Harmony explanation — both simulator sizes
+
+- Date: 2026-11-22.
+- Tester reports layout checks passed in portrait and landscape
+  on D11 Small and D11 Large.
+- Largest accessibility text remained readable and usable.
+- These results cover the displayed Activity History state;
+  empty and populated states were not separately recorded.
+- Activity search keyboard behavior remains pending unless separately verified.
