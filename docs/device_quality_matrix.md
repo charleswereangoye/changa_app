@@ -53,9 +53,9 @@ Record results with the device name and app commit in the evidence notes.
 | Add expense | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pending | Pass (both sizes) | User-tested on both sizes |
 | Debt details and nudge | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Debt Details layout passed; sending a nudge not verified |
 | Settle up | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Selection survives rotation; settlement submission not verified |
-| Chore roster | Pending | Pending | Pending | Pending | Pending | N/A | |
-| Add / edit chore | Pending | Pending | Pending | Pending | Pending | Pending | |
-| Chore swap | Pending | Pending | Pending | Pending | Pending | Pending | |
+| Chore roster | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | User-tested on D11 Large |
+| Add / edit chore | Pending | Pending | Pass (layout) | Pass (layout) | Pending | Pass (large device) | Entered values preserved after rotation |
+| Chore swap | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Swap dialog layout passed; request submission not verified |
 | Activity history | Pending | Pending | Pending | Pending | Pending | Pending | |
 | Profile | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Edit profile | Pending | Pending | Pending | Pending | Pending | Pending | |
@@ -142,3 +142,12 @@ For each failure, record:
 - Add Expense remains usable with the keyboard open and preserves entered values.
 - Settle Up preserves the selected payment method after rotation.
 - These results cover layout and state preservation, not successful writes.
+
+### Chores — D11 Large
+
+- App build: 38389f6.
+- Chore Roster, Add Chore, Edit Chore, and Chore Swap passed
+  portrait and landscape layout checks.
+- Add/Edit Chore remain usable with the keyboard open and preserve
+  entered values after rotation.
+- Results reported by the tester; write operations remain unverified.
