@@ -51,7 +51,7 @@ class HarmonyExplainerSheet extends StatelessWidget {
                       Text(
                         'How your household score works',
                         style: AppTextStyles.bodyMedium.copyWith(
-                          color: AppColors.edward,
+                          color: AppColors.sherwoodGreen,
                         ),
                       ),
                     ],

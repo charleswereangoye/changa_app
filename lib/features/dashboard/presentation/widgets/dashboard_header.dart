@@ -42,7 +42,7 @@ class DashboardHeader extends StatelessWidget {
                 style: AppTextStyles.bodySmall.copyWith(
                   letterSpacing: 1.2,
                   fontWeight: FontWeight.w600,
-                  color: AppColors.edward,
+                  color: AppColors.sherwoodGreen,
                 ),
               ),
               const SizedBox(height: AppSpacing.xs),

@@ -104,7 +104,7 @@ class _Loaded extends StatelessWidget {
               _Total(
                 label: 'You owe',
                 amount: data?.youOwe ?? 0,
-                color: AppColors.lightGreen,
+                color: AppColors.sherwoodGreen,
               ),
               if (onSettleUp != null)
                 FilledButton(
@@ -190,11 +190,7 @@ class _Loaded extends StatelessWidget {
                           MoneyText(
                             entry.value.abs(),
                             textAlign: TextAlign.end,
-                            style: AppTextStyles.label.copyWith(
-                              color: entry.value > 0
-                                  ? AppColors.sherwoodGreen
-                                  : AppColors.lightGreen,
-                            ),
+                            style: AppTextStyles.label,
                           ),
                           Text(
                             entry.value > 0 ? 'owes you' : 'to pay back',
