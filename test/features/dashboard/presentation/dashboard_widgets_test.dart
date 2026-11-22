@@ -27,6 +27,50 @@ Future<void> _show(WidgetTester tester, Widget child) async {
 const _names = {'amara': 'Amara', 'chloe': 'Chloe', 'dan': 'Dan'};
 
 void main() {
+  testWidgets('dashboard targets are at least 48 by 48 and respond', (
+    tester,
+  ) async {
+    var avatarTaps = 0;
+    var bellTaps = 0;
+    var infoTaps = 0;
+
+    await _show(
+      tester,
+      Column(
+        children: [
+          DashboardHeader(
+            householdName: 'Test household',
+            uid: 'amara',
+            displayName: 'Amara',
+            onAvatar: () => avatarTaps++,
+            onBell: () => bellTaps++,
+          ),
+          HarmonyCard(
+            status: DashboardSection.ready,
+            score: null,
+            onInfo: () => infoTaps++,
+          ),
+        ],
+      ),
+    );
+
+    for (final key in ['dashboard-avatar', 'dashboard-bell', 'harmony-info']) {
+      final target = find.byKey(Key(key));
+      await tester.ensureVisible(target);
+
+      final size = tester.getSize(target);
+      expect(size.width, greaterThanOrEqualTo(48), reason: '$key width');
+      expect(size.height, greaterThanOrEqualTo(48), reason: '$key height');
+
+      await tester.tap(target);
+      await tester.pump();
+    }
+
+    expect(avatarTaps, 1);
+    expect(bellTaps, 1);
+    expect(infoTaps, 1);
+    expect(tester.takeException(), isNull);
+  });
   group('HarmonyCard', () {
     testWidgets('shows the tier of the score', (tester) async {
       await _show(
