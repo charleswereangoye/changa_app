@@ -29,7 +29,7 @@ class AppBottomNavigation extends StatelessWidget {
       const TextStyle(
         fontFamily: 'Poppins',
         fontSize: 12,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.w700,
       ),
     );
 

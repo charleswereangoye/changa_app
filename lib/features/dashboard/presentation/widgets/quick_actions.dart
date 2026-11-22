@@ -32,7 +32,8 @@ class QuickActions extends StatelessWidget {
           )..layout();
 
           // Label, icon, icon gap, and horizontal padding.
-          final width = painter.width + 20 + AppSpacing.sm + 24;
+          final width =
+              painter.width.ceilToDouble() + 20 + AppSpacing.sm + 24 + 2;
           if (width > requiredButtonWidth) {
             requiredButtonWidth = width;
           }
