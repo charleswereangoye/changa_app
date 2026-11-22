@@ -75,7 +75,13 @@ class DashboardHeader extends StatelessWidget {
           key: const Key('dashboard-avatar'),
           customBorder: const CircleBorder(),
           onTap: onAvatar,
-          child: MemberAvatar(uid: uid, name: displayName, radius: 20),
+          child: SizedBox(
+            width: 48,
+            height: 48,
+            child: Center(
+              child: MemberAvatar(uid: uid, name: displayName, radius: 20),
+            ),
+          ),
         ),
       ],
     );
