@@ -86,14 +86,25 @@ class HarmonyCard extends StatelessWidget {
                   key: const Key('harmony-info'),
                   onTap: onInfo,
                   borderRadius: BorderRadius.circular(8),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      vertical: AppSpacing.xs,
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(
+                      minWidth: 48,
+                      minHeight: 48,
                     ),
-                    child: Text(
-                      "What's this? →",
-                      style: AppTextStyles.label.copyWith(
-                        color: AppColors.lightGreen,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        vertical: AppSpacing.xs,
+                      ),
+                      child: Align(
+                        alignment: Alignment.centerLeft,
+                        widthFactor: 1,
+                        heightFactor: 1,
+                        child: Text(
+                          "What's this? →",
+                          style: AppTextStyles.label.copyWith(
+                            color: AppColors.lightGreen,
+                          ),
+                        ),
                       ),
                     ),
                   ),

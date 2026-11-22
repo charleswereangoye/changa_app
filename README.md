@@ -19,11 +19,17 @@ Built with Flutter and Firebase for the ALU Mobile Application Development final
 
 All amounts are whole Rwandan francs (RWF), with no decimals.
 
+## Supported platforms
+
+Android is the release target. iOS Firebase configuration is included for simulator-based layout testing; physical iOS release distribution has not been verified.
+
+Web is not configured in this version. The earlier Web options contained an Android Firebase app ID and did not establish a valid Web registration. Web startup currently throws an explicit unsupported-platform error. Supporting Web requires a separate Firebase Web app registration and platform validation.
+
 ## Tech stack
 
 | Area | Choice |
 |---|---|
-| Framework | Flutter (Dart), Android only |
+| Framework | Flutter (Dart); Android release target, iOS simulator testing |
 | State management | Cubit (`flutter_bloc`). `setState` is not allowed and CI checks for it |
 | Architecture | Clean Architecture: `presentation`, `domain`, `data` in every feature |
 | Navigation | `go_router` |
