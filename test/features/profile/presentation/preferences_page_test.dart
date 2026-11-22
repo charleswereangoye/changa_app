@@ -79,8 +79,13 @@ void main() {
     await cubit.load();
     await tester.pumpWidget(page());
 
-    await tester.tap(find.byKey(const Key('split-byAmount')));
-    await tester.pump();
+    final splitOption = find.byKey(const Key('split-byAmount'));
+
+    await tester.ensureVisible(splitOption);
+    await tester.pumpAndSettle();
+
+    await tester.tap(splitOption);
+    await tester.pumpAndSettle();
 
     verify(() => store.setString(PrefKeys.defaultSplitType, 'byAmount'))
         .called(1);
