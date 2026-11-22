@@ -1,0 +1,887 @@
+Resolving dependencies...
+Downloading packages...
+  _fe_analyzer_shared 103.0.0 (111.0.0 available)
+  _flutterfire_internals 1.3.77 (1.4.0 available)
+  analyzer 13.3.0 (14.7.0 available)
+  archive 4.5.2 (4.7.1 available)
+  cel 0.6.0 (0.6.1 available)
+  cli_util 0.4.2 (0.6.1 available)
+  cloud_firestore 6.10.0 (7.2.0 available)
+  cloud_firestore_platform_interface 8.0.7 (8.2.0 available)
+  cloud_firestore_web 5.7.3 (5.9.0 available)
+  code_assets 1.2.1 (2.2.0 available)
+  coverage 1.15.1 (1.16.1 available)
+  cross_file 0.3.5+5 (0.4.0 available)
+  crypto 3.0.7 (3.0.8 available)
+  cupertino_icons 1.0.9 (2.0.0 available)
+  cupertino_ui 1.1.3 (1.1.7 available)
+  dbus 0.8.0 (0.8.1 available)
+  equatable 2.1.0 (3.0.0 available)
+  fake_cloud_firestore 4.4.0 (4.5.0 available)
+  firebase_auth 6.7.0 (7.1.0 available)
+  firebase_auth_platform_interface 9.1.0 (9.2.0 available)
+  firebase_auth_web 6.3.0 (6.4.0 available)
+  firebase_core 4.15.0 (5.2.0 available)
+  firebase_core_platform_interface 8.1.1 (8.2.0 available)
+  firebase_core_web 3.12.0 (4.2.0 available)
+  flutter_local_notifications 22.3.2 (23.0.3 available)
+  flutter_local_notifications_linux 8.0.2 (9.0.0 available)
+  flutter_local_notifications_platform_interface 12.2.0 (13.0.0 available)
+  flutter_local_notifications_web 1.0.0 (2.0.0 available)
+  flutter_local_notifications_windows 3.1.1 (4.0.1 available)
+  flutter_svg 2.3.0 (2.5.0 available)
+  frontend_server_client 4.1.0 (4.2.0 available)
+  go_router 18.1.0 (18.1.4 available)
+  google_sign_in_android 7.2.18 (7.2.19 available)
+  google_sign_in_ios 6.3.8 (6.4.0 available)
+  hooks 2.0.2 (2.2.0 available)
+  http_multi_server 3.2.2 (3.2.3 available)
+  image 4.12.0 (4.13.1 available)
+  jni 1.1.0 (1.2.1 available)
+  jni_flutter 1.0.4+1 (1.1.0 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  material_ui 1.7.0 (1.11.1 available)
+  meta 1.18.3 (1.19.0 available)
+  more 4.7.0 (4.10.0 available)
+  objective_c 9.5.0 (9.6.4 available)
+  package_config 2.2.0 (3.0.0 available)
+  petitparser 7.0.2 (7.1.0 available)
+  posix 6.5.2 (6.5.4 available)
+  record_use 0.6.0 (1.1.1 available)
+  shared_preferences_android 2.5.0 (2.5.5 available)
+  shared_preferences_foundation 2.5.7 (2.6.2 available)
+  test 1.31.1 (1.33.0 available)
+  test_api 0.7.12 (0.7.15 available)
+  test_core 0.6.18 (0.6.21 available)
+  vector_graphics 1.2.4 (1.3.1 available)
+  vector_graphics_codec 1.1.13 (1.2.0 available)
+  vector_graphics_compiler 1.3.2 (1.3.6 available)
+  vector_math 2.4.0 (2.4.4 available)
+  web 1.1.1 (1.1.2 available)
+  xml 7.0.1 (7.1.0 available)
+Got dependencies!
+59 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading /Users/dianahgasasira/ChangaApp/changa_app/test/core/constants/firestore_paths_test.dart
+00:00 +0: /Users/dianahgasasira/ChangaApp/changa_app/test/core/constants/firestore_paths_test.dart: FirestorePaths top-level paths
+00:00 +1: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/pin_generator_test.dart: PinGenerator Tests generates exactly a 6-digit numeric string
+00:00 +2: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.name returns null for valid names
+00:00 +3: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.name returns null for valid names
+00:00 +4: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.name returns null for valid names
+00:00 +5: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.name returns null for valid names
+00:00 +6: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.name returns null for valid names
+00:00 +7: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.name returns null for valid names
+00:00 +8: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.name returns null for valid names
+00:00 +9: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.name returns null for valid names
+00:00 +10: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.name returns error for empty or whitespace-only name
+00:00 +11: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.name returns error for name shorter than 2 characters
+00:00 +12: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.name returns error for name longer than 50 characters
+00:00 +13: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.email returns null for valid emails
+00:00 +14: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.email returns error for empty or whitespace email
+00:00 +15: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.email returns error for invalid email patterns
+00:00 +16: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.phone returns null for valid Rwandan phone numbers
+00:00 +17: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.phone returns error for empty or invalid phone numbers
+00:00 +18: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.password returns null for valid password with >=8 chars, letter, and number
+00:00 +19: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.password returns error for empty or short password
+00:00 +20: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.password returns error when letters or numbers are missing
+00:00 +21: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.pin returns null for valid 6-digit PIN
+00:00 +22: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/validators_test.dart: Validators.pin returns error for invalid PIN
+00:00 +23: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/currency_formatter_test.dart: CurrencyFormatter formats thousands with a comma
+00:00 +24: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/currency_formatter_test.dart: CurrencyFormatter formats thousands with a comma
+00:00 +25: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/currency_formatter_test.dart: CurrencyFormatter formats thousands with a comma
+00:00 +26: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/currency_formatter_test.dart: CurrencyFormatter formats zero
+00:00 +27: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/currency_formatter_test.dart: CurrencyFormatter formats millions
+00:00 +28: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/currency_formatter_test.dart: CurrencyFormatter keeps the minus sign in front of RWF
+00:02 +29: loading /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart
+00:06 +29: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: startOfDay / endOfDay strip and fill the time of day
+00:06 +30: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: isSameDay ignores the time
+00:06 +31: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: isSameDay same day number in another month is a different day
+00:06 +32: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: addDays crosses a month end
+00:06 +33: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: addDays crosses a year end
+00:06 +34: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: addDays knows 2028 is a leap year
+00:06 +35: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: addDays knows 2027 is not
+00:06 +36: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: addDays goes backwards too
+00:06 +37: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: weekDays starts on Monday
+00:06 +38: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: weekDays a Sunday belongs to the week that is ending
+00:06 +39: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: weekDays a Monday starts its own week
+00:06 +40: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: weekDays runs across a month end
+00:06 +41: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: dayLabel reads like the roster tab
+00:06 +42: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: isMissed pending and due yesterday is missed
+00:06 +43: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: isMissed pending and due today is not missed yet
+00:06 +44: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: isMissed pending and due tomorrow is not missed
+00:06 +45: /Users/dianahgasasira/ChangaApp/changa_app/test/core/utils/date_helpers_test.dart: isMissed a finished chore is never missed
+00:06 +46: /Users/dianahgasasira/ChangaApp/changa_app/test/core/theme/app_theme_test.dart: credit badge colours use the cream card fill with dark green text
+00:06 +47: /Users/dianahgasasira/ChangaApp/changa_app/test/core/theme/app_theme_test.dart: harmony ring colours each tier gets its own palette colour
+00:06 +48: /Users/dianahgasasira/ChangaApp/changa_app/test/core/theme/app_theme_test.dart: harmony ring colours the three tiers never share a colour
+00:06 +49: /Users/dianahgasasira/ChangaApp/changa_app/test/core/theme/app_theme_test.dart: harmony ring colours tier boundaries pick the right colour
+00:06 +50: /Users/dianahgasasira/ChangaApp/changa_app/test/core/theme/app_theme_test.dart: harmony ring colours no score yet uses the neutral outline
+00:06 +51: /Users/dianahgasasira/ChangaApp/changa_app/test/core/services/local_notification_service_test.dart: (setUpAll)
+00:06 +51: /Users/dianahgasasira/ChangaApp/changa_app/test/core/services/local_notification_service_test.dart: initializes once and creates the Android channel
+00:06 +52: /Users/dianahgasasira/ChangaApp/changa_app/test/core/services/local_notification_service_test.dart: muted nudges do not call the plugin
+00:06 +53: /Users/dianahgasasira/ChangaApp/changa_app/test/core/services/local_notification_service_test.dart: muted chore updates do not call the plugin
+00:06 +54: /Users/dianahgasasira/ChangaApp/changa_app/test/core/services/local_notification_service_test.dart: shows a notification with its navigation payload
+00:07 +55: /Users/dianahgasasira/ChangaApp/changa_app/test/core/services/local_notification_service_test.dart: expense notifications ignore nudge and chore preferences
+00:07 +56: /Users/dianahgasasira/ChangaApp/changa_app/test/core/services/local_notification_service_test.dart: requests permission only when explicitly asked
+00:07 +57: /Users/dianahgasasira/ChangaApp/changa_app/test/core/services/local_notification_service_test.dart: cancelAll clears displayed notifications
+00:07 +58: /Users/dianahgasasira/ChangaApp/changa_app/test/core/services/local_notification_service_test.dart: unsupported platforms skip all plugin calls
+00:07 +59: /Users/dianahgasasira/ChangaApp/changa_app/test/core/services/local_notification_service_test.dart: failed initialization can be retried
+00:07 +60: /Users/dianahgasasira/ChangaApp/changa_app/test/core/services/local_notification_service_test.dart: includes account household and actor IDs in the payload
+00:07 +61: /Users/dianahgasasira/ChangaApp/changa_app/test/core/services/local_notification_service_test.dart: (tearDownAll)
+00:07 +61: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/pin_input_test.dart: PinInput Tests typing 6 digits calls onCompleted
+00:11 +62: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/shared_widgets_test.dart: ConfirmDialog renders title, message, cancel and confirm buttons
+00:12 +63: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/shared_widgets_test.dart: ConfirmDialog renders title, message, cancel and confirm buttons
+00:12 +64: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/shared_widgets_test.dart: ConfirmDialog renders title, message, cancel and confirm buttons
+00:12 +65: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/shared_widgets_test.dart: ConfirmDialog renders title, message, cancel and confirm buttons
+00:13 +66: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/shared_widgets_test.dart: ConfirmDialog renders title, message, cancel and confirm buttons
+00:13 +67: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/shared_widgets_test.dart: ConfirmDialog renders title, message, cancel and confirm buttons
+00:14 +68: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/shared_widgets_test.dart: ConfirmDialog renders title, message, cancel and confirm buttons
+00:14 +69: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/shared_widgets_test.dart: ConfirmDialog renders title, message, cancel and confirm buttons
+00:14 +70: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/alert_modal_test.dart: shows the content without an optional secondary action
+00:14 +71: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/alert_modal_test.dart: shows the content without an optional secondary action
+00:14 +72: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/alert_modal_test.dart: shows the content without an optional secondary action
+00:14 +73: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/alert_modal_test.dart: shows the content without an optional secondary action
+00:14 +74: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/alert_modal_test.dart: shows the content without an optional secondary action
+00:14 +75: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/shared_widgets_test.dart: EmptyState renders title, description and call-to-action button
+00:15 +76: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/alert_modal_test.dart: primary action invokes its callback without auto-dismissing
+00:15 +77: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/alert_modal_test.dart: primary action invokes its callback without auto-dismissing
+00:15 +78: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/shared_widgets_test.dart: PillTabBar renders tab options and calls back on selection
+00:15 +79: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/alert_modal_test.dart: optional secondary action invokes its callback
+00:15 +80: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/alert_modal_test.dart: optional secondary action invokes its callback
+00:15 +81: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/shared_widgets_test.dart: GoogleSignInButton renders full-width Google button with label
+00:15 +82: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/shared_widgets_test.dart: GoogleSignInButton renders full-width Google button with label
+00:16 +83: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/alert_modal_test.dart: Close icon closes the dialog by default
+00:16 +84: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/alert_modal_test.dart: a custom dismiss callback controls dismissal
+00:16 +85: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/alert_modal_test.dart: long content scrolls on a small screen with larger text
+00:17 +86: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/money_text_test.dart: formats whole RWF with separators
+00:19 +87: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/debt_remote_datasource_test.dart: pending query excludes settled debts
+00:19 +88: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/money_text_test.dart: negative amounts keep the minus sign
+00:19 +89: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/money_text_test.dart: negative amounts keep the minus sign
+00:19 +90: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/debt_remote_datasource_test.dart: between query includes both directions, newest first
+00:19 +91: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/money_text_test.dart: showPlus adds a plus only to positive amounts
+00:19 +92: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/money_text_test.dart: showPlus adds a plus only to positive amounts
+00:19 +93: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/money_text_test.dart: showPlus adds a plus only to positive amounts
+00:19 +94: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/money_text_test.dart: showPlus adds a plus only to positive amounts
+00:19 +95: /Users/dianahgasasira/ChangaApp/changa_app/test/core/widgets/money_text_test.dart: showPlus adds a plus only to positive amounts
+00:19 +96: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/debt_model_test.dart: DebtModel reads the document ID and all shared fields
+00:19 +97: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/debt_model_test.dart: DebtModel reads the document ID and all shared fields
+00:19 +98: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/debt_model_test.dart: DebtModel reads the document ID and all shared fields
+00:19 +99: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/debt_model_test.dart: DebtModel reads the document ID and all shared fields
+00:19 +100: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/debt_model_test.dart: DebtModel reads the document ID and all shared fields
+00:19 +101: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/debt_model_test.dart: DebtModel reads the document ID and all shared fields
+00:20 +102: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: first nudge creates a recipient notification and activity
+00:20 +103: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: first nudge creates a recipient notification and activity
+00:20 +104: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: first nudge creates a recipient notification and activity
+00:20 +105: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: first nudge creates a recipient notification and activity
+00:20 +106: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: first nudge creates a recipient notification and activity
+00:20 +107: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: first nudge creates a recipient notification and activity
+00:20 +108: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: first nudge creates a recipient notification and activity
+00:20 +109: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: first nudge creates a recipient notification and activity
+00:20 +110: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: first nudge creates a recipient notification and activity
+00:20 +111: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: first nudge creates a recipient notification and activity
+00:20 +112: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: first nudge creates a recipient notification and activity
+00:20 +113: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: first nudge creates a recipient notification and activity
+00:20 +114: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: first nudge creates a recipient notification and activity
+00:21 +115: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: a second immediate nudge is refused without extra writes
+00:21 +116: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: a previous nudge within 24 hours blocks another nudge
+00:21 +117: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: a previous nudge 25 hours ago allows another nudge
+00:21 +118: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: a signed-out user cannot send a nudge
+00:21 +119: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/data/send_nudge_test.dart: a user cannot send a nudge as another member
+00:21 +120: loading /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/nudge_policy_test.dart
+00:24 +120: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/nudge_policy_test.dart: NudgePolicy the configured cooldown is 24 hours
+00:24 +121: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/nudge_policy_test.dart: NudgePolicy first nudge is allowed when the recipient owes me
+00:24 +122: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/nudge_policy_test.dart: NudgePolicy a second nudge within 24 hours is refused
+00:24 +123: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/nudge_policy_test.dart: NudgePolicy a nudge after 25 hours is allowed
+00:24 +124: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/nudge_policy_test.dart: NudgePolicy a nudge at exactly 24 hours is allowed
+00:24 +125: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/nudge_policy_test.dart: NudgePolicy one second before the cooldown expires is refused
+00:24 +126: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/nudge_policy_test.dart: NudgePolicy a zero net balance cannot be nudged
+00:24 +127: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/nudge_policy_test.dart: NudgePolicy I cannot nudge someone when I owe them overall
+00:24 +128: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/nudge_policy_test.dart: NudgePolicy positive net balance is eligible despite debts both ways
+00:24 +129: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/nudge_policy_test.dart: NudgePolicy an empty debt history cannot be nudged
+00:24 +130: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/nudge_policy_test.dart: NudgePolicy a future nudge timestamp does not bypass the cooldown
+00:24 +131: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/nudge_policy_test.dart: NudgePolicy zero and negative cooldowns are rejected
+00:24 +132: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/balance_calculator_test.dart: BalanceCalculator one-way debt owed to me is positive
+00:24 +133: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/balance_calculator_test.dart: BalanceCalculator one-way debt I owe is negative
+00:24 +134: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/balance_calculator_test.dart: BalanceCalculator debts in both directions are netted per person
+00:24 +135: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/balance_calculator_test.dart: BalanceCalculator several expenses with one person are combined
+00:24 +136: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/balance_calculator_test.dart: BalanceCalculator equal opposing debts keep a zero member balance
+00:24 +137: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/balance_calculator_test.dart: BalanceCalculator settled debts are ignored
+00:24 +138: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/balance_calculator_test.dart: BalanceCalculator debts settled by credits are ignored
+00:24 +139: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/balance_calculator_test.dart: BalanceCalculator unknown member UID is preserved
+00:24 +140: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/balance_calculator_test.dart: BalanceCalculator empty debts produce an empty zero summary
+00:24 +141: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/balance_calculator_test.dart: BalanceCalculator totals use each member net without cancelling different people
+00:24 +142: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/balance_calculator_test.dart: BalanceCalculator debts between other people and self-debts are ignored
+00:25 +143: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/get_outstanding_balance_test.dart: sums outgoing debts without subtracting incoming debts
+00:25 +144: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/get_outstanding_balance_test.dart: excludes settled, self, and other members debts
+00:25 +145: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/get_outstanding_balance_test.dart: empty debts return a successful zero balance
+00:25 +146: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/get_outstanding_balance_test.dart: empty household or member IDs are rejected before querying
+00:25 +147: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/get_outstanding_balance_test.dart: preserves a friendly repository failure
+00:25 +148: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/get_outstanding_balance_test.dart: unexpected errors become UnknownFailure
+00:25 +149: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/settlement_plan_test.dart: SettlementPlan empty debts produce an empty plan
+00:26 +150: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/settlement_plan_test.dart: SettlementPlan debt owed to me produces a positive net amount
+00:26 +151: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/settlement_plan_test.dart: SettlementPlan debt I owe produces a negative net amount
+00:26 +152: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/settlement_plan_test.dart: SettlementPlan both directions are included with one net amount
+00:26 +153: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/settlement_plan_test.dart: SettlementPlan zero net still includes both pending debts for settlement
+00:26 +154: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/settlement_plan_test.dart: SettlementPlan settled debts and debts involving other people are excluded
+00:26 +155: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/settlement_plan_test.dart: SettlementPlan a repeated document is only counted once
+00:26 +156: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/settlement_plan_test.dart: SettlementPlan empty member IDs and settling with yourself are rejected
+00:26 +157: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/domain/settlement_plan_test.dart: SettlementPlan debt IDs cannot be changed after creating the plan
+00:26 +158: loading /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart
+00:32 +158: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +159: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +160: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +161: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +162: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +163: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +164: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +165: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +166: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +167: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +168: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +169: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +170: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +171: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +172: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +173: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:32 +174: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balance_widgets_test.dart: balance card shows both totals and positive net
+00:34 +175: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: signed-out users cannot open settlement streams
+00:35 +176: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: signed-out users cannot open settlement streams
+00:35 +177: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_page_test.dart: shows a loading indicator
+00:35 +178: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_page_test.dart: shows a loading indicator
+00:35 +179: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: opens without a preselected member for ""
+00:35 +180: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: opens without a preselected member for ""
+00:35 +181: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: opens without a preselected member for ""
+00:36 +182: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: opens without a preselected member for ""
+00:36 +183: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: opens without a preselected member for ""
+00:36 +184: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: opens without a preselected member for ""
+00:36 +185: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: opens without a preselected member for ""
+00:36 +186: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: opens without a preselected member for ""
+00:36 +187: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: opens without a preselected member for ""
+00:36 +188: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: opens without a preselected member for ""
+00:37 +189: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: opens without a preselected member for ""
+00:37 +190: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_page_test.dart: tapping an expense passes it to the details action
+00:37 +191: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: opens without a preselected member for "all"
+00:37 +192: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: opens without a preselected member for "all"
+00:38 +193: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_page_test.dart: shows a success message after sending
+00:38 +194: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_page_test.dart: shows a success message after sending
+00:38 +195: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_page_test.dart: shows a success message after sending
+00:38 +196: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: uses Housemate while profiles load, including settlement success
+00:38 +197: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_page_test.dart: shows the friendly cooldown message
+00:38 +198: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: loads saved Bank Transfer and uses it for confirmation
+00:38 +199: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: loads saved Bank Transfer and uses it for confirmation
+00:39 +200: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_page_test.dart: fits a narrow screen with larger text
+00:39 +201: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: saved "credits" falls back to Mobile Money
+00:39 +202: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_route_test.dart: saved "unknown-method" falls back to Mobile Money
+00:39 +203: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_page_test.dart: shows loading while balances arrive
+00:40 +204: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_page_test.dart: shows loading while balances arrive
+00:40 +205: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_page_test.dart: shows loading while balances arrive
+00:41 +206: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_page_test.dart: shows loading while balances arrive
+00:42 +207: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_page_test.dart: shows loading while balances arrive
+00:43 +208: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_route_test.dart: signed-out users cannot open debt streams
+00:44 +209: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_route_test.dart: signed-out users cannot open debt streams
+00:44 +210: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_page_test.dart: selecting a housemate updates the selected card
+00:45 +211: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_page_test.dart: selecting a housemate updates the selected card
+00:45 +212: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_page_test.dart: selecting a housemate updates the selected card
+00:45 +213: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_route_test.dart: loads the current household and housemate name
+00:45 +214: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_route_test.dart: loads the current household and housemate name
+00:46 +215: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_route_test.dart: loads the current household and housemate name
+00:46 +216: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_route_test.dart: loads the current household and housemate name
+00:46 +217: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_route_test.dart: loads the current household and housemate name
+00:46 +218: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_page_test.dart: shows all settled when no net balances remain
+00:46 +219: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_route_test.dart: household switching replaces debt listeners only
+00:46 +220: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_route_test.dart: household switching replaces debt listeners only
+00:46 +221: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_page_test.dart: Done calls the supplied navigation action
+00:46 +222: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_route_test.dart: leaving and rejoining keeps the profile stream usable
+00:47 +223: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_route_test.dart: leaving and rejoining keeps the profile stream usable
+00:47 +224: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/settle_up_page_test.dart: fits a narrow screen with larger text
+00:47 +225: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_route_test.dart: sign-out removes balances and cancels listeners
+00:47 +226: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_route_test.dart: account switching clears the previous account immediately
+00:47 +227: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_route_test.dart: housemate profile permission error preserves the debt page
+00:47 +228: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_route_test.dart: profile errors show a friendly message
+00:49 +229: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_cubit_test.dart: starts with no available actions
+00:49 +230: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_cubit_test.dart: waits for both debts and expenses
+00:49 +231: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_cubit_test.dart: nets both directions and excludes settled or unrelated debts
+00:49 +232: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_cubit_test.dart: sorts newest first and retains applied credits
+00:49 +233: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_cubit_test.dart: an empty balance disables nudge and settlement
+00:49 +234: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_cubit_test.dart: cannot nudge when I owe the other member
+00:49 +235: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_cubit_test.dart: cannot nudge when opposing debts net to zero
+00:49 +236: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_cubit_test.dart: sends a nudge for the current pair
+00:49 +237: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_cubit_test.dart: preserves the cooldown failure for the screen
+00:49 +238: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_cubit_test.dart: live updates cannot enable a second in-flight nudge
+00:49 +239: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_cubit_test.dart: stream failure disables actions and retry can recover
+00:49 +240: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_cubit_test.dart: retry recovers during a nudge without sending it twice
+00:49 +241: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/debt_detail_cubit_test.dart: closing during a nudge ignores its late result
+00:50 +242: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balances_cubit_test.dart: starts in the initial state
+00:50 +243: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balances_cubit_test.dart: loads the summary for the current user and household
+00:50 +244: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balances_cubit_test.dart: updates when another summary arrives
+00:50 +245: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balances_cubit_test.dart: does not subscribe without both session IDs
+00:50 +246: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balances_cubit_test.dart: starting the same active session does not resubscribe
+00:50 +247: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balances_cubit_test.dart: preserves domain failures from the stream
+00:50 +248: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balances_cubit_test.dart: converts unexpected errors into a friendly failure
+00:50 +249: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balances_cubit_test.dart: retry resubscribes and can recover
+00:50 +250: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balances_cubit_test.dart: household switching clears the previous balance immediately
+00:50 +251: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balances_cubit_test.dart: switching users subscribes for the new user
+00:50 +252: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balances_cubit_test.dart: sign-out clears balances and cancels the subscription
+00:50 +253: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balances_cubit_test.dart: handles a use case that throws before returning a stream
+00:50 +254: /Users/dianahgasasira/ChangaApp/changa_app/test/features/debts/presentation/balances_cubit_test.dart: close cancels the subscription and start after close is ignored
+00:50 +255: loading /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/complete_chore_test.dart
+00:53 +255: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/complete_chore_test.dart: credits awarded a easy chore awards 10
+00:54 +256: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: requesting a swap saves a pending request, a notification and an activity
+00:54 +257: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: requesting a swap saves a pending request, a notification and an activity
+00:54 +258: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: requesting a swap saves a pending request, a notification and an activity
+00:54 +259: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: requesting a swap saves a pending request, a notification and an activity
+00:54 +260: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: requesting a swap saves a pending request, a notification and an activity
+00:54 +261: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: requesting a swap saves a pending request, a notification and an activity
+00:54 +262: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: requesting a swap saves a pending request, a notification and an activity
+00:54 +263: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: requesting a swap saves a pending request, a notification and an activity
+00:55 +264: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: requesting a swap only the assignee can ask to swap
+00:55 +265: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: requesting a swap you cannot swap with yourself
+00:55 +266: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: requesting a swap the other person must be in the household
+00:55 +267: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: requesting a swap a finished chore cannot be swapped
+00:55 +268: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: requesting a swap only one request can be open for a chore
+00:55 +269: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: answering a swap accepting hands the chore over and tells the asker
+00:55 +270: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: answering a swap declining leaves the chore with its owner
+00:55 +271: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: answering a swap only the person asked can answer
+00:55 +272: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: answering a swap a request cannot be answered twice
+00:55 +273: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: answering a swap accepting fails if the chore was finished meanwhile
+00:55 +274: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: cancelling a swap the asker can cancel an open request
+00:55 +275: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/swap_datasource_test.dart: cancelling a swap someone else cannot cancel it
+00:56 +276: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/chore_repository_impl_test.dart: a finished call becomes a success
+00:57 +277: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/chore_repository_impl_test.dart: rule errors become friendly failures validation
+00:57 +278: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/chore_repository_impl_test.dart: rule errors become friendly failures permission
+00:57 +279: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/chore_repository_impl_test.dart: rule errors become friendly failures not found
+00:57 +280: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/chore_repository_impl_test.dart: Firebase errors permission denied
+00:57 +281: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/chore_repository_impl_test.dart: Firebase errors network trouble
+00:57 +282: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/chore_repository_impl_test.dart: Firebase errors anything else is unknown
+00:57 +283: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/chore_repository_impl_test.dart: a surprise error is reported, not thrown
+00:57 +284: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/chore_repository_impl_test.dart: swap calls go through the same guard
+00:57 +285: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/update_chore_test.dart: editing a pending chore changes only the editable fields
+00:58 +286: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/update_chore_test.dart: a chore completed first cannot be edited afterwards
+00:58 +287: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/data/update_chore_test.dart: editing a chore that no longer exists is reported as not found
+00:58 +288: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/domain/rotation_planner_test.dart: three members over four weeks wraps back to the start
+00:59 +289: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/domain/rotation_planner_test.dart: a single member takes every week
+00:59 +290: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/domain/rotation_planner_test.dart: starting in the middle of the list carries on from there
+00:59 +291: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/domain/rotation_planner_test.dart: five members means nobody repeats inside four weeks
+00:59 +292: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/domain/rotation_planner_test.dart: due dates are exactly a week apart, even across a month end
+00:59 +293: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/domain/rotation_planner_test.dart: the number of weeks can be changed
+00:59 +294: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/domain/rotation_planner_test.dart: an empty member list is rejected
+00:59 +295: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/domain/rotation_planner_test.dart: a starting member who is not in the list is rejected
+00:59 +296: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_inbox_cubit_test.dart: keeps the open requests and the chore names
+00:59 +297: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_inbox_cubit_test.dart: uses a plain fallback when the chore is unknown
+00:59 +298: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_inbox_cubit_test.dart: accepting tells the user the chore is theirs
+00:59 +299: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_inbox_cubit_test.dart: declining says so
+00:59 +300: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_inbox_cubit_test.dart: shows the reason when answering fails
+00:59 +301: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_inbox_cubit_test.dart: unknown requests and double taps are ignored
+00:59 +302: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_inbox_cubit_test.dart: the notice can be cleared
+01:01 +303: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: lists the housemates for the chore
+01:02 +304: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: lists the housemates for the chore
+01:02 +305: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: lists the housemates for the chore
+01:02 +306: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: lists the housemates for the chore
+01:03 +307: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: lists the housemates for the chore
+01:03 +308: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: lists the housemates for the chore
+01:03 +309: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: lists the housemates for the chore
+01:03 +310: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: lists the housemates for the chore
+01:04 +311: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: lists the housemates for the chore
+01:04 +312: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: lists the housemates for the chore
+01:04 +313: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: lists the housemates for the chore
+01:04 +314: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: lists the housemates for the chore
+01:04 +315: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: lists the housemates for the chore
+01:04 +316: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: lists the housemates for the chore
+01:04 +317: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: lists the housemates for the chore
+01:06 +318: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_day_strip_test.dart: shows all seven days of the week
+01:06 +319: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: tapping Request Swap sends it to that person
+01:07 +320: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: tapping Request Swap sends it to that person
+01:07 +321: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_sheet_test.dart: tapping Request Swap sends it to that person
+01:08 +322: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_card_test.dart: shows the title, due day and points
+01:08 +323: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_card_test.dart: shows the title, due day and points
+01:13 +324: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_card_test.dart: your own open chore can be completed and edited
+01:14 +325: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_card_test.dart: the swap button only shows when swapping is wired up
+01:14 +326: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_card_test.dart: a housemate’s chore has no buttons
+01:14 +327: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_card_test.dart: a finished chore shows Done with the points it earned
+01:14 +328: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_card_test.dart: a chore past its day is marked missed
+01:14 +329: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +330: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +331: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +332: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +333: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +334: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +335: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +336: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +337: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +338: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +339: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +340: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +341: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +342: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +343: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +344: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +345: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +346: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:14 +347: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/difficulty_selector_test.dart: shows each level with its points
+01:17 +348: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_request_banner_test.dart: shows nothing when there are no requests
+01:17 +349: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_request_banner_test.dart: shows nothing when there are no requests
+01:17 +350: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_request_banner_test.dart: shows nothing when there are no requests
+01:19 +351: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_request_banner_test.dart: says who wants to swap which chore, with their note
+01:19 +352: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/swap_request_banner_test.dart: accept and decline report the request id
+01:20 +353: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:20 +354: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:20 +355: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:20 +356: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:21 +357: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:21 +358: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:21 +359: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:21 +360: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:21 +361: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:21 +362: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:21 +363: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:21 +364: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:21 +365: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:21 +366: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:21 +367: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:21 +368: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:21 +369: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:21 +370: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:21 +371: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:22 +372: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: before the roster can show waits while the household loads
+01:22 +373: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/missed_chore_modal_test.dart: names the chore, its day and the points
+01:23 +374: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/missed_chore_modal_test.dart: names the chore, its day and the points
+01:23 +375: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/missed_chore_modal_test.dart: names the chore, its day and the points
+01:24 +376: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/missed_chore_modal_test.dart: names the chore, its day and the points
+01:24 +377: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/missed_chore_modal_test.dart: names the chore, its day and the points
+01:24 +378: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: the roster lists today’s chores with actions only on yours
+01:24 +379: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: the roster lists today’s chores with actions only on yours
+01:25 +380: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/missed_chore_modal_test.dart: Dismiss closes without completing
+01:25 +381: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: the roster Mark Done completes the chore
+01:25 +382: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: the roster Mark Done completes the chore
+01:25 +383: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: the roster Mark Done completes the chore
+01:25 +384: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: the roster Mark Done completes the chore
+01:25 +385: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: the roster Mark Done completes the chore
+01:25 +386: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: the roster shows a request waiting for your answer
+01:26 +387: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: the roster a failing chore stream offers to try again
+01:26 +388: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: landscape fits a short, wide screen without overflowing
+01:26 +389: /Users/dianahgasasira/ChangaApp/changa_app/test/features/chores/presentation/chore_roster_page_test.dart: (tearDownAll)
+01:27 +389: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/onboarding_cubit_test.dart: OnboardingCubit initial state has currentPage = 0 and isLastPage = false
+01:27 +390: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/onboarding_cubit_test.dart: OnboardingCubit setPage updates currentPage correctly
+01:28 +391: loading /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/verify_email_cubit_test.dart
+01:31 +391: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/verify_email_cubit_test.dart: (setUpAll)
+01:31 +391: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/verify_email_cubit_test.dart: VerifyEmailCubit initial state has default flags
+01:31 +392: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/verify_email_cubit_test.dart: VerifyEmailCubit resendVerificationEmail success triggers cooldown
+01:31 +393: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/verify_email_cubit_test.dart: VerifyEmailCubit resendVerificationEmail failure sets errorMessage
+01:31 +394: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/verify_email_cubit_test.dart: VerifyEmailCubit checkVerificationStatus returns true when verified
+01:31 +395: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/verify_email_cubit_test.dart: VerifyEmailCubit checkVerificationStatus returns false and sets errorMessage when not verified
+01:31 +396: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/verify_email_cubit_test.dart: (tearDownAll)
+01:33 +396: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/verify_email_page_test.dart: (setUpAll)
+01:33 +396: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/verify_email_page_test.dart: VerifyEmailPage Widget Tests renders all email verification screen components
+01:36 +397: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/sign_up_page_test.dart: SignUpPage renders heading, 4 inputs, terms, buttons, and links
+01:38 +398: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/sign_up_page_test.dart: SignUpPage renders heading, 4 inputs, terms, buttons, and links
+01:38 +399: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/sign_up_page_test.dart: SignUpPage renders heading, 4 inputs, terms, buttons, and links
+01:38 +400: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/sign_up_page_test.dart: SignUpPage renders heading, 4 inputs, terms, buttons, and links
+01:39 +401: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/login_cubit_test.dart: (setUpAll)
+01:39 +401: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/login_cubit_test.dart: LoginCubit initial state has correct default values
+01:39 +402: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/login_cubit_test.dart: LoginCubit togglePasswordVisibility toggles isPasswordVisible
+01:39 +403: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/login_cubit_test.dart: LoginCubit login with empty fields emits failure status with error message
+01:39 +404: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/login_cubit_test.dart: LoginCubit login with valid credentials emits success status
+01:39 +405: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/login_cubit_test.dart: LoginCubit login with invalid credentials emits failure with message
+01:39 +406: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/login_cubit_test.dart: LoginCubit loginWithGoogle emits success on valid response
+01:39 +407: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/login_cubit_test.dart: (tearDownAll)
+01:41 +407: loading /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/forgot_password_page_test.dart
+01:46 +407: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/auth_cubit_test.dart: AuthCubit initial state begins with AuthStateLoading when initialized
+01:46 +408: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/forgot_password_page_test.dart: ForgotPasswordPage Widget Tests renders reset password form elements
+01:46 +409: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/forgot_password_page_test.dart: ForgotPasswordPage Widget Tests renders reset password form elements
+01:46 +410: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/forgot_password_page_test.dart: ForgotPasswordPage Widget Tests renders reset password form elements
+01:46 +411: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/forgot_password_page_test.dart: ForgotPasswordPage Widget Tests renders reset password form elements
+01:46 +412: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/forgot_password_page_test.dart: ForgotPasswordPage Widget Tests renders reset password form elements
+01:46 +413: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/forgot_password_page_test.dart: ForgotPasswordPage Widget Tests renders reset password form elements
+01:46 +414: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/forgot_password_page_test.dart: ForgotPasswordPage Widget Tests renders reset password form elements
+01:46 +415: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/forgot_password_page_test.dart: ForgotPasswordPage Widget Tests renders reset password form elements
+01:46 +416: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/forgot_password_page_test.dart: ForgotPasswordPage Widget Tests renders reset password form elements
+01:46 +417: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/forgot_password_page_test.dart: ForgotPasswordPage Widget Tests renders reset password form elements
+01:46 +418: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/forgot_password_page_test.dart: ForgotPasswordPage Widget Tests renders reset password form elements
+01:46 +419: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/forgot_password_page_test.dart: ForgotPasswordPage Widget Tests renders reset password form elements
+01:49 +420: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/login_page_test.dart: LoginPage Widget Tests LoginPage renders heading, inputs, buttons, and links
+01:50 +421: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/login_page_test.dart: LoginPage Widget Tests LoginPage renders heading, inputs, buttons, and links
+01:50 +422: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/forgot_password_page_test.dart: ForgotPasswordPage Widget Tests entering email and submitting displays success UI
+01:51 +423: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/login_page_test.dart: LoginPage Widget Tests submitting empty form displays validation errors
+01:51 +424: /Users/dianahgasasira/ChangaApp/changa_app/test/features/auth/presentation/login_page_test.dart: LoginPage Widget Tests submitting valid credentials calls login on cubit and navigates
+01:52 +425: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_unit_test.dart: ActivityRemoteDataSourceImpl & ActivityRepositoryImpl watchRecent returns activities ordered newest first and respects limit
+01:53 +426: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +427: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +428: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +429: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +430: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +431: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +432: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +433: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +434: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +435: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +436: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +437: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +438: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +439: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +440: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +441: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:53 +442: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:56 +443: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:57 +444: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:59 +445: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: renders sticky headers ("Today", "Yesterday", "12 Oct"), month tabs, search, and tap callbacks
+01:59 +446: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: shows error state on stream failure and retries on tap
+02:00 +447: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: shows empty state for a month with no activity and fits 320px screen with scaled text
+02:00 +448: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: discovers and navigates to older month even when household has more than 100 recent activities
+02:00 +449: /Users/dianahgasasira/ChangaApp/changa_app/test/features/activity/activity_page_test.dart: Older month button connects selectPreviousMonth() and navigates beyond the 24-month discovery window
+02:01 +450: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/data/expense_data_layer_test.dart: addExpense writes expense, debts, credits, activity and notifications
+02:01 +451: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/data/expense_data_layer_test.dart: addExpense a debt fully covered by credits is settled with method credits
+02:01 +452: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/data/expense_data_layer_test.dart: addExpense rejects a title that is too short and saves nothing
+02:01 +453: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/data/expense_data_layer_test.dart: ExpenseRepositoryImpl turns a percent split that is not 100 into a ValidationFailure
+02:01 +454: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/data/expense_data_layer_test.dart: ExpenseRepositoryImpl addExpense returns the saved expense on success
+02:01 +455: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/data/expense_data_layer_test.dart: deleteExpense removes expense and debts, refunds credits, adds activity
+02:02 +456: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/data/expense_data_layer_test.dart: deleteExpense only the person who paid can delete
+02:02 +457: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/data/expense_data_layer_test.dart: deleteExpense is blocked when someone has already paid their share
+02:02 +458: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/data/expense_data_layer_test.dart: deleteExpense re-checks the debts inside the transaction: a payment made after they were looked up still blocks the delete
+02:02 +459: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/data/expense_data_layer_test.dart: deleteExpense deleting the same expense twice refunds the credits only once
+02:02 +460: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/data/expense_data_layer_test.dart: deleteExpense a delete that finishes in the gap makes the other one fail without a second refund
+02:02 +461: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/data/expense_data_layer_test.dart: updateExpenseNote changes only the title and the note
+02:02 +462: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/data/expense_data_layer_test.dart: watchExpenses emits the saved expenses
+02:02 +463: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/data/expense_data_layer_test.dart: watchExpenseDebts emits only the debts of that expense
+02:02 +464: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/expense_shares_test.dart: the payer comes first and gets what is left of the total
+02:02 +465: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/expense_shares_test.dart: the payer comes first and gets what is left of the total
+02:02 +466: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/expense_shares_test.dart: a share includes the credits used on it
+02:02 +467: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/expense_shares_test.dart: payment states: pending, paid with a method, covered by credits
+02:02 +468: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/expense_shares_test.dart: paidCount counts only debts settled with real money
+02:02 +469: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/expense_shares_test.dart: with no debts the payer carries the whole total
+02:03 +470: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/apply_credits_test.dart: ApplyCredits uses all credits when the share is bigger
+02:03 +471: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/apply_credits_test.dart: ApplyCredits credits greater than the share cover it fully
+02:03 +472: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/apply_credits_test.dart: ApplyCredits credits exactly equal to the share leave nothing to pay
+02:03 +473: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/apply_credits_test.dart: ApplyCredits zero credits changes nothing
+02:03 +474: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/apply_credits_test.dart: ApplyCredits 4,005 RWF with 1,000 credits leaves the odd 5 RWF
+02:03 +475: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/apply_credits_test.dart: ApplyCredits a share under 10 RWF uses no credits
+02:03 +476: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/apply_credits_test.dart: ApplyCredits a negative balance is treated as zero
+02:05 +477: loading /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/split_calculator_test.dart
+02:08 +477: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/split_calculator_test.dart: equal split 10,000 between 3: first person pays the extra RWF
+02:08 +478: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/split_calculator_test.dart: equal split 100 between 3
+02:08 +479: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/split_calculator_test.dart: equal split the order decides who pays the extra RWF
+02:08 +480: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/split_calculator_test.dart: equal split one participant pays everything
+02:08 +481: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/split_calculator_test.dart: equal split shares always add up to the total
+02:08 +482: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/split_calculator_test.dart: percent split 33/33/34 of 100
+02:08 +483: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/split_calculator_test.dart: percent split the last person takes the rounding leftover
+02:08 +484: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/split_calculator_test.dart: percent split percentages not adding up to 100 are rejected
+02:08 +485: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/split_calculator_test.dart: exact split amounts that match the total are accepted
+02:08 +486: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/split_calculator_test.dart: exact split amounts that do not match the total are rejected
+02:08 +487: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/split_calculator_test.dart: exact split a missing amount is rejected
+02:08 +488: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/split_calculator_test.dart: bad input zero total is rejected
+02:08 +489: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/domain/split_calculator_test.dart: bad input no participants is rejected
+02:09 +490: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:10 +491: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:10 +492: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:10 +493: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:10 +494: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:10 +495: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:10 +496: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:10 +497: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:10 +498: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:10 +499: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:10 +500: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:10 +501: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:10 +502: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:10 +503: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:10 +504: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:10 +505: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_form_widgets_test.dart: tapping a category chip reports that category
+02:12 +506: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_detail_sheet_test.dart: shows the expense details
+02:12 +507: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_detail_sheet_test.dart: shows the expense details
+02:13 +508: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_detail_sheet_test.dart: lists each person with their share and payment status
+02:13 +509: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_detail_sheet_test.dart: a debt covered by credits says so
+02:14 +510: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_detail_sheet_test.dart: someone who did not pay sees no edit or delete
+02:14 +511: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/expense_detail_sheet_test.dart: the payer can edit the title and save
+02:16 +512: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:16 +513: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:17 +514: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:17 +515: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:17 +516: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:17 +517: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:17 +518: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:17 +519: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:17 +520: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:17 +521: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:17 +522: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:17 +523: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:17 +524: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:17 +525: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:17 +526: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +527: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +528: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +529: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +530: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +531: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +532: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +533: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +534: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +535: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +536: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +537: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +538: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +539: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +540: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +541: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +542: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:18 +543: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +544: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +545: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +546: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +547: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +548: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +549: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +550: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +551: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +552: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +553: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +554: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +555: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +556: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +557: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +558: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:19 +559: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: Save is disabled until the form is valid
+02:21 +560: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the header Save follows the same rule as the button
+02:22 +561: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: a percent total of 90 shows the error
+02:24 +562: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_cubit_test.dart: no household: shows the no-household state and watches nothing
+02:24 +563: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +564: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +565: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +566: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +567: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +568: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +569: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +570: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +571: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +572: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +573: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +574: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +575: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +576: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +577: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +578: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:24 +579: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:25 +580: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:25 +581: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:25 +582: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:25 +583: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:25 +584: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:25 +585: /Users/dianahgasasira/ChangaApp/changa_app/test/features/expenses/presentation/add_expense_page_test.dart: the form is locked while the save is running
+02:25 +586: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: HarmonyCard shows the tier of the score
+02:26 +587: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: HarmonyCard shows the tier of the score
+02:26 +588: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: HarmonyCard shows the tier of the score
+02:27 +589: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: HarmonyCard shows the tier of the score
+02:27 +590: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: HarmonyCard shows the tier of the score
+02:27 +591: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: HarmonyCard shows the tier of the score
+02:27 +592: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: HarmonyCard shows the tier of the score
+02:27 +593: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: HarmonyCard shows the tier of the score
+02:27 +594: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: HarmonyCard shows the tier of the score
+02:27 +595: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: HarmonyCard shows the tier of the score
+02:27 +596: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: HarmonyCard shows the tier of the score
+02:28 +597: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: HarmonyCard shows a dash and a hint when there is no data
+02:28 +598: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: HarmonyCard loading and failed have their own text
+02:28 +599: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: HarmonyCard the info button calls back
+02:29 +600: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: HarmonyExplainerSheet explains the tiers
+02:29 +601: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: BalanceSummaryCard shows totals and who owes whom
+02:29 +602: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: BalanceSummaryCard Settle Up calls back
+02:29 +603: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: BalanceSummaryCard tapping a person reports their uid
+02:29 +604: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: BalanceSummaryCard no debts reads as settled up
+02:29 +605: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: BalanceSummaryCard hides people whose debts cancelled out
+02:29 +606: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: BalanceSummaryCard only cancelled-out people reads as settled up
+02:30 +607: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: BalanceSummaryCard failed shows a retry button
+02:30 +608: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: QuickActions report each tap
+02:30 +609: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: RecentActivityList writes readable lines with You and names
+02:30 +610: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: RecentActivityList empty shows a hint and See all calls back
+02:30 +611: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: RecentActivityList unknown people read as a housemate
+02:30 +612: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: DashboardHeader greets by first name
+02:30 +613: /Users/dianahgasasira/ChangaApp/changa_app/test/features/dashboard/presentation/dashboard_widgets_test.dart: DashboardEmptyState shows both actions
+02:33 +614: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/preferences_page_test.dart: waits for the saved values before showing the options
+02:40 +615: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/preferences_page_test.dart: waits for the saved values before showing the options
+02:41 +616: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/profile_page_test.dart: ProfilePage renders user profile header, name, subtitle and stats row
+02:41 +617: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/profile_page_test.dart: ProfilePage renders user profile header, name, subtitle and stats row
+02:41 +618: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/profile_page_test.dart: ProfilePage renders user profile header, name, subtitle and stats row
+02:42 +619: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/profile_page_test.dart: ProfilePage renders user profile header, name, subtitle and stats row
+02:42 +620: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/profile_page_test.dart: ProfilePage renders user profile header, name, subtitle and stats row
+02:42 +621: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/preferences_page_test.dart: picking a split saves it
+02:42 +622: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/profile_page_test.dart: ProfilePage renders settings menu categories and tiles with Admin badge
+02:42 +623: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/preferences_page_test.dart: a failed save tells the user
+02:43 +624: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/profile_page_test.dart: ProfilePage tapping Log Out opens ConfirmDialog
+02:44 +625: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage renders input fields populated with existing user data
+02:44 +626: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage renders input fields populated with existing user data
+02:45 +627: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage renders input fields populated with existing user data
+02:46 +628: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage renders input fields populated with existing user data
+02:46 +629: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage renders input fields populated with existing user data
+02:47 +630: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage renders input fields populated with existing user data
+02:47 +631: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage renders input fields populated with existing user data
+02:48 +632: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage renders input fields populated with existing user data
+02:48 +633: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage validates required name field on submission
+02:50 +634: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage validates phone number format on submission
+02:50 +635: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage validates phone number format on submission
+02:50 +636: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage validates phone number format on submission
+02:50 +637: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage validates phone number format on submission
+02:50 +638: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage validates phone number format on submission
+02:50 +639: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage validates phone number format on submission
+02:51 +640: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage validates phone number format on submission
+02:51 +641: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage validates phone number format on submission
+02:51 +642: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage validates phone number format on submission
+02:51 +643: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage submits updated values when form is valid
+02:51 +644: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage submits updated values when form is valid
+02:51 +645: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage submits updated values when form is valid
+02:51 +646: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage submits updated values when form is valid
+02:51 +647: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage submits updated values when form is valid
+02:51 +648: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage submits updated values when form is valid
+02:51 +649: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage submits updated values when form is valid
+02:51 +650: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage submits updated values when form is valid
+02:51 +651: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage submits updated values when form is valid
+02:51 +652: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage submits updated values when form is valid
+02:51 +653: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage submits updated values when form is valid
+02:51 +654: /Users/dianahgasasira/ChangaApp/changa_app/test/features/profile/presentation/edit_profile_page_test.dart: EditProfilePage regression: saving then reopening the profile editor populates the latest saved data
+02:55 +655: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdCubit loads household, sorts admin first, and resolves member names
+02:55 +656: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdCubit regeneratePin updates household PIN and emits pinRegenerated action
+02:55 +657: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdCubit transferAdmin updates adminUid and flips member roles
+02:55 +658: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdCubit fetchOutstandingBalance returns pending balance from GetOutstandingBalance
+02:55 +659: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdCubit fetchOutstandingBalance preserves failure instead of coercing to zero
+02:55 +660: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdCubit removeMember calls ReassignChores(fromUid: removed, toUid: admin) then RemoveMember
+02:55 +661: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdCubit removeMember aborts if ReassignChores fails
+02:55 +662: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdCubit clears state, updates currentUid, and invalidates in-flight actions on global HouseholdCubit session changes
+02:55 +663: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:58 +664: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +665: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +666: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +667: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +668: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +669: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +670: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +671: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +672: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +673: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +674: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +675: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +676: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +677: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +678: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +679: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+02:59 +680: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage renders summary card, formatted PIN, members list, role badges, and Harmony scores
+03:00 +681: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/pin_input_test.dart: PinInputTest placeholder test
+03:01 +682: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_pages_test.dart: HouseholdCreatedPage widget tests disables Copy PIN and share buttons when no household is available
+03:02 +683: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_pages_test.dart: HouseholdCreatedPage widget tests disables Copy PIN and share buttons when no household is available
+03:03 +684: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_pages_test.dart: HouseholdCreatedPage widget tests disables Copy PIN and share buttons when no household is available
+03:03 +685: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage failed balance lookup blocks unverified removal and offers Retry before showing removal dialog
+03:03 +686: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_pages_test.dart: HouseholdCreatedPage widget tests displays formatted PIN and shares invite message when household is loaded
+03:04 +687: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/manage_household_test.dart: ManageHouseholdPage clears previous household PIN, members, and admin controls on session switch and sign-out
+03:04 +688: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_pages_test.dart: JoinHouseholdPage widget tests shows preview when 6 digits completed and invalidates when reset
+03:04 +689: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_pages_test.dart: JoinHouseholdPage widget tests shows preview when 6 digits completed and invalidates when reset
+03:04 +690: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_pages_test.dart: JoinHouseholdPage widget tests shows preview when 6 digits completed and invalidates when reset
+03:06 +691: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_pages_test.dart: Responsive 320px and Landscape layout regression tests renders Create, Created, and Join pages at Size(320.0, 568.0) without overflow
+03:08 +692: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_pages_test.dart: Responsive 320px and Landscape layout regression tests renders Create, Created, and Join pages at Size(320.0, 568.0) without overflow
+03:08 +693: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_pages_test.dart: Responsive 320px and Landscape layout regression tests renders Create, Created, and Join pages at Size(640.0, 320.0) without overflow
+03:09 +694: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_pages_test.dart: Responsive 320px and Landscape layout regression tests renders Create, Created, and Join pages at Size(640.0, 320.0) without overflow
+03:09 +695: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_pages_test.dart: Responsive 320px and Landscape layout regression tests renders Create, Created, and Join pages at Size(640.0, 320.0) without overflow
+03:09 +696: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_cubit_test.dart: CreateHouseholdCubit in-flight guard ignores duplicate submit on double tap
+03:09 +697: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_cubit_test.dart: CreateHouseholdCubit does not emit after cubit is closed during in-flight create
+03:09 +698: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_cubit_test.dart: JoinHouseholdCubit ignores out-of-order preview lookup results
+03:09 +699: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_cubit_test.dart: JoinHouseholdCubit invalidates preview when deleting a PIN digit or changing PIN
+03:09 +700: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_cubit_test.dart: JoinHouseholdCubit prevents PIN changes and duplicate submissions during joining
+03:09 +701: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_cubit_test.dart: JoinHouseholdCubit guards preview and join completions when cubit closes mid-request
+03:09 +702: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_cubit_test.dart: HouseholdCubit session, streams, and race conditions loads household via WatchUser on login/restart and clears on sign-out
+03:09 +703: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_cubit_test.dart: HouseholdCubit session, streams, and race conditions immediately clears Account A state when switching to Account B with delayed profile response
+03:09 +704: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_cubit_test.dart: HouseholdCubit session, streams, and race conditions resets caches and caller overrides across account/household switches and ignores stale name lookups
+03:10 +705: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_cubit_test.dart: HouseholdCubit session, streams, and race conditions HouseholdCreatedPage formats share text per B8 spec
+03:10 +706: /Users/dianahgasasira/ChangaApp/changa_app/test/features/household/presentation/household_cubit_test.dart: (tearDownAll)
+03:11 +706: loading /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_repository_impl_test.dart
+03:22 +706: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_repository_impl_test.dart: watchUnread rejects a signed-out user
+03:23 +707: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: reads the user household and allows no household
+03:23 +708: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: reads the user household and allows no household
+03:23 +709: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: reads the user household and allows no household
+03:23 +710: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: reads the user household and allows no household
+03:23 +711: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: reads the user household and allows no household
+03:23 +712: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: reads the user household and allows no household
+03:23 +713: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: reads the user household and allows no household
+03:23 +714: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: reads the user household and allows no household
+03:23 +715: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: reads the user household and allows no household
+03:23 +716: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: reads the user household and allows no household
+03:23 +717: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: reads the user household and allows no household
+03:23 +718: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: reads the user household and allows no household
+03:25 +719: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: rejects a missing user profile
+03:25 +720: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: watches only this recipient unread items, newest first
+03:26 +721: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: markRead changes only the read flag and is repeatable
+03:26 +722: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: markRead rejects another recipient without changing data
+03:26 +723: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: markRead rejects a missing notification
+03:26 +724: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/data/notification_remote_datasource_test.dart: markAllRead handles multiple batches and isolates recipients
+03:30 +725: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: reads all navigation fields
+03:30 +726: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: accepts the supported type newExpense
+03:30 +727: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: accepts the supported type nudge
+03:30 +728: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: accepts the supported type settled
+03:30 +729: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: accepts the supported type swapRequest
+03:30 +730: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: accepts the supported type swapResponse
+03:30 +731: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects invalid or non-object JSON: {broken
+03:30 +732: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects invalid or non-object JSON: null
+03:30 +733: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects invalid or non-object JSON: []
+03:30 +734: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects invalid or non-object JSON: "hello"
+03:30 +735: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects invalid or non-object JSON: 42
+03:30 +736: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects missing notificationId
+03:30 +737: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects invalid values for notificationId
+03:30 +738: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects missing type
+03:30 +739: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects invalid values for type
+03:30 +740: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects missing recipientUid
+03:30 +741: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects invalid values for recipientUid
+03:30 +742: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects missing actorUid
+03:30 +743: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects invalid values for actorUid
+03:31 +744: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects missing householdId
+03:31 +745: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects invalid values for householdId
+03:31 +746: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects an unsupported notification type
+03:31 +747: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: accepts an absent or null optional reference
+03:31 +748: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: rejects a non-string reference
+03:31 +749: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_tap_target_test.dart: matches only the intended account and household
+03:32 +750: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_session_listener_test.dart: starts an already loaded notification session
+03:36 +751: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_session_listener_test.dart: signed-out startup has no notification session
+03:36 +752: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_session_listener_test.dart: sign-out clears the previous notification session
+03:38 +753: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_session_listener_test.dart: HouseholdStateLoading clears the active household subscription
+03:38 +754: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_session_listener_test.dart: HouseholdStateEmpty clears the active household subscription
+03:39 +755: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_session_listener_test.dart: household changes start the new household session
+03:39 +756: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_session_listener_test.dart: a new account cannot use the previous account household
+03:41 +757: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing a banner keeps the notification unread
+03:43 +758: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing a banner keeps the notification unread
+03:43 +759: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing a banner keeps the notification unread
+03:43 +760: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing a banner keeps the notification unread
+03:43 +761: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing a banner keeps the notification unread
+03:43 +762: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing a banner keeps the notification unread
+03:43 +763: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing a banner keeps the notification unread
+03:43 +764: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing a banner keeps the notification unread
+03:43 +765: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing a banner keeps the notification unread
+03:43 +766: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing a banner keeps the notification unread
+03:43 +767: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing a banner keeps the notification unread
+03:43 +768: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing a banner keeps the notification unread
+03:43 +769: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing a banner keeps the notification unread
+03:43 +770: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing a banner keeps the notification unread
+03:46 +771: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing a banner keeps the notification unread
+03:46 +772: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/in_app_banner_test.dart: dismisses once after four seconds
+03:46 +773: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: opening an expense marks it read and opens its details
+03:46 +774: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/in_app_banner_test.dart: tapping opens once and cancels automatic dismissal
+03:46 +775: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: a nudge opens its modal before opening details
+03:46 +776: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: a nudge opens its modal before opening details
+03:47 +777: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: a nudge opens its modal before opening details
+03:47 +778: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/in_app_banner_test.dart: a replacement notification gets its own four seconds
+03:47 +779: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/in_app_banner_test.dart: a replacement notification gets its own four seconds
+03:47 +780: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: signing out removes an open nudge modal
+03:47 +781: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: signing out removes an open nudge modal
+03:47 +782: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: an expired banner keeps its notification unread
+03:47 +783: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_listener_host_test.dart: closing one banner displays the next queued notification
+03:51 +784: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/local_notification_listener_test.dart: only new background alerts use Android delivery
+03:52 +785: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/local_notification_listener_test.dart: only new background alerts use Android delivery
+03:52 +786: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/local_notification_listener_test.dart: only new background alerts use Android delivery
+03:52 +787: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/local_notification_listener_test.dart: only new background alerts use Android delivery
+03:52 +788: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/local_notification_listener_test.dart: only new background alerts use Android delivery
+03:52 +789: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/local_notification_listener_test.dart: only new background alerts use Android delivery
+03:52 +790: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/local_notification_listener_test.dart: only new background alerts use Android delivery
+03:52 +791: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/local_notification_listener_test.dart: only new background alerts use Android delivery
+03:52 +792: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/local_notification_listener_test.dart: only new background alerts use Android delivery
+03:54 +793: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/local_notification_listener_test.dart: a matching tap opens the current notification and marks it read
+03:54 +794: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/local_notification_listener_test.dart: taps for another account or household are ignored
+03:54 +795: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/local_notification_listener_test.dart: a launch tap waits for notification data to load
+03:54 +796: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/local_notification_listener_test.dart: sign-out clears displayed notifications and blocks late taps
+03:55 +797: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_permission_button_test.dart: shows feedback for permission result true
+03:58 +798: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_permission_button_test.dart: shows feedback for permission result false
+03:58 +799: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_permission_button_test.dart: shows feedback for permission result null
+03:58 +800: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_permission_button_test.dart: prevents duplicate requests while waiting
+03:58 +801: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_permission_button_test.dart: shows an error and allows retry after failure
+03:59 +802: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_permission_button_test.dart: safely handles disposal during a permission request
+03:59 +803: /Users/dianahgasasira/ChangaApp/changa_app/test/features/notifications/presentation/notification_permission_button_test.dart: is hidden on unsupported platforms
+04:01 +804: All tests passed!
