@@ -76,6 +76,9 @@ Passing automated tests does not establish successful physical-device startup.
 - [Test output — 804 passed](evidence/quality/tests-512f3cb.txt)
 - [Coverage summary](evidence/quality/coverage-summary-512f3cb.txt)
 - [Raw LCOV data](evidence/quality/lcov-512f3cb.info)
+- [Saved analyzer, test, and coverage output screenshot](evidence/quality/quality-results-512f3cb.png)
+
+The screenshot displays excerpts from the saved logs for commit 512f3cb.
 
 Reproduce the saved coverage summary from the repository root:
 
