@@ -227,4 +227,8 @@ Scope:
 - Dashboard quick actions have a minimum height of 52 logical pixels.
 - The navigation Add Expense button occupies 56 × 56 logical pixels.
 - These results cover the tested controls and viewport configurations.
-- Other interactive controls still require target-size verification.
+- Dashboard avatar, notification bell, and Harmony information link:
+  widget tests verify width and height of at least 48 logical pixels
+  and confirm their callbacks respond.
+- The avatar keeps its 40-pixel visual size inside a 48 × 48 touch area.
+- These measurements cover the tested widget configuration.
