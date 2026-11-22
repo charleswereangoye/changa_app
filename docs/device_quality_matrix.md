@@ -49,7 +49,7 @@ Record results with the device name and app commit in the evidence notes.
 | Create household | Pending | Pending | Pending | Pending | Pending | Pending | |
 | Household created / PIN | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Join household | Pending | Pending | Pending | Pending | Pending | Pending | |
-| Dashboard, empty and active | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pending | N/A | Other dashboard data state remains pending |
+| Dashboard, empty and active | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pending | N/A | Pass (large, tested state); small pending |
 | Add expense | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pending | Pass (both sizes) | User-tested on both sizes |
 | Debt details and nudge | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Debt Details layout passed; sending a nudge not verified |
 | Settle up | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Selection survives rotation; settlement submission not verified |
