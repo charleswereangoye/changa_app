@@ -89,40 +89,42 @@ class _Loaded extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(
-              child: _Total(
+        SizedBox(
+          width: double.infinity,
+          child: Wrap(
+            alignment: WrapAlignment.spaceBetween,
+            spacing: AppSpacing.md,
+            runSpacing: AppSpacing.lg,
+            children: [
+              _Total(
                 label: 'You are owed',
                 amount: data?.youAreOwed ?? 0,
                 color: AppColors.sherwoodGreen,
               ),
-            ),
-            Expanded(
-              child: _Total(
+              _Total(
                 label: 'You owe',
                 amount: data?.youOwe ?? 0,
                 color: AppColors.lightGreen,
               ),
-            ),
-            if (onSettleUp != null)
-              FilledButton(
-                key: const Key('balance-settle-up'),
-                onPressed: onSettleUp,
-                style: FilledButton.styleFrom(
-                  backgroundColor: AppColors.athsSpecial,
-                  foregroundColor: AppColors.sherwoodGreen,
-                  shape: const StadiumBorder(),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: AppSpacing.lg,
-                    vertical: AppSpacing.md,
+              if (onSettleUp != null)
+                FilledButton(
+                  key: const Key('balance-settle-up'),
+                  onPressed: onSettleUp,
+                  style: FilledButton.styleFrom(
+                    backgroundColor: AppColors.athsSpecial,
+                    foregroundColor: AppColors.sherwoodGreen,
+                    shape: const StadiumBorder(),
+                    minimumSize: const Size(48, 48),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: AppSpacing.lg,
+                      vertical: AppSpacing.md,
+                    ),
+                    textStyle: AppTextStyles.label,
                   ),
-                  textStyle: AppTextStyles.label,
+                  child: const Text('Settle Up'),
                 ),
-                child: const Text('Settle Up'),
-              ),
-          ],
+            ],
+          ),
         ),
         const SizedBox(height: AppSpacing.md),
         if (entries.isEmpty)
@@ -142,7 +144,9 @@ class _Loaded extends StatelessWidget {
                   size: 22,
                 ),
                 const SizedBox(width: AppSpacing.sm),
-                const Text('All settled up', style: AppTextStyles.label),
+                const Expanded(
+                  child: Text('All settled up', style: AppTextStyles.label),
+                ),
               ],
             ),
           )
@@ -154,38 +158,53 @@ class _Loaded extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
               child: Padding(
                 padding: const EdgeInsets.symmetric(vertical: AppSpacing.sm),
-                child: Row(
-                  children: [
-                    MemberAvatar(
-                      uid: entry.key,
-                      name: names[entry.key] ?? 'Housemate',
-                      radius: 16,
-                    ),
-                    const SizedBox(width: AppSpacing.md),
-                    Expanded(
-                      child: Text(
-                        names[entry.key] ?? 'Housemate',
-                        style: AppTextStyles.bodyMedium,
-                      ),
-                    ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        MoneyText(
-                          entry.value.abs(),
-                          style: AppTextStyles.label.copyWith(
-                            color: entry.value > 0
-                                ? AppColors.sherwoodGreen
-                                : AppColors.lightGreen,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: Wrap(
+                    alignment: WrapAlignment.spaceBetween,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: AppSpacing.md,
+                    runSpacing: AppSpacing.sm,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          MemberAvatar(
+                            uid: entry.key,
+                            name: names[entry.key] ?? 'Housemate',
+                            radius: 16,
                           ),
-                        ),
-                        Text(
-                          entry.value > 0 ? 'owes you' : 'to pay back',
-                          style: AppTextStyles.bodySmall,
-                        ),
-                      ],
-                    ),
-                  ],
+                          const SizedBox(width: AppSpacing.md),
+                          Flexible(
+                            child: Text(
+                              names[entry.key] ?? 'Housemate',
+                              style: AppTextStyles.bodyMedium,
+                            ),
+                          ),
+                        ],
+                      ),
+                      Column(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          MoneyText(
+                            entry.value.abs(),
+                            textAlign: TextAlign.end,
+                            style: AppTextStyles.label.copyWith(
+                              color: entry.value > 0
+                                  ? AppColors.sherwoodGreen
+                                  : AppColors.lightGreen,
+                            ),
+                          ),
+                          Text(
+                            entry.value > 0 ? 'owes you' : 'to pay back',
+                            textAlign: TextAlign.end,
+                            style: AppTextStyles.bodySmall,
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -208,6 +227,7 @@ class _Total extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(label, style: AppTextStyles.bodySmall),
