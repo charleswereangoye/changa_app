@@ -161,3 +161,16 @@ For each failure, record:
 - Tested editing controls remain accessible with the keyboard open.
 - Entered text and selected options survive rotation.
 - Results reported by the tester.
+
+### Dashboard largest-text failure — D11 Large
+
+- Build: 38389f6.
+- Device: iPhone 16 Plus, iOS 26.3.
+- Largest accessibility text, portrait.
+- Quick-action labels overflow horizontally.
+- Bottom navigation labels overflow vertically.
+- Balance totals are clipped.
+- Dashboard large-text result: Fail.
+- Owners: C (dashboard), A (navigation shell).
+- Evidence: docs/evidence/device-quality/iphone16plus-dashboard-largest-text-fail.png
+- Retest: pending.
