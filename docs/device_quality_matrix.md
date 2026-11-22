@@ -37,34 +37,47 @@ Test both portrait and landscape on the required device sizes.
 
 ## Screen checks
 
-Results are tester-reported. A layout pass does not establish that
-submissions or database writes succeeded.
+Results are tester-reported for D11 Small (iPhone SE, 3rd generation)
+and D11 Large (iPhone 16 Plus), running iOS 26.3.
+
+Layout checks cover portrait and landscape at normal and largest
+accessibility text. These results do not establish successful database
+writes or physical-device release behavior.
 
 | Screen or flow | Small portrait | Small landscape | Large portrait | Large landscape | Large text | Keyboard | Evidence / issue |
 |---|---|---|---|---|---|---|---|
-| Splash and onboarding | Pending | Pending | Pending | Pending | Pending | N/A | |
-| Login | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes) | Largest-text and keyboard checks passed |
+| Splash and onboarding | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Navigation and controls checked |
+| Login | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes) | Fields and controls remain reachable |
 | Sign up | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes) | Entered text survives rotation |
 | Forgot password | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes) | Fields and controls remain reachable |
-| Email verification | Pending | Pending | Pending | Pending | Pending | N/A | |
-| Create household | Pending | Pending | Pending | Pending | Pending | Pending | |
-| Household created / PIN | Pending | Pending | Pending | Pending | Pending | N/A | |
-| Join household | Pending | Pending | Pending | Pending | Pending | Pending | |
-| Dashboard, empty and active | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pass (both sizes, tested state) | N/A | Largest-text fixes: e3fada1; before-and-after screenshots saved; other data states pending |
-| Add expense | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes) | Layout and entered-value preservation tested; submission unverified |
-| Debt details and nudge | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Sending a nudge remains unverified |
-| Settle up | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Payment selection survives rotation; submission unverified |
-| Chore roster | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | User-tested on D11 Large |
-| Add / edit chore | Pending | Pending | Pass (layout) | Pass (layout) | Pending | Pass (large) | Entered values survive rotation |
-| Chore swap | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Dialog layout passed; submission unverified |
-| Activity history | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pending | Displayed state passed; empty and populated states not separately recorded |
-| Profile | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Final screen tested on both sizes |
+| Email verification | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Instructions and controls checked |
+| Create household | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes) | Values survive rotation |
+| Household created / PIN | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | PIN readability, copy, and navigation checked |
+| Join household | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes) | PIN entry and household preview checked |
+| Dashboard, empty and active | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Both states checked; original overflow and passing retest screenshots retained |
+| Add expense | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes) | Scrolling and value preservation checked |
+| Debt details and nudge | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Amounts, expense rows, scrolling, and navigation checked |
+| Settle up | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Payment selection survives rotation |
+| Chore roster | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Dates, cards, and actions checked |
+| Add / edit chore | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes) | Validation layout, scrolling, and value preservation checked |
+| Chore swap | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | List, buttons, and dismissal checked |
+| Activity history | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (search, both sizes) | Empty and populated states; search typing and clearing checked |
+| Profile | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Final screen tested |
 | Edit profile | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes) | Entered text survives rotation |
 | Preferences | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Selections survive rotation |
 | Payment methods | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Selection survives rotation |
-| Manage household | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes, editing form) | Layout and editing controls tested |
-| Harmony explanation | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Text and dismissal controls remain usable |
-| Notification banner and nudge modal | Pending | Pending | Pending | Pending | Pending | N/A | Integration retest required |
+| Manage household | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (editing form, both sizes) | Editing controls remain reachable |
+| Harmony explanation | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Text, scrolling, and dismissal checked |
+| Notification banner and nudge modal | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Banner/modal text, dismissal, and View Details checked |
+
+### Remaining verification
+
+- Measured text contrast of at least 4.5:1 remains pending.
+- Measured interactive target sizes of at least 48 logical pixels remain pending.
+- Database writes are not established by these layout results.
+- Android notification permission and delivery require Android testing.
+- D12 release startup remains unresolved.
+- Two-physical-phone release testing remains pending.
 
 ## Checks for each screen
 
