@@ -2,28 +2,26 @@
 
 ## Test build
 
-- Date: 2026-11-19
+- Last updated: 2026-11-22
 - Tester: Dianah
-- Branch: feature/d-device-quality
-- App commit: e303f1a
-- Current device: D11 Small — iPhone SE (3rd generation), 4.7-inch
-- OS: iOS 26.3
+- Branch: fix/d-large-text-layout
+- Latest dark-surface spot-check commit: b959f9c
+- Latest spot-check device: iPhone 16e, iOS 26.3
+- Earlier layout devices: iPhone SE (3rd generation) and iPhone 16 Plus
+- Earlier builds are identified in the historical logs below.
 
-Record the new app commit whenever the tested code changes.
+The Screen checks table records the latest tester-reported layout results.
+Earlier passes do not establish that every screen was rerun on this commit.
 
-## Status rules
+## Current summary
 
-- Pending: not tested yet.
-- Pass: all relevant checks completed successfully.
-- Fail: reproducible problem; link evidence and an issue.
-- Blocked: required feature, account, or device is unavailable.
-- N/A: check does not apply; explain why.
-
-## Initial observations
-
-- The app displays after configuring Firebase for iOS.
-- Rotating left was reported to work.
-- Screen-specific layout, keyboard, and accessibility checks remain pending.
+- The tester reports the screen-layout checks in the table passed.
+- Both required simulator sizes were checked in portrait and landscape,
+  including largest accessibility text.
+- Dashboard empty/active states and Activity History empty/populated
+  states and search were subsequently reported as passed.
+- Contrast and touch-target measurements cover only the audited controls.
+- Physical-device release results are documented separately under D12.
 
 ## Required device coverage
 
@@ -134,6 +132,13 @@ For each failure, record:
 - Small landscape evidence: docs/evidence/device-quality/iphonese-dashboard-largest-text-pass-landscape.png
 - Other dashboard data states remain pending.
 
+## Historical log interpretation
+
+The dated entries below preserve earlier observations. Their pending
+statuses describe those test stages, not the latest summary table.
+Later testing superseded the dashboard-state and Activity History
+state/search gaps. Contrast and target-size checks remain scoped.
+
 ## Test log — 2026-11-22
 
 ### Authentication layouts — D11 Large
@@ -182,7 +187,9 @@ For each failure, record:
 - Dashboard large-text result: Fail.
 - Owners: C (dashboard), A (navigation shell).
 - Evidence: docs/evidence/device-quality/iphone16plus-dashboard-largest-text-fail.png
-- Retest: pending.
+- Retest: passed after the layout fixes from e3fada1.
+- Portrait evidence: docs/evidence/device-quality/iphone16plus-dashboard-largest-text-pass-portrait.png
+- Landscape evidence: docs/evidence/device-quality/iphone16plus-dashboard-largest-text-pass-landscape.png
 
 ### Activity History and Harmony explanation — both simulator sizes
 
@@ -232,3 +239,14 @@ Scope:
   and confirm their callbacks respond.
 - The avatar keeps its 40-pixel visual size inside a 48 × 48 touch area.
 - These measurements cover the tested widget configuration.
+
+## Review follow-up — dark surfaces
+
+- Date: 2026-11-22.
+- Tested commit: b959f9c.
+- Device: iPhone 16e, iOS 26.3.
+- Tester reports the Harmony card, household-created header/PIN card,
+  and Manage Household PIN panel remained readable at normal and
+  largest accessibility text.
+- No dark-green-on-dark-green small text was reported.
+- This was a visual regression check, not a complete contrast measurement.
