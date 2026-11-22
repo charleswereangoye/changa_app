@@ -127,7 +127,9 @@ class RecentActivityList extends StatelessWidget {
             TextButton(
               key: const Key('activity-see-all'),
               onPressed: onSeeAll,
-              style: TextButton.styleFrom(foregroundColor: AppColors.leafGreen),
+              style: TextButton.styleFrom(
+                foregroundColor: AppColors.sherwoodGreen,
+              ),
               child: const Text('See all'),
             ),
           ],
