@@ -49,10 +49,10 @@ Record results with the device name and app commit in the evidence notes.
 | Create household | Pending | Pending | Pending | Pending | Pending | Pending | |
 | Household created / PIN | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Join household | Pending | Pending | Pending | Pending | Pending | Pending | |
-| Dashboard, empty and active | Pass (tested state) | Pass (tested state) | Pending | Pending | Pending | N/A | D11 Small; other data state pending |
-| Add expense | Pass (layout) | Pass (layout) | Pending | Pending | Pending | Pass (small device) | User-tested on D11 Small |
-| Debt details and nudge | Pending | Pending | Pending | Pending | Pending | N/A | |
-| Settle up | Pending | Pending | Pending | Pending | Pending | N/A | |
+| Dashboard, empty and active | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pending | N/A | Other dashboard data state remains pending |
+| Add expense | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pending | Pass (both sizes) | User-tested on both sizes |
+| Debt details and nudge | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Debt Details layout passed; sending a nudge not verified |
+| Settle up | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Selection survives rotation; settlement submission not verified |
 | Chore roster | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Add / edit chore | Pending | Pending | Pending | Pending | Pending | Pending | |
 | Chore swap | Pending | Pending | Pending | Pending | Pending | Pending | |
@@ -134,3 +134,11 @@ For each failure, record:
   and keyboard-open layout checks.
 - Results reported by the tester.
 - Large text, measured contrast, and tap-size checks remain pending.
+
+### Dashboard, expenses, and debts — D11 Large
+
+- App build: 38389f6.
+- Tester reports portrait and landscape layout checks passed.
+- Add Expense remains usable with the keyboard open and preserves entered values.
+- Settle Up preserves the selected payment method after rotation.
+- These results cover layout and state preservation, not successful writes.
