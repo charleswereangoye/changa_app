@@ -73,7 +73,8 @@ writes or physical-device release behavior.
 ### Remaining verification
 
 - Text contrast passed for the audited dashboard and navigation labels.
-  Other screens and explicit color overrides remain pending.
+- Navigation and dashboard quick-action target checks passed.
+  Measurements for other interactive controls remain pending.
 
 ## Checks for each screen
 
@@ -217,3 +218,13 @@ Scope:
 - Other screens, transparent text, and explicit overrides require review.
 - Icon contrast and measured tap-target sizes remain separate checks.
 - Earlier simulator layout passes predate these text-color changes.
+
+## Tap-target verification
+
+- Navigation and quick-action widget tests: 6 passed.
+- Tests cover normal and large text layouts, target-size assertions,
+  scrolling, and action callbacks.
+- Dashboard quick actions have a minimum height of 52 logical pixels.
+- The navigation Add Expense button occupies 56 × 56 logical pixels.
+- These results cover the tested controls and viewport configurations.
+- Other interactive controls still require target-size verification.
