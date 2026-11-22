@@ -57,10 +57,11 @@ Record results with the device name and app commit in the evidence notes.
 | Add / edit chore | Pending | Pending | Pass (layout) | Pass (layout) | Pending | Pass (large device) | Entered values preserved after rotation |
 | Chore swap | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Swap dialog layout passed; request submission not verified |
 | Activity history | Pending | Pending | Pending | Pending | Pending | Pending | |
-| Profile | Pending | Pending | Pending | Pending | Pending | N/A | |
-| Edit profile | Pending | Pending | Pending | Pending | Pending | Pending | |
-| Preferences | Pending | Pending | Pending | Pending | Pending | N/A | |
-| Manage household | Pending | Pending | Pending | Pending | Pending | Pending | |
+| Profile | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Final Profile screen tested on D11 Large |
+| Edit profile | Pending | Pending | Pass (layout) | Pass (layout) | Pending | Pass (large device) | Entered text survives rotation |
+| Preferences | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Selections survive rotation |
+| Payment methods | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Selection survives rotation |
+| Manage household | Pending | Pending | Pass (layout) | Pass (layout) | Pending | Pass (tested editing form) | User-tested on D11 Large |
 | Harmony explanation | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Notification banner and nudge modal | Pending | Pending | Pending | Pending | Pending | N/A | |
 
@@ -151,3 +152,12 @@ For each failure, record:
 - Add/Edit Chore remain usable with the keyboard open and preserve
   entered values after rotation.
 - Results reported by the tester; write operations remain unverified.
+
+### Profile and household settings — D11 Large
+
+- App build: 38389f6.
+- Profile, Edit Profile, Preferences, Payment Methods, and Manage Household
+  passed portrait and landscape layout checks.
+- Tested editing controls remain accessible with the keyboard open.
+- Entered text and selected options survive rotation.
+- Results reported by the tester.
