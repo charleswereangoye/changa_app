@@ -43,15 +43,15 @@ submissions or database writes succeeded.
 | Screen or flow | Small portrait | Small landscape | Large portrait | Large landscape | Large text | Keyboard | Evidence / issue |
 |---|---|---|---|---|---|---|---|
 | Splash and onboarding | Pending | Pending | Pending | Pending | Pending | N/A | |
-| Login | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (large); small pending | Pass (both sizes) | Small: e303f1a; large normal: 38389f6 |
-| Sign up | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (large); small pending | Pass (both sizes) | Small: e303f1a; large normal: 38389f6 |
-| Forgot password | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (large); small pending | Pass (both sizes) | Small: e303f1a; large normal: 38389f6 |
+| Login | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes) | Largest-text and keyboard checks passed |
+| Sign up | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes) | Entered text survives rotation |
+| Forgot password | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes) | Fields and controls remain reachable |
 | Email verification | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Create household | Pending | Pending | Pending | Pending | Pending | Pending | |
 | Household created / PIN | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Join household | Pending | Pending | Pending | Pending | Pending | Pending | |
 | Dashboard, empty and active | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pass (tested state) | Pass (both sizes, tested state) | N/A | Largest-text fixes: e3fada1; before-and-after screenshots saved; other data states pending |
-| Add expense | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (large); small pending | Pass (both sizes) | Layout and entered-value preservation tested |
+| Add expense | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes) | Layout and entered-value preservation tested; submission unverified |
 | Debt details and nudge | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Sending a nudge remains unverified |
 | Settle up | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Payment selection survives rotation; submission unverified |
 | Chore roster | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | User-tested on D11 Large |
