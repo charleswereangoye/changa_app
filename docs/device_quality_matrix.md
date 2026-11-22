@@ -30,7 +30,7 @@ Record the new app commit whenever the tested code changes.
 | Configuration | Device | Status |
 |---|---|---|
 | Small device, 5.5 inches or smaller | D11 Small — iPhone SE (3rd generation), iOS 26.3 | In progress |
-| Large device, 6.7 inches or larger | To select | Pending |
+| Large device, 6.7 inches or larger | D11 Large — iPhone 16 Plus, iOS 26.3 | In progress |
 | Additional simulator | iPhone 16e, iOS 26.3 | In progress |
 
 Test both portrait and landscape on the required device sizes.
@@ -42,9 +42,9 @@ Record results with the device name and app commit in the evidence notes.
 | Screen or flow | Small portrait | Small landscape | Large portrait | Large landscape | Large text | Keyboard | Evidence / issue |
 |---|---|---|---|---|---|---|---|
 | Splash and onboarding | Pending | Pending | Pending | Pending | Pending | N/A | |
-| Login | Pass (layout) | Pass (layout) | Pending | Pending | Pending | Pass (small device) | User-tested on D11 Small; see notes below |
-| Sign up | Pass (layout) | Pass (layout) | Pending | Pending | Pending | Pass (small device) | User-tested on D11 Small |
-| Forgot password | Pass (layout) | Pass (layout) | Pending | Pending | Pending | Pass (small device) | User-tested on D11 Small |
+| Login | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pending | Pass (both sizes) | Small: e303f1a; large: 38389f6 |
+| Sign up | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pending | Pass (both sizes) | Small: e303f1a; large: 38389f6 |
+| Forgot password | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pending | Pass (both sizes) | Small: e303f1a; large: 38389f6 |
 | Email verification | Pending | Pending | Pending | Pending | Pending | N/A | |
 | Create household | Pending | Pending | Pending | Pending | Pending | Pending | |
 | Household created / PIN | Pending | Pending | Pending | Pending | Pending | N/A | |
@@ -123,3 +123,14 @@ For each failure, record:
   final-screen testing is blocked pending integration.
 - Notification banner and nudge modal testing is blocked pending integration.
 - Large-text, contrast, tap-size, and large-device checks remain pending.
+
+## Test log — 2026-11-22
+
+### Authentication layouts — D11 Large
+
+- Build: 38389f6.
+- Device: iPhone 16 Plus, iOS 26.3.
+- Login, Sign Up, and Forgot Password passed portrait, landscape,
+  and keyboard-open layout checks.
+- Results reported by the tester.
+- Large text, measured contrast, and tap-size checks remain pending.
