@@ -72,12 +72,8 @@ writes or physical-device release behavior.
 
 ### Remaining verification
 
-- Measured text contrast of at least 4.5:1 remains pending.
-- Measured interactive target sizes of at least 48 logical pixels remain pending.
-- Database writes are not established by these layout results.
-- Android notification permission and delivery require Android testing.
-- D12 release startup remains unresolved.
-- Two-physical-phone release testing remains pending.
+- Text contrast passed for the audited dashboard and navigation labels.
+  Other screens and explicit color overrides remain pending.
 
 ## Checks for each screen
 
@@ -196,3 +192,28 @@ For each failure, record:
 - These results cover the displayed Activity History state;
   empty and populated states were not separately recorded.
 - Activity search keyboard behavior remains pending unless separately verified.
+
+## Text contrast audit — 2026-11-22
+
+Calculated from the opaque foreground and background colors in source.
+
+| Audited text combination | Contrast ratio | 4.5:1 target |
+|---|---:|---|
+| Dark green on cream | 13.51:1 | Pass |
+| Dark green on white | 14.16:1 | Pass |
+| Dark green on light green | 8.41:1 | Pass |
+| Light green on dark green | 8.41:1 | Pass |
+
+Changes:
+- Shared small-text default changed to dark green.
+- Navigation labels changed to dark green.
+- Dashboard household label and Harmony explanation subtitle darkened.
+- Balance amounts and the See all link changed to dark green.
+
+The tester reports all tests passed after these changes.
+
+Scope:
+- These results cover the audited text combinations.
+- Other screens, transparent text, and explicit overrides require review.
+- Icon contrast and measured tap-target sizes remain separate checks.
+- Earlier simulator layout passes predate these text-color changes.
