@@ -58,11 +58,11 @@ submissions or database writes succeeded.
 | Add / edit chore | Pending | Pending | Pass (layout) | Pass (layout) | Pending | Pass (large) | Entered values survive rotation |
 | Chore swap | Pending | Pending | Pass (layout) | Pass (layout) | Pending | N/A | Dialog layout passed; submission unverified |
 | Activity history | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pending | Displayed state passed; empty and populated states not separately recorded |
-| Profile | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (small); large pending | N/A | Final screen tested on both sizes |
-| Edit profile | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (small); large pending | Pass (both sizes) | Entered text survives rotation |
+| Profile | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Final screen tested on both sizes |
+| Edit profile | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes) | Entered text survives rotation |
 | Preferences | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Selections survive rotation |
-| Payment methods | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (small); large pending | N/A | Selection survives rotation |
-| Manage household | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (small); large pending | Pass (both sizes, editing form) | Layout and editing controls tested |
+| Payment methods | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Selection survives rotation |
+| Manage household | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | Pass (both sizes, editing form) | Layout and editing controls tested |
 | Harmony explanation | Pass (layout) | Pass (layout) | Pass (layout) | Pass (layout) | Pass (both sizes) | N/A | Text and dismissal controls remain usable |
 | Notification banner and nudge modal | Pending | Pending | Pending | Pending | Pending | N/A | Integration retest required |
 
