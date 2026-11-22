@@ -128,9 +128,7 @@ class BreakdownTile extends StatelessWidget {
                       textAlign: TextAlign.end,
                       style: theme.textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: isOwedToMe
-                            ? AppColors.leafGreen
-                            : colors.onSurface,
+                        color: colors.onSurface,
                       ),
                     ),
                   ),
@@ -152,7 +150,7 @@ class BreakdownTile extends StatelessWidget {
                         'Chore credits applied · '
                         '${debt.creditsApplied} pts',
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: AppColors.leafGreen,
+                          color: colors.onSurface,
                           fontWeight: FontWeight.w600,
                         ),
                       ),
