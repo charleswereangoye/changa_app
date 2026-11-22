@@ -86,7 +86,7 @@ void main() {
 
     expect(
       tester.widget<Text>(find.text('Activity')).style?.color,
-      AppColors.lightGreen,
+      AppColors.sherwoodGreen,
     );
 
     final scrollable = tester.state<ScrollableState>(navigationScrollable());

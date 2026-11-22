@@ -140,8 +140,8 @@ class AppBottomNavigation extends StatelessWidget {
                   label,
                   softWrap: false,
                   style: labelStyle.copyWith(
-                    color: color,
-                    fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+                    color: AppColors.sherwoodGreen,
+                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
                   ),
                 ),
               ],
