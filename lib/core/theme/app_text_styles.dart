@@ -41,7 +41,7 @@ class AppTextStyles {
     fontFamily: 'Poppins',
     fontSize: 12,
     fontWeight: FontWeight.w400,
-    color: AppColors.edward,
+    color: AppColors.sherwoodGreen,
   );
 
   // Buttons and labels
