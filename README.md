@@ -4,6 +4,9 @@ Changa is a mobile app that helps student housemates **share bills and rotate ch
 
 Built with Flutter and Firebase for the ALU Mobile Application Development final project (Group 32).
 
+## Team Task Sheet
+- https://docs.google.com/spreadsheets/d/198jQX6lll6FL8NJExx19SBIGqxlE3Bc7PM4AlsCg2LU/edit?usp=sharing
+
 ## Features
 
 - **Accounts:** sign up with email (with email verification and password reset) or with Google, and stay signed in after a restart.
