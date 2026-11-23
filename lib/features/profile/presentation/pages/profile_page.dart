@@ -117,42 +117,13 @@ class _ProfileView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Profile Header with Avatar and Stats
-              if (household != null && sl.isRegistered<ChoreRepository>())
-                StreamBuilder<List<Chore>>(
-                  stream: sl<ChoreRepository>().watchAllChores(household.id),
-                  builder: (context, snapshot) {
-                    final chores = snapshot.data ?? const [];
-                    final choresDone = chores
-                        .where(
-                          (c) =>
-                              c.status == ChoreStatus.done &&
-                              c.assignedToUid == fallbackUser.uid,
-                        )
-                        .length;
-
-                    final dynamicScore =
-                        sl.isRegistered<DashboardCubit>() &&
-                            sl<DashboardCubit>().state.harmony != null
-                        ? sl<DashboardCubit>().state.harmony!.value
-                        : (chores.isNotEmpty
-                              ? const CalculateHarmonyScore()
-                                    .call(
-                                      chores: chores,
-                                      debts: const [],
-                                      now: DateTime.now(),
-                                    )
-                                    ?.value
-                              : null);
-
-                    return ProfileHeader(
-                      user: fallbackUser,
-                      householdName: household.name,
-                      joinedAt: joinedAt,
-                      harmonyScore: dynamicScore,
-                      credits: credits,
-                      choresDone: choresDone,
-                    );
-                  },
+              if (household != null)
+                _ProfileStatsSection(
+                  user: fallbackUser,
+                  householdName: household.name,
+                  joinedAt: joinedAt,
+                  credits: credits,
+                  householdId: household.id,
                 )
               else
                 ProfileHeader(
@@ -525,6 +496,77 @@ class _HelpItem extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _ProfileStatsSection extends StatelessWidget {
+  const _ProfileStatsSection({
+    required this.user,
+    required this.householdName,
+    required this.joinedAt,
+    required this.credits,
+    required this.householdId,
+  });
+
+  final AppUser user;
+  final String householdName;
+  final DateTime? joinedAt;
+  final int credits;
+  final String householdId;
+
+  @override
+  Widget build(BuildContext context) {
+    int? harmonyScore;
+    try {
+      harmonyScore = context.watch<DashboardCubit>().state.harmony?.value;
+    } catch (_) {
+      harmonyScore = null;
+    }
+
+    if (sl.isRegistered<ChoreRepository>()) {
+      return StreamBuilder<List<Chore>>(
+        stream: sl<ChoreRepository>().watchAllChores(householdId),
+        builder: (context, snapshot) {
+          final chores = snapshot.data ?? const [];
+          final choresDone = chores
+              .where(
+                (c) =>
+                    c.status == ChoreStatus.done && c.assignedToUid == user.uid,
+              )
+              .length;
+
+          final effectiveScore =
+              harmonyScore ??
+              (chores.isNotEmpty
+                  ? const CalculateHarmonyScore()
+                        .call(
+                          chores: chores,
+                          debts: const [],
+                          now: DateTime.now(),
+                        )
+                        ?.value
+                  : null);
+
+          return ProfileHeader(
+            user: user,
+            householdName: householdName,
+            joinedAt: joinedAt,
+            harmonyScore: effectiveScore,
+            credits: credits,
+            choresDone: choresDone,
+          );
+        },
+      );
+    }
+
+    return ProfileHeader(
+      user: user,
+      householdName: householdName,
+      joinedAt: joinedAt,
+      harmonyScore: harmonyScore,
+      credits: credits,
+      choresDone: 0,
     );
   }
 }

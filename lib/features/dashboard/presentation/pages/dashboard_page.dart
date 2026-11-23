@@ -87,6 +87,16 @@ class _HouseholdDashboard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final existingCubit = _tryReadDashboardCubit(context);
+    if (existingCubit != null) {
+      existingCubit.start(householdId: householdId, uid: uid);
+      return _DashboardBody(
+        householdName: householdName,
+        uid: uid,
+        names: names,
+      );
+    }
+
     return BlocProvider<DashboardCubit>(
       create: (_) =>
           GetIt.instance<DashboardCubit>()
@@ -97,6 +107,14 @@ class _HouseholdDashboard extends StatelessWidget {
         names: names,
       ),
     );
+  }
+
+  static DashboardCubit? _tryReadDashboardCubit(BuildContext context) {
+    try {
+      return context.read<DashboardCubit>();
+    } catch (_) {
+      return null;
+    }
   }
 }
 
